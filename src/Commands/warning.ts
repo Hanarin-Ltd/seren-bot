@@ -1,0 +1,20 @@
+import { ChatInputCommandInteraction, GuildMember } from "discord.js"
+import { completeSuccessfullyMessage, getThisGuild, giveWarning, removeWarning } from "../lib"
+
+export default async function warning(interaction: ChatInputCommandInteraction) {
+    await interaction.deferReply()
+
+    const args = interaction.options
+    const targetMember = args.getMember('멤버')! as GuildMember
+    const option = args.getString('설정')!
+    const warningAmount = args.getNumber('갯수')
+    const thisGuild = await getThisGuild(interaction)
+
+    if (option === 'add') {
+        await giveWarning(thisGuild.id, targetMember, warningAmount ? warningAmount : 1)
+    } else if (option === 'remove') {
+        await removeWarning(thisGuild.id, targetMember.id, warningAmount ? warningAmount : 1)
+    }
+
+    await  interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
+}
