@@ -1,0 +1,112 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model GuildPermission {
+    guildId String @unique
+    collectBlockword Boolean @default(false)
+    collectBan Boolean @default(false)
+}
+
+model GuildOption {
+    guildId String @unique
+
+    banChannelId String @default("")
+    banMessageEnabled Boolean @default(false)
+    
+    welcomeChannelId String @default("")
+    welcomeMessage String @default(":wave: 안녕하세요, {user}님!")
+    welcomeMessageEnabled Boolean @default(false)
+
+    goodbyeChannelId String @default("")
+    goodbyeMessage String @default(":cry: {user}님이 나가셨습니다.")
+    goodbyeMessageEnabled Boolean @default(false)
+
+    logChannelId String @default("")
+    logEnabled Boolean @default(false)
+
+    checkModsMessage Boolean @default(false)
+}
+
+model GuildChannel {
+    guildId String
+    channelId String @unique
+    channelName String
+    channelType Int
+}
+
+model GuildData {
+    guildId String @unique
+    name String
+    isCommunityGuild Boolean @default(false)
+    isSettingComplete Boolean @default(false)
+}
+
+model GuildBan {
+    userId String @unique
+    guildId String
+    username String
+    nickname String
+    tag String
+    reason String
+    createdAt DateTime @default(now())
+}
+
+model UserData {
+    id String @unique
+    username String
+    tag String
+    profileImg String
+    bannedGuild String[]
+}
+
+model MemberData {
+    uniqueId Int @id @default(autoincrement())
+    userId String
+    guildId String
+    username String
+    nickname String
+    tag String
+    profileImg String
+
+    mod Boolean @default(false)
+    mentionBlock Boolean @default(false)
+    isOwner Boolean @default(false)
+
+    joinedAt DateTime
+    exp Int @default(0)
+    warning Int @default(0)
+}
+
+model Blockword {
+    uniqueId Int @id @default(autoincrement())
+    guildId String 
+    word String[] @default([])
+}
+
+model Account {
+    userId String @unique
+    guildId String
+    password String
+    username String
+    tag String
+}
+
+model ErrorLog {
+    id Int @id @default(autoincrement())
+    content Json
+    createdAt DateTime @default(now())
+}
+
+model GuildRole {
+    id String @unique
+    name String
+    guildId String
+    type String @default("any")
+}
+
