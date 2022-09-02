@@ -1,5 +1,7 @@
 import { GuildMember, PartialGuildMember } from "discord.js"
-import { BOT_COLOR, getChannel, getGuildOption, logToSQL } from "./lib"
+import { logToSQL, BOT_COLOR } from "./lib"
+import { getChannel } from "./utils/discord"
+import { getGuildOption } from "./utils/guildOption"
 
 export const welcome = async (member: GuildMember) => {
     const permission = await getGuildOption(member.guild.id)

@@ -1,6 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import getCommands from "../commands"
-import { BOT_COLOR, sendDM, updateMemberCache } from "../lib"
+import { BOT_COLOR } from "../lib"
+import { updateMemberCache, sendDM } from "../utils/discord"
 
 const helpMessage = () => {
     return new EmbedBuilder()

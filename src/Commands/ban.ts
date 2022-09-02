@@ -1,5 +1,9 @@
 import { ChatInputCommandInteraction, EmbedBuilder, GuildMember, User } from "discord.js"
-import { addBan, BOT_COLOR, completeSuccessfullyMessage, errorMessage, getChannel, getGuildData, getGuildOption, getGuildPermission, getMember, getThisGuild, getUser, isGuildModerator, logToSQL, noPermissionMessage, removeBan, updateMemberCache } from "../lib"
+import { BOT_COLOR, logToSQL } from "../lib"
+import { addBan, removeBan } from "../utils/ban"
+import { noPermissionMessage, errorMessage, completeSuccessfullyMessage } from "../utils/default"
+import { getThisGuild, getUser, getMember, isGuildModerator, getChannel, updateMemberCache } from "../utils/discord"
+import { getGuildOption } from "../utils/guildOption"
 
 const someoneHasBan = (name: string, reason: string | null) => {
     return new EmbedBuilder()

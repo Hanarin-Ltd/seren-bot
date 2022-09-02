@@ -1,5 +1,6 @@
 import { CacheType, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import { BOT_COLOR, getCurrentTime } from "../lib";
+import { BOT_COLOR } from "../lib";
+import { getCurrentTime } from "../utils/default";
 
 const message = (latency: number, apiLatency:number, timestamp: string, responce: string) => {
     return new EmbedBuilder()

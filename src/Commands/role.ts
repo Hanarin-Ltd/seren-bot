@@ -1,5 +1,8 @@
-import { ChatInputCommandInteraction, Guild, GuildMember, GuildMemberManager, GuildMemberRoleManager, Role } from "discord.js"
-import { BOT_COLOR, completeSuccessfullyMessage, errorMessage, getGuildModRole, isGuildModerator, noPermissionMessage } from "../lib"
+import { ChatInputCommandInteraction, GuildMember, Role } from "discord.js"
+import { BOT_COLOR } from "../lib"
+import { noPermissionMessage, completeSuccessfullyMessage } from "../utils/default"
+import { isGuildModerator } from "../utils/discord"
+import { getGuildModRole } from "../utils/role"
 
 export default async function role(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply()

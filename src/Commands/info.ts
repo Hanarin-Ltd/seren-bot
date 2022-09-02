@@ -1,5 +1,7 @@
 import { ChatInputCommandInteraction, CacheType, EmbedBuilder, Guild, GuildPremiumTier } from "discord.js"
-import { BOT_COLOR, getCurrentDate, updateMemberCache } from "../lib"
+import { BOT_COLOR } from "../lib"
+import { getCurrentDate } from "../utils/default"
+import { updateMemberCache } from "../utils/discord"
 
 type messageProp = {
     name: string,

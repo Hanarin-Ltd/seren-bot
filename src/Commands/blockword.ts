@@ -1,6 +1,12 @@
 import { ChatInputCommandInteraction, CacheType, Message, EmbedBuilder, GuildMember } from "discord.js"
 import { compareTwoStrings } from "string-similarity"
-import { addBlockword, BOT_COLOR, checkIsBlockword, FILTERING_MESSAGE_TYPE, getBlockwordList, getGuildData, getGuildOption, getThisGuild, giveWarning, isGuildModerator, isGuildOwner, logToSQL, noPermissionMessage, removeBlockword, updateMemberCache } from "../lib"
+import { BOT_COLOR, FILTERING_MESSAGE_TYPE } from "../lib"
+import { checkIsBlockword, addBlockword, removeBlockword, getBlockwordList } from "../utils/blockWord"
+import { noPermissionMessage } from "../utils/default"
+import { getThisGuild, updateMemberCache, isGuildModerator } from "../utils/discord"
+import { getGuildData } from "../utils/guildData"
+import { getGuildOption } from "../utils/guildOption"
+import { giveWarning } from "../utils/warning"
 
 export default async function blockword(interaction: ChatInputCommandInteraction<CacheType>) {
     const args = interaction.options

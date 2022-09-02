@@ -1,5 +1,7 @@
 import { ChatInputCommandInteraction, GuildMember } from "discord.js"
-import { completeSuccessfullyMessage, getThisGuild, giveWarning, removeWarning } from "../lib"
+import { completeSuccessfullyMessage } from "../utils/default"
+import { getThisGuild } from "../utils/discord"
+import { giveWarning, removeWarning } from "../utils/warning"
 
 export default async function warning(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply()

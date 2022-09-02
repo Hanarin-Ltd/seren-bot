@@ -1,5 +1,9 @@
 import { ChatInputCommandInteraction, CacheType, Message, EmbedBuilder, userMention, GuildMember } from "discord.js"
-import { updateMemberCache, getThisGuild, noPermissionMessage, BOT_COLOR, isGuildModerator, removeMentionBlock, addMentionBlock, getMentionBlockList, giveWarning, isMentionBlock } from "../lib"
+import { BOT_COLOR } from "../lib"
+import { noPermissionMessage } from "../utils/default"
+import { updateMemberCache, getThisGuild, isGuildModerator } from "../utils/discord"
+import { isMentionBlock, removeMentionBlock, addMentionBlock } from "../utils/mentionBlock"
+import { giveWarning } from "../utils/warning"
 
 const youCantMention = () => {
     return new EmbedBuilder()

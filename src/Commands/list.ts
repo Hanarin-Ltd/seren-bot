@@ -1,5 +1,12 @@
 import { ChatInputCommandInteraction, CacheType, userMention, bold, GuildMember } from "discord.js"
-import { updateMemberCache, BOT_COLOR, getThisGuild, getModList, getBlockwordList, sendDM, isGuildModerator, getMentionBlockList, getWarning, getWarningList, getBanList, getCurrentDate } from "../lib"
+import { BOT_COLOR } from "../lib"
+import { getBanList } from "../utils/ban"
+import { getBlockwordList } from "../utils/blockWord"
+import { getCurrentDate } from "../utils/default"
+import { updateMemberCache, getThisGuild, isGuildModerator, sendDM } from "../utils/discord"
+import { getMentionBlockList } from "../utils/mentionBlock"
+import { getModList } from "../utils/mod"
+import { getWarningList } from "../utils/warning"
 
 export default async function list(interaction: ChatInputCommandInteraction<CacheType>) {
     await interaction.deferReply()

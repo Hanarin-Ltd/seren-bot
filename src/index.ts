@@ -5,14 +5,21 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { Client, GatewayIntentBits, Guild } from 'discord.js'
+import { Client, GatewayIntentBits } from 'discord.js'
 import { getCommandFunction } from './commands'
 import { scanMessage } from './Commands/blockword'
 import { scanMention } from './Commands/mention'
 import guildSetting from './guildSetting'
-import { addMod, addSlashCommands, errorMessage, getGuildOwner, removeGuildData, logToSQL, addMentionBlock, getGuildData, BOT_COLOR, removeAccount, rest, removeMemberData, addMemberData, addAllGuildChannel, addGuildChannel, removeGuildChannel, modifyGuildChannel } from './lib'
 import { goodbye, welcome } from './welcome'
 import openSocketServer from './socket'
+import { BOT_COLOR, logToSQL } from './lib'
+import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
+import { addSlashCommands, errorMessage } from './utils/default'
+import { getGuildOwner } from './utils/discord'
+import { getGuildData, removeGuildData } from './utils/guildData'
+import { addMemberData, removeMemberData } from './utils/memberData'
+import { addMentionBlock } from './utils/mentionBlock'
+import { addMod } from './utils/mod'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -64,7 +71,6 @@ client.on('guildCreate', async (guild) => {
 client.on('guildDelete', async (guild) => {
     try {
         removeGuildData(guild.id)
-        await removeAccount(guild.id)
     } catch (error: any) {
         console.log(error)
         logToSQL(error)
