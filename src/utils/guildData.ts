@@ -11,7 +11,9 @@ export const addOrUpdateGuildData = async (guild: Guild) => {
         update: {},
         create: {
             guildId: guild.id,
-            name: guild.name
+            name: guild.name,
+            ownerId: guild.ownerId,
+            icon: guild.iconURL() || 'none'
         }
     })
 }

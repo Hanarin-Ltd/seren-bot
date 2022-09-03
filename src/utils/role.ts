@@ -17,6 +17,7 @@ export const addGuildRole = async (role: Role) => {
         id: role.id,
         name: role.name,
         guildId: role.guild.id,
+        type: 'any'
     }, skipDuplicates: true })
 }
 

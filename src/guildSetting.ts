@@ -1,6 +1,5 @@
 import { EmbedBuilder, Guild, spoiler } from "discord.js"
 import { env } from '.'
-import { Account } from "@prisma/client"
 import { BOT_COLOR } from "./lib"
 import { setDefaultBlockword } from "./utils/blockWord"
 import { addAllGuildChannel } from "./utils/channel"

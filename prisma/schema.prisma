@@ -43,6 +43,8 @@ model GuildChannel {
 model GuildData {
     guildId String @unique
     name String
+    ownerId String
+    icon String
     isCommunityGuild Boolean @default(false)
     isSettingComplete Boolean @default(false)
 }
@@ -63,6 +65,7 @@ model UserData {
     tag String
     profileImg String
     bannedGuild String[]
+    ownedGuild String[]
 }
 
 model MemberData {
@@ -89,14 +92,6 @@ model Blockword {
     word String[] @default([])
 }
 
-model Account {
-    userId String @unique
-    guildId String
-    password String
-    username String
-    tag String
-}
-
 model ErrorLog {
     id Int @id @default(autoincrement())
     content Json
@@ -107,6 +102,5 @@ model GuildRole {
     id String @unique
     name String
     guildId String
-    type String @default("any")
+    type String
 }
-
