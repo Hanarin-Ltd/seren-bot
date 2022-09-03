@@ -19,10 +19,11 @@ import { getChannel, getGuildOwner } from './utils/discord'
 import { getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData } from './utils/memberData'
 import { addMentionBlock } from './utils/mentionBlock'
-import { addMod } from './utils/mod'
+import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
 import { someoneHasBan, someoneHasUnban } from './Commands/ban'
+import { getGuildModRole } from './utils/role'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -138,6 +139,16 @@ client.on('guildBanRemove', async (banMember) => {
         option.unbanMessageEnabled && channel.send({ embeds: [someoneHasUnban(banMember.user.username, banMember.reason || '공개되지 않음')] })
     } catch (e) {
         logToSQL(e)
+    }
+})
+
+client.on('guildMemberUpdate', async (oldMember, newMember) => {
+    const modRoleId = (await getGuildModRole(newMember.guild)).id
+    const thisGuild = oldMember.guild
+    if (newMember.roles.cache.has(modRoleId)) {
+        await addMod(thisGuild, newMember)
+    } else if (!newMember.roles.cache.has(modRoleId)) {
+        await removeMod(thisGuild, newMember)
     }
 })
 

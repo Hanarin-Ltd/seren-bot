@@ -31,6 +31,6 @@ export const removeMentionBlock = async (guildId: string, member: GuildMember) =
 }
 
 export const isMentionBlock = async (guildId: string, member: GuildMember) => {
-    const mentionBlockList = await getMentionBlockList(guildId)
-    return mentionBlockList.some(m => m.userId === member.id)
+    const mentionBlockList = (await getMentionBlockList(guildId)).map(mb => mb.userId)
+    return mentionBlockList.includes(member.id)
 }
