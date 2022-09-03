@@ -1,5 +1,5 @@
 import { Guild, Role, PermissionFlagsBits } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 import { updateRoleCache } from "./discord"
 
 export const addAllGuildRole = async (guild: Guild) => {

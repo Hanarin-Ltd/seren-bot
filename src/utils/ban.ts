@@ -1,5 +1,5 @@
 import { GuildMember } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 
 export const getBanList = async (guildId: string) => {
     const result = await prisma.guildBan.findMany({ where: { guildId } })

@@ -1,5 +1,6 @@
 import { Guild } from "discord.js"
-import { logToSQL, prisma } from "../lib"
+import { logToSQL } from "../lib"
+import prisma from "../prisma"
 
 export const getGuildData = async (guildId: string) => {
     return await prisma.guildData.findUnique({ where: { guildId } })

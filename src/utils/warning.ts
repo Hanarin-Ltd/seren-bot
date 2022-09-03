@@ -1,5 +1,5 @@
 import { GuildMember } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 import { getMemberData, addMemberData } from "./memberData"
 
 export const getWarning = async (guildId: string, memberId: string) => {

@@ -1,5 +1,5 @@
 import { Guild, GuildChannel, GuildBasedChannel } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 import { updateChannelCache } from "./discord"
 
 export const getGuildChannel = async (guild: Guild) => {

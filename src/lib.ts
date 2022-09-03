@@ -1,8 +1,7 @@
 import { MessageType, REST } from 'discord.js'
 import { env } from '.'
-import { PrismaClient } from '@prisma/client'
+import prisma from './prisma'
 
-export const prisma = new PrismaClient()
 const BOT_TOKEN: string = env.BOT_TOKEN!
 export const rest = new REST({ version: '10' }).setToken(BOT_TOKEN)
 

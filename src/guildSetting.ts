@@ -3,7 +3,6 @@ import { env } from '.'
 import { BOT_COLOR } from "./lib"
 import { setDefaultBlockword } from "./utils/blockWord"
 import { addAllGuildChannel } from "./utils/channel"
-import { makeRandomString } from "./utils/default"
 import { getGuildOwner } from "./utils/discord"
 import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"

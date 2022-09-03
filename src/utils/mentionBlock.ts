@@ -1,5 +1,5 @@
 import { Guild, GuildMember } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 import { addMemberData } from "./memberData"
 
 export const getMentionBlockList = async (guildId: string) => {

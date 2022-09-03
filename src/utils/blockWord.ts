@@ -1,4 +1,4 @@
-import { prisma } from "../lib"
+import prisma from "../prisma"
 
 export const getBlockwordList = async (guildId: string)=> {
     const result = await prisma.blockword.findFirst({ where: {

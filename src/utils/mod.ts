@@ -1,5 +1,5 @@
 import { GuildMember, PermissionFlagsBits } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 import { addMemberData } from "./memberData"
 
 export const getModList = async (guildId: string) => {

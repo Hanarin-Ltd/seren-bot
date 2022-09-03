@@ -1,5 +1,5 @@
 import { GuildOption } from "@prisma/client"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 
 export const getGuildOption = async (guildId: string) => {
     return await prisma.guildOption.findUnique({ where: { guildId } })

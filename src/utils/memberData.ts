@@ -1,6 +1,6 @@
 import { MemberData } from "@prisma/client"
 import { GuildMember, PartialGuildMember } from "discord.js"
-import { prisma } from "../lib"
+import prisma from "../prisma"
 import { getGuildOwner } from "./discord"
 
 export const getMemberData = async (memberId: string) => {
