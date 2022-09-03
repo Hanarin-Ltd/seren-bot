@@ -9,7 +9,6 @@ export default async function mod(interaction: ChatInputCommandInteraction<Cache
 
     const args = interaction.options
     const thisGuild = await getThisGuild(interaction)
-    const guildId = thisGuild.id
     const target = args.getMember('멤버')! as GuildMember
 
     await updateMemberCache(thisGuild)
@@ -25,7 +24,7 @@ export default async function mod(interaction: ChatInputCommandInteraction<Cache
             return
         }
         
-        await addMod(guildId, target)
+        await addMod(thisGuild, target)
     }
     else if (args.getString('설정') === 'remove') {
         if (!await isGuildModerator(thisGuild, target)) {
@@ -37,7 +36,7 @@ export default async function mod(interaction: ChatInputCommandInteraction<Cache
             return
         }
 
-       await removeMod(guildId, target)
+       await removeMod(thisGuild, target)
     }
 
     await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':white_check_mark: 성공적으로 처리되었습니다.' }] })

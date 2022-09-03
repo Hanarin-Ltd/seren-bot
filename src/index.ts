@@ -68,7 +68,7 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('guildCreate', async (guild) => {
     await removeGuildData(guild.id)
-    await addMod(guild.id, await getGuildOwner(guild))
+    await addMod(guild, await getGuildOwner(guild))
     guildSetting(guild)
 })
 

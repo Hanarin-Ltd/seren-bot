@@ -1,6 +1,7 @@
-import { GuildMember, PermissionFlagsBits } from "discord.js"
+import { Guild, GuildMember, PermissionFlagsBits } from "discord.js"
 import prisma from "../prisma"
 import { addMemberData } from "./memberData"
+import { getGuildModRole } from "./role"
 
 export const getModList = async (guildId: string) => {
     const modList = await prisma.memberData.findMany({ where: {
@@ -10,30 +11,30 @@ export const getModList = async (guildId: string) => {
     return modList
 }
 
-export const addMod = async (guildId: string, member: GuildMember) => {
+export const addMod = async (guild: Guild, member: GuildMember) => {
     try {
         await addMemberData(member)
         await prisma.memberData.updateMany({
-            where: { guildId, userId: member.id },
+            where: { guildId: guild.id, userId: member.id },
             data: { mod: true },
         })
-        member.permissions.add(PermissionFlagsBits.ManageGuild)
+        member.roles.add((await getGuildModRole(guild))!.id)
     } catch {
         await addMemberData(member)
-        await addMod(guildId, member)
+        await addMod(guild, member)
     }
 }
 
-export const removeMod = async (guildId: string, member: GuildMember) => {
+export const removeMod = async (guild: Guild, member: GuildMember) => {
     try {
         await addMemberData(member)
         await prisma.memberData.updateMany({
-            where: { guildId, userId: member.id },
+            where: { guildId: guild.id, userId: member.id },
             data: { mod: false }
         })
-        member.permissions.add(PermissionFlagsBits.ManageGuild)
+        member.roles.remove((await getGuildModRole(guild))!.id)
     } catch {
         await addMemberData(member)
-        removeMod(guildId, member)
+        removeMod(guild, member)
     }
 }
