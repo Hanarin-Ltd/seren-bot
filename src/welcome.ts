@@ -6,6 +6,7 @@ import { getGuildOption } from "./utils/guildOption"
 export const welcome = async (member: GuildMember) => {
     const permission = await getGuildOption(member.guild.id)
     if (!permission) return
+    if (!permission.welcomeMessageEnabled) return
 
     const channel = await getChannel(member.guild, permission.welcomeChannelId)
     if (!channel) {
@@ -29,6 +30,7 @@ export const welcome = async (member: GuildMember) => {
 export const goodbye = async (member: GuildMember | PartialGuildMember) => {
     const permission = await getGuildOption(member.guild.id)
     if (!permission) return
+    if (!permission.goodbyeMessageEnabled) return
 
     const channel = await getChannel(member.guild, permission.goodbyeChannelId)
     if (!channel) {

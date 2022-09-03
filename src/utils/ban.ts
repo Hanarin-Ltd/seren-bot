@@ -1,9 +1,22 @@
-import { GuildMember } from "discord.js"
+import { Guild, GuildMember } from "discord.js"
+import { logToSQL } from "../lib"
 import prisma from "../prisma"
 
-export const getBanList = async (guildId: string) => {
+export const updateBanListCache = async (guild: Guild) => {
+    await guild.bans.fetch().catch(err => {
+        logToSQL(err)
+        console.log(err)
+    })
+}
+
+export const getBanListFromSQL = async (guildId: string) => {
     const result = await prisma.guildBan.findMany({ where: { guildId } })
     return result
+}
+
+export const getBanListFromAPI = async (guild: Guild) => {
+    await updateBanListCache(guild)
+    return guild.bans.cache
 }
 
 export const getBannedGuildList = async (userId: string) => {
@@ -11,7 +24,9 @@ export const getBannedGuildList = async (userId: string) => {
     return result ? result.bannedGuild : []
 }
 
-export const addBan = async (guildId: string, member: GuildMember, reason: string) => {
+export const addBan = async (guildId: string, member: GuildMember, reason?: string | null) => {
+    const exist = await prisma.guildBan.findFirst({ where: { guildId, userId: member.user.id } })
+    if (exist) return
     await prisma.guildBan.create({
         data: {
             userId: member.id,
@@ -19,7 +34,8 @@ export const addBan = async (guildId: string, member: GuildMember, reason: strin
             username: member.user.username,
             nickname: member.nickname ? member.nickname : member.user.username,
             tag: member.user.tag,
-            reason: reason
+            profileImg: member.displayAvatarURL(),
+            reason: reason || '공개하지 않음'
         }
     })
 

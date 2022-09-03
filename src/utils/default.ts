@@ -16,7 +16,7 @@ export const getCurrentTime = (now: Date = new Date()) => {
 }
 
 export const getCurrentDate = (now: Date = new Date()) => {
-    return `${now.getFullYear()}/${now.getMonth().toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}`
+    return `${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}`
 }
 
 export const errorMessage = () => {

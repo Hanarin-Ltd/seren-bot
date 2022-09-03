@@ -5,15 +5,17 @@ import { noPermissionMessage, errorMessage, completeSuccessfullyMessage } from "
 import { getThisGuild, getUser, getMember, isGuildModerator, getChannel, updateMemberCache } from "../utils/discord"
 import { getGuildOption } from "../utils/guildOption"
 
-const someoneHasBan = (name: string, reason: string | null) => {
+export const someoneHasBan = (name: string, reason: string | null) => {
     return new EmbedBuilder()
+        .setColor(BOT_COLOR)
         .setTitle(`:no_entry: ${name}이(가) 차단되었습니다.`)
         .setDescription(`사유: ${reason ? reason : '공개하지 않음'}`)
         .setTimestamp()
 }
 
-const someoneHasUnban = (name: string, reason: string | null) => {
+export const someoneHasUnban = (name: string, reason: string | null) => {
     return new EmbedBuilder()
+        .setColor(BOT_COLOR)
         .setTitle(`:white_check_mark: ${name}이(가) 차단 해제되었습니다.`)
         .setDescription(`사유: ${reason ? reason : '공개하지 않음'}`)
         .setTimestamp()
@@ -45,7 +47,7 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
         return
     }
 
-    const channel = await getChannel(thisGuild, permission.banChannelId)
+    const channel = await getChannel(thisGuild, setting === 'add' ? permission.banChannelId : permission.unbanChannelId)
     if (setting === 'add') {
         if (!targetMember) {
             await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':warning: ID가 유효하지 않습니다!' }] })
@@ -67,11 +69,11 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
         await interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
 
         if (!channel) {
-            logToSQL(`Error: Can't get the Channel / guildId : ${thisGuild.id} / channelId : ${permission.welcomeChannelId}`)
+            logToSQL(`Error: Can't get the Channel / guildId : ${thisGuild.id} / channelId : ${permission.banChannelId}`)
             return
         }
         if (channel.isTextBased()) {
-            channel.send({
+            permission.banMessageEnabled && channel.send({
                 embeds: [someoneHasBan(targetMember.user.username, reason)]
             })
         }
@@ -83,11 +85,11 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
             await interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
 
             if (!channel) {
-                logToSQL(`Error: Can't get the Channel / guildId : ${thisGuild.id} / channelId : ${permission.welcomeChannelId}`)
+                logToSQL(`Error: Can't get the Channel / guildId : ${thisGuild.id} / channelId : ${permission.unbanChannelId}`)
                 return
             }
             if (channel.isTextBased()) {
-                channel.send({
+                permission.unbanMessageEnabled && channel.send({
                     embeds: [someoneHasUnban(targetUser.username, reason)]
                 })
             }

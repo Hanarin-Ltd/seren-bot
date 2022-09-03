@@ -5,7 +5,7 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { Client, GatewayIntentBits } from 'discord.js'
+import { Client, GatewayIntentBits, GuildMember } from 'discord.js'
 import { getCommandFunction } from './commands'
 import { scanMessage } from './Commands/blockword'
 import { scanMention } from './Commands/mention'
@@ -15,11 +15,14 @@ import openSocketServer from './socket'
 import { BOT_COLOR, logToSQL } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
-import { getGuildOwner } from './utils/discord'
+import { getChannel, getGuildOwner } from './utils/discord'
 import { getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData } from './utils/memberData'
 import { addMentionBlock } from './utils/mentionBlock'
 import { addMod } from './utils/mod'
+import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
+import { getGuildOption } from './utils/guildOption'
+import { someoneHasBan, someoneHasUnban } from './Commands/ban'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -28,6 +31,7 @@ export const client = new Client({ intents: [
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildBans
 ] })
 
 client.on('ready', async () => {
@@ -85,21 +89,56 @@ client.on('guildMemberAdd', async (member) => {
 
 client.on('guildMemberRemove', async (member) => {
     await removeMemberData(member)
+
+    await updateBanListCache(member.guild)
+    const banList = (await getBanListFromAPI(member.guild)).map(m => m.user.id)
+
+    if (banList.includes(member.id)) {
+        try {
+            const option = (await getGuildOption(member.guild.id))!
+            const channel = (await getChannel(member.guild, option.banChannelId))!
+    
+            await addBan(member.guild.id, member as GuildMember, '알 수 없음')
+    
+            if (!channel || !channel.isTextBased()) return
+            option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(member.user.username, '알 수 없음')] })
+        } catch (e) {
+            console.log(e)
+            logToSQL(e)
+        }
+        return
+    }
     await goodbye(member)
 })
 
 client.on('channelCreate', async (channel) => {
     await addGuildChannel(channel)
 })
+
 client.on('channelDelete', async (channel) => {
     if (channel.isDMBased()) return
 
     await removeGuildChannel(channel)
 })
+
 client.on('channelUpdate', async (oldChannel, newChannel) => {
     if (oldChannel.isDMBased() || newChannel.isDMBased()) return
 
     await modifyGuildChannel(oldChannel, newChannel)
+})
+
+client.on('guildBanRemove', async (banMember) => {
+    try {
+        const option = (await getGuildOption(banMember.guild.id))!
+        const channel = (await getChannel(banMember.guild, option.unbanChannelId))!
+
+        await removeBan(banMember.guild.id, banMember.user.id)
+
+        if (!channel || !channel.isTextBased()) return
+        option.unbanMessageEnabled && channel.send({ embeds: [someoneHasUnban(banMember.user.username, banMember.reason || '공개되지 않음')] })
+    } catch (e) {
+        logToSQL(e)
+    }
 })
 
 client.login(env.BOT_TOKEN)

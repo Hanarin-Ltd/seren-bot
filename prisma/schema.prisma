@@ -18,6 +18,9 @@ model GuildOption {
 
     banChannelId String @default("")
     banMessageEnabled Boolean @default(false)
+
+    unbanChannelId String @default("")
+    unbanMessageEnabled Boolean @default(false)
     
     welcomeChannelId String @default("")
     welcomeMessage String @default(":wave: 안녕하세요, {user}님!")
@@ -55,6 +58,7 @@ model GuildBan {
     username String
     nickname String
     tag String
+    profileImg String
     reason String
     createdAt DateTime @default(now())
 }

@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, CacheType, userMention, bold, GuildMember } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getBanList } from "../utils/ban"
+import { getBanListFromSQL } from "../utils/ban"
 import { getBlockwordList } from "../utils/blockWord"
 import { getCurrentDate } from "../utils/default"
 import { updateMemberCache, getThisGuild, isGuildModerator, sendDM } from "../utils/discord"
@@ -60,7 +60,7 @@ export default async function list(interaction: ChatInputCommandInteraction<Cach
         }
     } else if (content === 'ban') {
         dataName = '차단'
-        const data = await getBanList(thisGuild.id)
+        const data = await getBanListFromSQL(thisGuild.id)
         if (data.length === 0) {
             dataListString = ':no_entry_sign: 차단당한 사용자가 없습니다'
         } else {
