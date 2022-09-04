@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, CacheType, Message, EmbedBuilder, GuildMember } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, Message, EmbedBuilder, GuildMember, userMention } from "discord.js"
 import { compareTwoStrings } from "string-similarity"
 import { BOT_COLOR, FILTERING_MESSAGE_TYPE } from "../lib"
 import { checkIsBlockword, addBlockword, removeBlockword, getBlockwordList } from "../utils/blockWord"
@@ -6,6 +6,7 @@ import { noPermissionMessage } from "../utils/default"
 import { getThisGuild, updateMemberCache, isGuildModerator } from "../utils/discord"
 import { getGuildData } from "../utils/guildData"
 import { getGuildOption } from "../utils/guildOption"
+import { getGuildLogSetting, log } from "../utils/log"
 import { giveWarning } from "../utils/warning"
 
 export default async function blockword(interaction: ChatInputCommandInteraction<CacheType>) {
@@ -29,7 +30,7 @@ export default async function blockword(interaction: ChatInputCommandInteraction
             return
         }
         
-        await addBlockword(guildId, word)
+        await addBlockword(thisGuild, word)
     }
     else if (args.getString('설정') === 'remove') {
         if (!await checkIsBlockword(guildId, word)) {
@@ -37,7 +38,7 @@ export default async function blockword(interaction: ChatInputCommandInteraction
             return
         }
 
-        await removeBlockword(guildId, word)
+        await removeBlockword(thisGuild, word)
     }
 
     await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':white_check_mark: 성공적으로 처리되었습니다.' }] })
@@ -67,10 +68,11 @@ export const scanMessage = async (message: Message) => {
     if (!data) return
     if (!data.isCommunityGuild) return
 
-    const guild = message.guild!
-    const guildId = guild.id
+    const thisGuild = message.guild!
+    const guildId = thisGuild.id
     const blockwordList = await getBlockwordList(guildId)
     const catchedWordList: string[] = []
+    const logSetting = await getGuildLogSetting(guildId)
 
     blockwordList.forEach(blockword => {
         if (message.content.toLowerCase().includes(blockword.toLowerCase())) {
@@ -90,5 +92,6 @@ export const scanMessage = async (message: Message) => {
         await message.delete()
         await message.author.send({ embeds: [youUsedBlockword(catchedWordList)] })
         await giveWarning(guildId, message.member!)
+        await log(`금지어 사용 멤버 : ${userMention(message.member!.id)} / 사용 금지어 : ${catchedWordList.join(', ')}`, thisGuild, 'useBlockword')
     }
 }

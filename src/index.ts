@@ -5,7 +5,7 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { Client, GatewayIntentBits, GuildMember, PermissionFlagsBits } from 'discord.js'
+import { Client, GatewayIntentBits, GuildMember, PermissionFlagsBits, userMention } from 'discord.js'
 import { getCommandFunction } from './commands'
 import { scanMessage } from './Commands/blockword'
 import guildSetting from './guildSetting'
@@ -21,7 +21,8 @@ import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
 import { someoneHasBan, someoneHasUnban } from './Commands/ban'
-import { getGuildModRole } from './utils/role'
+import { getGuildModRole, getGuildRole } from './utils/role'
+import { getGuildLogSetting, log } from './utils/log'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -55,8 +56,11 @@ client.on('interactionCreate', async (interaction) => {
         return
     }
 
+    const logSetting = await getGuildLogSetting(interaction.guild!.id)
+
     try {
         getCommandFunction()[interaction.commandName](interaction)
+        logSetting?.useCommand && log(`명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}}`, interaction.guild!, 'useCommand')
     } catch (error: any) {
         console.log(error)
         logToSQL(error)
@@ -144,12 +148,39 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     try {
         const modRoleId = (await getGuildModRole(newMember.guild)).id
         const thisGuild = oldMember.guild
+
         if (newMember.roles.cache.has(modRoleId)) {
             await addMod(thisGuild, newMember)
         } else if (!newMember.roles.cache.has(modRoleId)) {
             await removeMod(thisGuild, newMember)
         }
+
+        const logSetting = (await getGuildLogSetting(newMember.guild.id))!
+        const oldRoles = oldMember.roles.cache.map(r => r.id)
+        const newRoles = newMember.roles.cache.map(r => r.id)
+
+        const deletedRole = oldRoles.filter(r => !newRoles.includes(r))
+        const addedRole = newRoles.filter(r => !oldRoles.includes(r))
+
+        deletedRole.forEach(async id => {
+            const role = (await getGuildRole(thisGuild, id))!
+            logSetting?.removeRoleToMember && log(`역할 제거됨 : ${userMention(newMember.id)} / 제거된 역할 : ${role.name}`, thisGuild, 'removeRoleToMember')
+        })
+        addedRole.forEach(async id => {
+            const role = (await getGuildRole(thisGuild, id))!
+            logSetting?.addRoleToMember && log(`역할 추가됨 : ${userMention(newMember.id)} / 추가된 역할 : ${role.name}`, thisGuild, 'addRoleToMember')
+        })
     } catch {
+        return
+    }
+})
+
+client.on('messageDelete', async (message) => {
+    try {
+        if (!message.guild) return
+        const logSetting = await getGuildLogSetting(message.guildId!)
+        logSetting?.removeMessage && log(`메세지 작성자 : ${userMention(message.member!.id)} / 내용 : ${message.content || '알 수 없음 (null)'}`, message.guild, 'removeMessage')
+    } catch (e) {
         return
     }
 })

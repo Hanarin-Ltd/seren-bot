@@ -1,10 +1,12 @@
-import { GuildMember, PartialGuildMember } from "discord.js"
+import { GuildMember, PartialGuildMember, userMention } from "discord.js"
 import { logToSQL, BOT_COLOR } from "./lib"
 import { getChannel } from "./utils/discord"
 import { getGuildOption } from "./utils/guildOption"
+import { getGuildLogSetting, log } from "./utils/log"
 
 export const welcome = async (member: GuildMember) => {
     const permission = await getGuildOption(member.guild.id)
+    const logSetting = await getGuildLogSetting(member.guild.id)
     if (!permission) return
     if (!permission.welcomeMessageEnabled) return
 
@@ -25,10 +27,13 @@ export const welcome = async (member: GuildMember) => {
         logToSQL(`TypeError: Unpredictable Type / guildId : ${member.guild.id} / channelId : ${permission.welcomeChannelId}`)
         return
     }
+
+    if (logSetting && logSetting.userCreate) log(`새로운 멤버 : ${userMention(member.id)}`, member.guild, 'userCreate')
 }
 
 export const goodbye = async (member: GuildMember | PartialGuildMember) => {
     const permission = await getGuildOption(member.guild.id)
+    const logSetting = await getGuildLogSetting(member.guild.id)
     if (!permission) return
     if (!permission.goodbyeMessageEnabled) return
 
@@ -49,4 +54,6 @@ export const goodbye = async (member: GuildMember | PartialGuildMember) => {
         logToSQL(`TypeError: Unpredictable Type / guildId : ${member.guild.id} / channelId : ${permission.goodbyeChannelId}`)
         return
     }
+
+    if (logSetting && logSetting.userDelete) log(`멤버 나감 : ${userMention(member.id)}`, member.guild, 'userDelete')
 }

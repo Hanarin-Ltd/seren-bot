@@ -108,7 +108,7 @@ model GuildRole {
     type String
 }
 
-model GuildLog {
+model GuildLogSetting {
     guildId String @unique
 
     userCreate Boolean @default(false)
@@ -132,4 +132,15 @@ model GuildLog {
 
     addBan Boolean @default(false)
     removeBan Boolean @default(false)
+
+    getWarning Boolean @default(false)
+    removeWarning Boolean @default(false)
+}
+
+model GuildLog {
+    uniqueId Int @id @default(autoincrement())
+    guildId String
+    type String
+    content String
+    createdAt DateTime
 }

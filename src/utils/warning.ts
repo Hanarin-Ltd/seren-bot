@@ -1,5 +1,6 @@
-import { GuildMember } from "discord.js"
+import { GuildMember, userMention } from "discord.js"
 import prisma from "../prisma"
+import { getGuildLogSetting, log } from "./log"
 import { getMemberData, addMemberData } from "./memberData"
 
 export const getWarning = async (guildId: string, memberId: string) => {
@@ -17,6 +18,7 @@ export const getWarningList = async (guildId: string) => {
 
 export const giveWarning = async (guildId: string, member: GuildMember, num = 1) => {
     const exist = await getMemberData(member.id)
+    const logSetting = await getGuildLogSetting(guildId)
     try {
         await prisma.memberData.updateMany({
             where: { guildId, userId: member.id },
@@ -24,17 +26,20 @@ export const giveWarning = async (guildId: string, member: GuildMember, num = 1)
                 warning: exist.warning + num
             }
         })
+        logSetting?.getWarning && log(`경고 추가 멤버 : ${userMention(member.id)} / 갯수 : ${num}개`, member.guild!, 'getWarning')
     } catch {
         await addMemberData(member)
         await giveWarning(guildId, member, num)
     }
 }
 
-export const removeWarning = async (guildId: string, memberId: string, num = 1) => {
+export const removeWarning = async (guildId: string, member: GuildMember, num = 1) => {
+    const logSetting = await getGuildLogSetting(guildId)
     await prisma.memberData.updateMany({
-        where: { guildId, userId: memberId },
+        where: { guildId, userId: member.id },
         data: {
-            warning: (await getWarning(guildId, memberId))! - num
+            warning: (await getWarning(guildId, member.id))! - num
         }
     })
+    logSetting?.getWarning && log(`경고 제거 멤버 : ${userMention(member.id)} / 갯수 : ${num}개`, member.guild!, 'removeWarning')
 }

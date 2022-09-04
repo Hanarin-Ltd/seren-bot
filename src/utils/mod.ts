@@ -1,5 +1,6 @@
-import { Guild, GuildMember, PermissionFlagsBits } from "discord.js"
+import { Guild, GuildMember, PermissionFlagsBits, userMention } from "discord.js"
 import prisma from "../prisma"
+import { getGuildLogSetting, log } from "./log"
 import { addMemberData } from "./memberData"
 import { getGuildModRole } from "./role"
 
@@ -13,6 +14,7 @@ export const getModList = async (guildId: string) => {
 
 export const addMod = async (guild: Guild, member: GuildMember) => {
     try {
+        const logSetting = await getGuildLogSetting(guild.id)
         const exist = await prisma.memberData.findMany({ where: { guildId: guild.id, mod: true, userId: member.id } })
         if (exist.length > 0) return
         await addMemberData(member)
@@ -21,6 +23,7 @@ export const addMod = async (guild: Guild, member: GuildMember) => {
             data: { mod: true },
         })
         member.roles.add((await getGuildModRole(guild))!.id)
+        logSetting?.addMod && log(`관리자 임명됨 : ${userMention(member.id)}`, guild, 'addMod')
     } catch {
         await addMemberData(member)
         await addMod(guild, member)
@@ -29,12 +32,14 @@ export const addMod = async (guild: Guild, member: GuildMember) => {
 
 export const removeMod = async (guild: Guild, member: GuildMember) => {
     try {
+        const logSetting = await getGuildLogSetting(guild.id)
         await addMemberData(member)
         await prisma.memberData.updateMany({
             where: { guildId: guild.id, userId: member.id },
             data: { mod: false }
         })
         member.roles.remove((await getGuildModRole(guild))!.id)
+        logSetting?.removeMod && log(`관리자 해임됨 : ${userMention(member.id)}`, guild, 'removeMod')
     } catch {
         await addMemberData(member)
         removeMod(guild, member)

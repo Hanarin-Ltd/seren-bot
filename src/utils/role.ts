@@ -25,6 +25,10 @@ export const getGuildModRole = async (guild: Guild) => {
     return (await prisma.guildRole.findFirst({ where: { guildId: guild.id, type: 'mod' } }))!
 }
 
+export const getGuildRole = async (guild: Guild, roleId: string) => {
+    return await prisma.guildRole.findFirst({ where: { guildId: guild.id, id: roleId } })
+}
+
 export const removeGuildRole = async (role: Role) => {
     return await prisma.guildRole.deleteMany({ where: { guildId: role.guild.id, id: role.id } })
 }

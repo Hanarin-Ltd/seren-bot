@@ -202,6 +202,8 @@ const commands =  [
                 { name: '역할 삭제', value: 'removeRoleToMember' },
                 { name: '차단 추가', value: 'addBan' },
                 { name: '차단 삭제', value: 'removeBan' },
+                { name: '경고 추가', value: 'getWarning' },
+                { name: '경고 삭제', value: 'removeWarning' }
             )
             .setRequired(true)
         )

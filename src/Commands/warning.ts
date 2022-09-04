@@ -15,7 +15,7 @@ export default async function warning(interaction: ChatInputCommandInteraction) 
     if (option === 'add') {
         await giveWarning(thisGuild.id, targetMember, warningAmount ? warningAmount : 1)
     } else if (option === 'remove') {
-        await removeWarning(thisGuild.id, targetMember.id, warningAmount ? warningAmount : 1)
+        await removeWarning(thisGuild.id, targetMember, warningAmount ? warningAmount : 1)
     }
 
     await  interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
