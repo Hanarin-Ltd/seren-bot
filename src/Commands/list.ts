@@ -4,7 +4,6 @@ import { getBanListFromSQL } from "../utils/ban"
 import { getBlockwordList } from "../utils/blockWord"
 import { getCurrentDate } from "../utils/default"
 import { updateMemberCache, getThisGuild, isGuildModerator, sendDM } from "../utils/discord"
-import { getMentionBlockList } from "../utils/mentionBlock"
 import { getModList } from "../utils/mod"
 import { getWarningList } from "../utils/warning"
 
@@ -39,17 +38,6 @@ export default async function list(interaction: ChatInputCommandInteraction<Cach
                 return bold(word)
             }).join('\n-----\n')
         }
-    }
-    else if (content === 'mention') {
-        dataList = await getMentionBlockList(thisGuild.id)
-        if (dataList.length === 0) {
-            dataListString = ':no_entry_sign: 멘션이 금지된 사용자가 없습니다.'
-        } else {
-            dataListString = dataList.map(m => {
-                return userMention(m.userId)
-            }).join('\n-----\n')
-        }
-        isModOnly = true
     } else if (content === 'warning') {
         dataName = '경고'
         const data = await getWarningList(thisGuild.id)

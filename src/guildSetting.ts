@@ -6,6 +6,7 @@ import { addAllGuildChannel } from "./utils/channel"
 import { getGuildOwner } from "./utils/discord"
 import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"
+import { addGuildLogSetting } from "./utils/log"
 import { setDefaultGuildPermission } from "./utils/permission"
 import { addAllGuildRole } from "./utils/role"
 
@@ -25,6 +26,7 @@ export default async function guildSetting(guild: Guild) {
     await setDefaultBlockword(guildId)
     await addAllGuildChannel(guild)
     await addAllGuildRole(guild)
+    await addGuildLogSetting(guild.id)
 
     await (await getGuildOwner(guild)).send({ embeds: [thanksForUsing(guildId)] })
 }

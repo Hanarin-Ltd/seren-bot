@@ -82,7 +82,6 @@ model MemberData {
     profileImg String
 
     mod Boolean @default(false)
-    mentionBlock Boolean @default(false)
     isOwner Boolean @default(false)
 
     joinedAt DateTime
@@ -107,4 +106,30 @@ model GuildRole {
     name String
     guildId String
     type String
+}
+
+model GuildLog {
+    guildId String @unique
+
+    userCreate Boolean @default(false)
+    userDelete Boolean @default(false)
+
+    addMod Boolean @default(false)
+    removeMod Boolean @default(false)
+
+    useCommand Boolean @default(false)
+
+    useBlockword Boolean @default(false)
+    addBlockword Boolean @default(false)
+    removeBlockword Boolean @default(false)
+
+    removeMessage Boolean @default(false)
+
+    levelUp Boolean @default(false)
+
+    addRoleToMember Boolean @default(false)
+    removeRoleToMember Boolean @default(false)
+
+    addBan Boolean @default(false)
+    removeBan Boolean @default(false)
 }

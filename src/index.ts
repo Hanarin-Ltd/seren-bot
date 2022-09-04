@@ -5,10 +5,9 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { Client, GatewayIntentBits, GuildMember } from 'discord.js'
+import { Client, GatewayIntentBits, GuildMember, PermissionFlagsBits } from 'discord.js'
 import { getCommandFunction } from './commands'
 import { scanMessage } from './Commands/blockword'
-import { scanMention } from './Commands/mention'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openSocketServer from './socket'
@@ -18,7 +17,6 @@ import { addSlashCommands, errorMessage } from './utils/default'
 import { getChannel, getGuildOwner } from './utils/discord'
 import { getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData } from './utils/memberData'
-import { addMentionBlock } from './utils/mentionBlock'
 import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
@@ -48,7 +46,6 @@ client.on('messageCreate', async (message) => {
     if (!message.guildId) return
 
     scanMessage(message)
-    scanMention(message)
 })
 
 client.on('interactionCreate', async (interaction) => {
@@ -71,6 +68,7 @@ client.on('guildCreate', async (guild) => {
     await removeGuildData(guild.id)
     await addMod(guild, await getGuildOwner(guild))
     guildSetting(guild)
+    guild.roles.everyone.permissions.remove('MentionEveryone')
 })
 
 client.on('guildDelete', async (guild) => {
@@ -84,11 +82,11 @@ client.on('guildDelete', async (guild) => {
 
 client.on('guildMemberAdd', async (member) => {
     await addMemberData(member)
-    await addMentionBlock(member.guild, member)
     await welcome(member)
 })
 
 client.on('guildMemberRemove', async (member) => {
+    if (member.id === client.user?.id) return
     await removeMemberData(member)
 
     await updateBanListCache(member.guild)
@@ -143,12 +141,16 @@ client.on('guildBanRemove', async (banMember) => {
 })
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
-    const modRoleId = (await getGuildModRole(newMember.guild)).id
-    const thisGuild = oldMember.guild
-    if (newMember.roles.cache.has(modRoleId)) {
-        await addMod(thisGuild, newMember)
-    } else if (!newMember.roles.cache.has(modRoleId)) {
-        await removeMod(thisGuild, newMember)
+    try {
+        const modRoleId = (await getGuildModRole(newMember.guild)).id
+        const thisGuild = oldMember.guild
+        if (newMember.roles.cache.has(modRoleId)) {
+            await addMod(thisGuild, newMember)
+        } else if (!newMember.roles.cache.has(modRoleId)) {
+            await removeMod(thisGuild, newMember)
+        }
+    } catch {
+        return
     }
 })
 

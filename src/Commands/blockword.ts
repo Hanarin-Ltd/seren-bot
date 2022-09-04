@@ -9,13 +9,14 @@ import { getGuildOption } from "../utils/guildOption"
 import { giveWarning } from "../utils/warning"
 
 export default async function blockword(interaction: ChatInputCommandInteraction<CacheType>) {
+    await interaction.deferReply()
+    
     const args = interaction.options
     const thisGuild = await getThisGuild(interaction)
     const guildId = thisGuild.id
     const word = args.getString('금지어')!
 
     await updateMemberCache(thisGuild)
-    await interaction.deferReply()
 
     if (!await isGuildModerator(thisGuild, interaction.member! as GuildMember)) {
         await interaction.editReply({ embeds: [noPermissionMessage()] })
