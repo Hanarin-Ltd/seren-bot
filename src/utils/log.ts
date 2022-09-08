@@ -1,4 +1,4 @@
-import { GuildLog, GuildLogSetting } from "@prisma/client"
+import { GuildLogSetting } from "@prisma/client"
 import { EmbedBuilder, Guild } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import prisma from "../prisma"
