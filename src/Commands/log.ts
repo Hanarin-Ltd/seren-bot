@@ -1,11 +1,11 @@
-import { GuildLog } from "@prisma/client"
+import { GuildLogSetting } from "@prisma/client"
 import { ChatInputCommandInteraction, EmbedBuilder, Guild } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild } from "../utils/discord"
 import { getGuildLogSetting, modifyGuildLogSetting } from "../utils/log"
 
-const setToOff = async (type: keyof GuildLog, logSetting: any, guildId: string) => {
+const setToOff = async (type: string, logSetting: any, guildId: string) => {
     const data = logSetting[type]
     if (!data) return false
     logSetting[type] = false
@@ -13,7 +13,7 @@ const setToOff = async (type: keyof GuildLog, logSetting: any, guildId: string) 
 
     return true
 }
-const setToOn = async (type: keyof GuildLog, logSetting: any, guildId: string) => {
+const setToOn = async (type: string, logSetting: any, guildId: string) => {
     const data = logSetting[type]
     if (data) return false
     logSetting[type] = true
@@ -35,13 +35,19 @@ export default async function log(interaction: ChatInputCommandInteraction) {
     const thisGuild = await getThisGuild(interaction)
     const guildId = thisGuild.id
     const setting = args.getString('설정')!
-    const type = args.getString('종류')! as keyof GuildLog
+    const type = args.getString('종류')!
 
     const logSetting = (await getGuildLogSetting(guildId))!
     let result: boolean = true
 
-    if (setting === 'on') result = await setToOn(type, logSetting, guildId)
-    else result = await setToOff(type, logSetting, guildId)
+    if (setting === 'on') {
+        if (type !== 'all') result = await setToOn(type, logSetting, guildId)
+        else result = true
+    }
+    else {
+        if (type !== 'all') result = await setToOff(type, logSetting, guildId)
+        else result = true
+    }
     return result ?
         await interaction.editReply({ embeds: [completeSuccessfullyMessage()] }) :
         await interaction.editReply({ embeds: [sameValue(setting === 'on')] })

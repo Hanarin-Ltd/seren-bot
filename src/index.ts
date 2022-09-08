@@ -14,13 +14,13 @@ import openSocketServer from './socket'
 import { BOT_COLOR, logToSQL } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
-import { getChannel, getGuildOwner } from './utils/discord'
+import { getChannel, getGuildOwner, getMember } from './utils/discord'
 import { getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData } from './utils/memberData'
 import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
-import { someoneHasBan, someoneHasUnban } from './Commands/ban'
+import ban, { someoneHasBan, someoneHasUnban } from './Commands/ban'
 import { getGuildModRole, getGuildRole } from './utils/role'
 import { getGuildLogSetting, log } from './utils/log'
 
@@ -60,7 +60,12 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
         getCommandFunction()[interaction.commandName](interaction)
-        logSetting?.useCommand && log(`명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}}`, interaction.guild!, 'useCommand')
+        logSetting?.useCommand && log({
+            content: `명령어 사용 : ${interaction.member!.user.username} / 사용한 명령어 : ${interaction.commandName}`,
+            rawContent: `명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}`,
+            guild: interaction.guild!,
+            type: 'useCommand'
+        })
     } catch (error: any) {
         console.log(error)
         logToSQL(error)
@@ -100,11 +105,18 @@ client.on('guildMemberRemove', async (member) => {
         try {
             const option = (await getGuildOption(member.guild.id))!
             const channel = (await getChannel(member.guild, option.banChannelId))!
+            const logSetting = await getGuildLogSetting(member.guild.id)
     
             await addBan(member.guild.id, member as GuildMember, '알 수 없음')
     
             if (!channel || !channel.isTextBased()) return
             option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(member.user.username, '알 수 없음')] })
+            logSetting?.addBan && log({
+                content: `차단 추가됨 : ${member.user.username}`,
+                rawContent: `차단 추가됨 : ${userMention(member.user.id)}`,
+                guild: member.guild,
+                type: 'addBan'
+            })
         } catch (e) {
             console.log(e)
             logToSQL(e)
@@ -115,6 +127,8 @@ client.on('guildMemberRemove', async (member) => {
 })
 
 client.on('channelCreate', async (channel) => {
+    if (channel.isDMBased()) return
+    
     await addGuildChannel(channel)
 })
 
@@ -130,18 +144,49 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
     await modifyGuildChannel(oldChannel, newChannel)
 })
 
-client.on('guildBanRemove', async (banMember) => {
+client.on('guildBanAdd', async (banMember) => {
+    console.log('ban add')
     try {
-        const option = (await getGuildOption(banMember.guild.id))!
-        const channel = (await getChannel(banMember.guild, option.unbanChannelId))!
+        const thisGuild = banMember.guild
+        const option = (await getGuildOption(thisGuild.id))!
+        const logSetting = await getGuildLogSetting(thisGuild.id)
+        const channel = await getChannel(thisGuild, option.banChannelId)
 
-        await removeBan(banMember.guild.id, banMember.user.id)
+        console.log(logSetting!.addBan)
+
+        if (!channel || !channel.isTextBased()) return
+        option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(banMember.user.username, banMember.reason || '공개되지 않음')] })
+        logSetting?.addBan && log({
+            content: `차단 추가됨 : ${banMember.user.username}`,
+            rawContent: `차단 추가됨 : ${userMention(banMember.user.id)}`,
+            guild: thisGuild,
+            type: 'addBan'
+        })
+    } catch (e) { logToSQL(e); console.log(e) }
+})
+
+client.on('guildBanRemove', async (banMember) => {
+    console.log('ban remove')
+    try {
+        const thisGuild = banMember.guild
+        const option = (await getGuildOption(thisGuild.id))!
+        const logSetting = await getGuildLogSetting(thisGuild.id)
+        const channel = await getChannel(thisGuild, option.banChannelId)
+
+        console.log(logSetting!.removeBan)
+
+        await removeBan(thisGuild.id, banMember.user.id)
 
         if (!channel || !channel.isTextBased()) return
         option.unbanMessageEnabled && channel.send({ embeds: [someoneHasUnban(banMember.user.username, banMember.reason || '공개되지 않음')] })
-    } catch (e) {
-        logToSQL(e)
-    }
+        logSetting?.removeBan && log({
+            content: `차단 해제됨 : ${banMember.user.username}`,
+            rawContent: `차단 해제됨 : ${userMention(banMember.user.id)}`,
+            guild: thisGuild,
+            type: 'removeBan'
+        })
+
+    } catch (e) { logToSQL(e); console.log(e) }
 })
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
@@ -162,27 +207,63 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
         const deletedRole = oldRoles.filter(r => !newRoles.includes(r))
         const addedRole = newRoles.filter(r => !oldRoles.includes(r))
 
+        console.log(deletedRole, addedRole)
+
         deletedRole.forEach(async id => {
             const role = (await getGuildRole(thisGuild, id))!
-            logSetting?.removeRoleToMember && log(`역할 제거됨 : ${userMention(newMember.id)} / 제거된 역할 : ${role.name}`, thisGuild, 'removeRoleToMember')
+            logSetting?.removeRoleToMember && log({
+                content: `역할 제거됨 : ${newMember.user.username} / 제거된 역할 : ${role.name}`,
+                rawContent: `역할 제거됨 : ${userMention(newMember.id)} / 제거된 역할 : ${role.name}`,
+                guild: thisGuild,
+                type: 'removeRoleToMember'
+            })
         })
         addedRole.forEach(async id => {
             const role = (await getGuildRole(thisGuild, id))!
-            logSetting?.addRoleToMember && log(`역할 추가됨 : ${userMention(newMember.id)} / 추가된 역할 : ${role.name}`, thisGuild, 'addRoleToMember')
+            logSetting?.addRoleToMember && log({
+                content: `역할 추가됨 : ${newMember.user.username} / 추가된 역할 : ${role.name}`,
+                rawContent: `역할 추가됨 : ${userMention(newMember.id)} / 추가된 역할 : ${role.name}`,
+                guild: thisGuild,
+                type: 'addRoleToMember'
+            })
         })
     } catch {
         return
     }
 })
 
-client.on('messageDelete', async (message) => {
+client.on('messageDelete', async (message) => { 
     try {
         if (!message.guild) return
         const logSetting = await getGuildLogSetting(message.guildId!)
-        logSetting?.removeMessage && log(`메세지 작성자 : ${userMention(message.member!.id)} / 내용 : ${message.content || '알 수 없음 (null)'}`, message.guild, 'removeMessage')
+        logSetting?.removeMessage && log({
+            content: `메세지 작성자 : ${message.member!.user.username} / 내용 : ${message.content || '알 수 없음 (null)'}`,
+            rawContent: `메세지 작성자 : ${userMention(message.member!.id)} / 내용 : ${message.content || '알 수 없음 (null)'}`,
+            guild: message.guild,
+            type: 'removeMessage'
+        })
     } catch (e) {
         return
     }
 })
 
 client.login(env.BOT_TOKEN)
+
+/*
+userCreate : O
+userDelete : O
+addMod : O
+removeMod : O
+useCommand : O
+useBlockword : O
+addBlockword : O
+removeBlockword : O
+removeMessage : O
+levelUp : X
+addRoleToMember : O
+removeRoleToMember : O
+addBan : X
+removeBan : X
+getWarning : O
+removeWarning : O
+*/

@@ -142,5 +142,6 @@ model GuildLog {
     guildId String
     type String
     content String
+    rawContent String
     createdAt DateTime
 }

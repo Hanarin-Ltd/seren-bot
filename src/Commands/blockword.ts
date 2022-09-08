@@ -92,6 +92,11 @@ export const scanMessage = async (message: Message) => {
         await message.delete()
         await message.author.send({ embeds: [youUsedBlockword(catchedWordList)] })
         await giveWarning(guildId, message.member!)
-        await log(`금지어 사용 멤버 : ${userMention(message.member!.id)} / 사용 금지어 : ${catchedWordList.join(', ')}`, thisGuild, 'useBlockword')
+        await log({
+            content: `금지어 사용 멤버 : ${message.member!.user.username} / 사용 금지어 : ${catchedWordList.join(', ')}`,
+            rawContent: `금지어 사용 멤버 : ${userMention(message.member!.id)} / 사용 금지어 : ${catchedWordList.join(', ')}`,
+            guild: thisGuild,
+            type: 'useBlockword'
+        })
     }
 }

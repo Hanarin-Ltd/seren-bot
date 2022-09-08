@@ -33,31 +33,25 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply()
 
     if (!await isGuildModerator(thisGuild, interaction.member! as GuildMember)) {
-        await interaction.editReply({ embeds: [noPermissionMessage()] })
-        return
+        return await interaction.editReply({ embeds: [noPermissionMessage()] })
     }
     if (!targetUser) {
-        await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':warning: ID가 유효하지 않습니다!' }] })
-        return
+        return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':warning: ID가 유효하지 않습니다!' }] })
     }
     if (!permission) {
-        await interaction.editReply({ embeds: [errorMessage()] })
-        return
+        return await interaction.editReply({ embeds: [errorMessage()] })
     }
 
     const channel = await getChannel(thisGuild, setting === 'add' ? permission.banChannelId : permission.unbanChannelId)
     if (setting === 'add') {
         if (!targetMember) {
-            await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':warning: ID가 유효하지 않습니다!' }] })
-            return
+            return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':warning: ID가 유효하지 않습니다!' }] })
         }
         if (await isGuildModerator(thisGuild, targetMember)) {
-            await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':no_entry: 관리자는 차단할 수 없습니다.' }] })
-            return
+            return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':no_entry: 관리자는 차단할 수 없습니다.' }] })
         }
         if (thisGuild.bans.cache.has(targetUser.id)) {
-            await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 이미 차단된 사용자입니다!' }] })
-            return
+            return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 이미 차단된 사용자입니다!' }] })
         }
 
         await thisGuild.bans.create(targetMember, { reason: reason ? reason : '공개하지 않음' })
@@ -72,8 +66,7 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
         } catch (e) {
             console.log(e)
             logToSQL(e as string)
-            await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 차단되지 않은 사용자입니다!' }] })
-            return
+            return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 차단되지 않은 사용자입니다!' }] })
         }
     }
 }

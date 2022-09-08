@@ -23,7 +23,12 @@ export const addBlockword = async (guild: Guild, word: string) => {
         where: { guildId: guild.id },
         data: { word: [...await getBlockwordList(guild.id), word] },
     })
-    logSetting?.addBlockword && log(`금지어 추가됨 : ${word}`, guild, 'addBlockword')
+    logSetting?.addBlockword && log({
+        content: `금지어 추가됨 : ${word}`,
+        rawContent: `금지어 추가됨 : ${word}`,
+        guild,
+        type: 'addBlockword'
+    })
 }
 
 export const removeBlockword = async (guild: Guild, word: string) => {
@@ -36,7 +41,12 @@ export const removeBlockword = async (guild: Guild, word: string) => {
         where: { guildId: guild.id },
         data: { word: word  }
     })
-    logSetting?.removeBlockword && log(`금지어 제거됨 : ${word}`, guild, 'removeBlockword')
+    logSetting?.removeBlockword && log({
+        content: `금지어 제거됨 : ${word}`,
+        rawContent: `금지어 제거됨 : ${word}`,
+        guild,
+        type: 'removeBlockword'
+    })
 }
 
 export const checkIsBlockword = async (guildId: string, word: string) => {

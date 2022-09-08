@@ -23,7 +23,12 @@ export const addMod = async (guild: Guild, member: GuildMember) => {
             data: { mod: true },
         })
         member.roles.add((await getGuildModRole(guild))!.id)
-        logSetting?.addMod && log(`관리자 임명됨 : ${userMention(member.id)}`, guild, 'addMod')
+        logSetting?.addMod && log({
+            content: `관리자 임명됨 : ${member.user.username}`,
+            rawContent: `관리자 임명됨 : ${userMention(member.id)}`,
+            guild,
+            type: 'addMod'
+        })
     } catch {
         await addMemberData(member)
         await addMod(guild, member)
@@ -39,7 +44,12 @@ export const removeMod = async (guild: Guild, member: GuildMember) => {
             data: { mod: false }
         })
         member.roles.remove((await getGuildModRole(guild))!.id)
-        logSetting?.removeMod && log(`관리자 해임됨 : ${userMention(member.id)}`, guild, 'removeMod')
+        logSetting?.removeMod && log({
+            content: `관리자 해임됨 : ${member.user.username}`,
+            rawContent: `관리자 해임됨 : ${userMention(member.id)}`,
+            guild,
+            type: 'removeMod'
+        })
     } catch {
         await addMemberData(member)
         removeMod(guild, member)
