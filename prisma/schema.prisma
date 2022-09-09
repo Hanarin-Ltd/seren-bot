@@ -34,6 +34,12 @@ model GuildOption {
     logEnabled Boolean @default(false)
 
     checkModsMessage Boolean @default(false)
+
+    useLevelSystem Boolean @default(true)
+    levelUpMessage String @default(":partying_face: {user}님의 레벨이 올랐습니다! Level {beforelevel} -> {afterlevel}")
+    levelUpMessageEnabled Boolean @default(true)
+    levelUpChannelId String @default("")
+    messageInLevelupChannel Boolean @default(true)
 }
 
 model GuildChannel {
@@ -86,6 +92,7 @@ model MemberData {
 
     joinedAt DateTime
     exp Int @default(0)
+    level Int @default(1)
     warning Int @default(0)
 }
 

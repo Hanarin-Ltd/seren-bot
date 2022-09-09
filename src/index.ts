@@ -5,7 +5,7 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { Client, GatewayIntentBits, GuildMember, PermissionFlagsBits, userMention } from 'discord.js'
+import { ChannelType, Client, GatewayIntentBits, GuildMember, PermissionFlagsBits, userMention } from 'discord.js'
 import { getCommandFunction } from './commands'
 import { scanMessage } from './Commands/blockword'
 import guildSetting from './guildSetting'
@@ -23,6 +23,7 @@ import { getGuildOption } from './utils/guildOption'
 import ban, { someoneHasBan, someoneHasUnban } from './Commands/ban'
 import { getGuildModRole, getGuildRole } from './utils/role'
 import { getGuildLogSetting, log } from './utils/log'
+import { addMemberExp, checkLevelUp, sendLevelUpMessage } from './utils/level'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -44,9 +45,15 @@ client.on('ready', async () => {
 })
 
 client.on('messageCreate', async (message) => {
-    if (!message.guildId) return
-
-    scanMessage(message)
+    try {
+        if (!message.guild) return
+        if (!message.member) return
+        if (message.author.id === client.user?.id) return
+        if (!message.channel || message.channel.type !== ChannelType.GuildText) return
+        scanMessage(message)
+        await addMemberExp(message.member!, 10)
+        await checkLevelUp(message.member!, message.channel)
+    } catch { return }
 })
 
 client.on('interactionCreate', async (interaction) => {
@@ -66,6 +73,10 @@ client.on('interactionCreate', async (interaction) => {
             guild: interaction.guild!,
             type: 'useCommand'
         })
+        await addMemberExp(interaction.member! as GuildMember, 5)
+        if (interaction.channel!.isDMBased()) return
+        if (interaction.channel!.type !== ChannelType.GuildText) return
+        await checkLevelUp(interaction.member! as GuildMember, interaction.channel!)
     } catch (error: any) {
         console.log(error)
         logToSQL(error)
@@ -95,7 +106,7 @@ client.on('guildMemberAdd', async (member) => {
 })
 
 client.on('guildMemberRemove', async (member) => {
-    if (member.id === client.user?.id) return
+    if (member.id === client.user?.id) return console.log('bot was kicked')
     await removeMemberData(member)
 
     await updateBanListCache(member.guild)
@@ -145,14 +156,12 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
 })
 
 client.on('guildBanAdd', async (banMember) => {
-    console.log('ban add')
+    if (banMember.user.id === client.user?.id) return
     try {
         const thisGuild = banMember.guild
         const option = (await getGuildOption(thisGuild.id))!
         const logSetting = await getGuildLogSetting(thisGuild.id)
         const channel = await getChannel(thisGuild, option.banChannelId)
-
-        console.log(logSetting!.addBan)
 
         if (!channel || !channel.isTextBased()) return
         option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(banMember.user.username, banMember.reason || '공개되지 않음')] })
@@ -166,14 +175,11 @@ client.on('guildBanAdd', async (banMember) => {
 })
 
 client.on('guildBanRemove', async (banMember) => {
-    console.log('ban remove')
     try {
         const thisGuild = banMember.guild
         const option = (await getGuildOption(thisGuild.id))!
         const logSetting = await getGuildLogSetting(thisGuild.id)
         const channel = await getChannel(thisGuild, option.banChannelId)
-
-        console.log(logSetting!.removeBan)
 
         await removeBan(thisGuild.id, banMember.user.id)
 
@@ -190,6 +196,7 @@ client.on('guildBanRemove', async (banMember) => {
 })
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
+    if (oldMember.user.id === client.user?.id) return
     try {
         const modRoleId = (await getGuildModRole(newMember.guild)).id
         const thisGuild = oldMember.guild
@@ -242,9 +249,7 @@ client.on('messageDelete', async (message) => {
             guild: message.guild,
             type: 'removeMessage'
         })
-    } catch (e) {
-        return
-    }
+    } catch { return }
 })
 
 client.login(env.BOT_TOKEN)

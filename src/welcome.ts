@@ -51,8 +51,8 @@ export const goodbye = async (member: GuildMember | PartialGuildMember) => {
     if (channel.isTextBased()) {
         channel.send({
             embeds: [{ color: BOT_COLOR, title: permission.goodbyeMessage
-                .replace('{user}', member.user.username)
-                .replace('{server}', member.guild.name)
+                .replaceAll('{user}', member.user.username)
+                .replaceAll('{server}', member.guild.name)
             }]
         })
     } else {

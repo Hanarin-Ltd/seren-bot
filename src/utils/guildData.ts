@@ -30,6 +30,7 @@ export const removeGuildData = async (guildId: string) => {
         await prisma.memberData.deleteMany({ where: { guildId } })
         await prisma.guildRole.deleteMany({ where: { guildId } })
         await prisma.guildLog.deleteMany({ where: { guildId } })
+        await prisma.guildLogSetting.deleteMany({ where: { guildId } })
     } catch (err: any) {
         logToSQL(err)
     }
