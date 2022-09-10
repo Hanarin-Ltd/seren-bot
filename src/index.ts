@@ -15,7 +15,7 @@ import { BOT_COLOR, logToSQL } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
 import { getChannel, getGuildOwner, getMember } from './utils/discord'
-import { getGuildData, removeGuildData } from './utils/guildData'
+import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData } from './utils/memberData'
 import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
@@ -48,7 +48,7 @@ client.on('messageCreate', async (message) => {
     try {
         if (!message.guild) return
         if (!message.member) return
-        if (message.author.id === client.user?.id) return
+        if (message.author.bot) return
         if (!message.channel || message.channel.type !== ChannelType.GuildText) return
         scanMessage(message)
         await addMemberExp(message.member!, 10)
@@ -106,7 +106,7 @@ client.on('guildMemberAdd', async (member) => {
 })
 
 client.on('guildMemberRemove', async (member) => {
-    if (member.id === client.user?.id) return console.log('bot was kicked')
+    if (member.id === client.user?.id) return
     await removeMemberData(member)
 
     await updateBanListCache(member.guild)
@@ -214,8 +214,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
         const deletedRole = oldRoles.filter(r => !newRoles.includes(r))
         const addedRole = newRoles.filter(r => !oldRoles.includes(r))
 
-        console.log(deletedRole, addedRole)
-
         deletedRole.forEach(async id => {
             const role = (await getGuildRole(thisGuild, id))!
             logSetting?.removeRoleToMember && log({
@@ -237,6 +235,10 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     } catch {
         return
     }
+})
+
+client.on('guildUpdate', async (oldGuild, newGuild) => {
+    await addOrUpdateGuildData(newGuild)
 })
 
 client.on('messageDelete', async (message) => { 

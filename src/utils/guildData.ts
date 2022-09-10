@@ -9,12 +9,34 @@ export const getGuildData = async (guildId: string) => {
 export const addOrUpdateGuildData = async (guild: Guild) => {
     await prisma.guildData.upsert({
         where: { guildId: guild.id },
-        update: {},
+        update: {
+            name: guild.name,
+            ownerId: guild.ownerId,
+            icon: guild.iconURL() || 'none',
+            memberCount: guild.memberCount,
+            botCount: guild.members.cache.filter(member => member.user.bot).size!,
+            region: guild.preferredLocale,
+            createdAt: guild.createdAt,
+            isPartner: guild.partnered,
+            isVerified: guild.verified,
+            premiumTier: guild.premiumTier,
+            premiumSubscriptionCount: guild.premiumSubscriptionCount || 0,
+            description: guild.description || '설정되지 않음'
+        },
         create: {
             guildId: guild.id,
             name: guild.name,
             ownerId: guild.ownerId,
-            icon: guild.iconURL() || 'none'
+            icon: guild.iconURL() || 'none',
+            memberCount: guild.memberCount,
+            botCount: guild.members.cache.filter(member => member.user.bot).size!,
+            region: guild.preferredLocale,
+            createdAt: guild.createdAt,
+            isPartner: guild.partnered,
+            isVerified: guild.verified,
+            premiumTier: guild.premiumTier,
+            premiumSubscriptionCount: guild.premiumSubscriptionCount || 0,
+            description: guild.description || '설정되지 않음'
         }
     })
 }

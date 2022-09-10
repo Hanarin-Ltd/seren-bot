@@ -54,6 +54,17 @@ model GuildData {
     name String
     ownerId String
     icon String
+
+    memberCount Int
+    botCount Int
+    region String
+    createdAt DateTime
+    isPartner Boolean
+    isVerified Boolean
+    premiumTier Int
+    premiumSubscriptionCount Int
+    description String
+
     isCommunityGuild Boolean @default(false)
     isSettingComplete Boolean @default(false)
 }
