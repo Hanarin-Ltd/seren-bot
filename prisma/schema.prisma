@@ -34,12 +34,15 @@ model GuildOption {
     logEnabled Boolean @default(false)
 
     checkModsMessage Boolean @default(false)
+    blockwordDisabledChannel String[] @default([])
 
     useLevelSystem Boolean @default(true)
     levelUpMessage String @default(":partying_face: {user}님의 레벨이 올랐습니다! Level {beforelevel} -> {afterlevel}")
     levelUpMessageEnabled Boolean @default(true)
     levelUpChannelId String @default("")
     messageInLevelupChannel Boolean @default(true)
+
+    enableLegacyCommand Boolean @default(false)
 }
 
 model GuildChannel {
@@ -105,6 +108,8 @@ model MemberData {
     exp Int @default(0)
     level Int @default(1)
     warning Int @default(0)
+
+    point BigInt @default(25000)
 }
 
 model Blockword {
@@ -163,3 +168,20 @@ model GuildLog {
     rawContent String
     createdAt DateTime
 }
+
+model CoinData {
+    id Int @id @unique
+    name String
+    price Int
+    createdAt DateTime @default(now())
+
+    priceHistory Int[] @default([])
+}
+
+model MemberCoinData {
+    uniqueId Int @id @default(autoincrement())
+    name String
+    amount Int @default(0)
+    createdAt DateTime @default(now())
+}
+

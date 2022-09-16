@@ -1,6 +1,7 @@
 import { Guild } from "discord.js"
 import { logToSQL } from "../lib"
 import prisma from "../prisma"
+import { isCommunity } from "./discord"
 
 export const getGuildData = async (guildId: string) => {
     return await prisma.guildData.findUnique({ where: { guildId } })
@@ -21,7 +22,8 @@ export const addOrUpdateGuildData = async (guild: Guild) => {
             isVerified: guild.verified,
             premiumTier: guild.premiumTier,
             premiumSubscriptionCount: guild.premiumSubscriptionCount || 0,
-            description: guild.description || '설정되지 않음'
+            description: guild.description || '설정되지 않음',
+            isCommunityGuild: isCommunity(guild)
         },
         create: {
             guildId: guild.id,
@@ -36,7 +38,8 @@ export const addOrUpdateGuildData = async (guild: Guild) => {
             isVerified: guild.verified,
             premiumTier: guild.premiumTier,
             premiumSubscriptionCount: guild.premiumSubscriptionCount || 0,
-            description: guild.description || '설정되지 않음'
+            description: guild.description || '설정되지 않음',
+            isCommunityGuild: isCommunity(guild)
         }
     })
 }

@@ -5,21 +5,24 @@ import { getModList } from "./mod"
 export const updateMemberCache = async (guild: Guild) => {
     await guild.members.fetch().catch(err => {
         logToSQL(err)
-        console.log(err)
     })
 }
 
 export const updateChannelCache = async (guild: Guild) => {
     await guild.channels.fetch().catch(err => {
         logToSQL(err)
-        console.log(err)
     })
 }
 
 export const updateRoleCache = async (guild: Guild) => {
     await guild.roles.fetch().catch(err => {
         logToSQL(err)
-        console.log(err)
+    })
+}
+
+export const updateGuildCache = async (guild: Guild) => {
+    await guild.fetch().catch(err => {
+        logToSQL(err)
     })
 }
 
@@ -59,4 +62,8 @@ export const getChannel = async (guild: Guild, channelId: string) => {
 
 export const isGuildMember = async (guild: Guild, user: User) => {
     return guild.members.cache.has(user.id)
+}
+
+export const isCommunity = (guild: Guild) => {
+    return guild.features?.includes('COMMUNITY')
 }

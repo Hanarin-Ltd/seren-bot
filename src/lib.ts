@@ -18,4 +18,5 @@ export const logToSQL = async (content: any) => {
             content
         }
     })
+    console.log(content)
 }

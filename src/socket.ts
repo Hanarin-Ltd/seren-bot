@@ -126,6 +126,7 @@ const server = net.createServer(client => {
         if (changed.includes('mentionBlock')) {
         }
     })
+
 })
 
 export default function openSocketServer() {

@@ -38,7 +38,7 @@ export default async function role(interaction: ChatInputCommandInteraction) {
         await interaction.editReply({ embeds: [{
             color: BOT_COLOR,
             title: ':no_entry_sign: 오류가 발생했습니다!',
-            description: '역할과 관련된 권한 오류가 발생했습니다. Seren의 역할을 관리자 바로 아래에 위치시켜 주세요.'
+            description: '역할과 관련된 권한 오류가 발생했습니다. Seren의 역할을 맨위에  위치시켜 주세요. (관리자보다 높아야 됩니다)'
         }] })
     }
 }
