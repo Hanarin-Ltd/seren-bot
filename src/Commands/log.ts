@@ -1,4 +1,3 @@
-import { GuildLogSetting } from "@prisma/client"
 import { ChatInputCommandInteraction, EmbedBuilder, Guild } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { completeSuccessfullyMessage } from "../utils/default"

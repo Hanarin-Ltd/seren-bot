@@ -2,11 +2,13 @@ import { Guild } from "discord.js"
 import prisma from "../prisma"
 import { getGuildLogSetting, log } from "./log"
 
-export const getBlockwordList = async (guildId: string)=> {
-    const result = await prisma.blockword.findFirst({ where: {
-        guildId
-    } })
-    return result ? result.word : []
+export const getBlockwordList = async (guildId: string): Promise<string[]> => {
+    try {
+        const result = await prisma.blockword.findFirst({ where: {
+            guildId
+        } })
+        return result ? result.word : []
+    } catch { return getBlockwordList(guildId) }
 }
 
 export const setDefaultBlockword = async (guildId: string) => {
@@ -18,35 +20,39 @@ export const setDefaultBlockword = async (guildId: string) => {
 }
 
 export const addBlockword = async (guild: Guild, word: string) => {
-    const logSetting = await getGuildLogSetting(guild.id)
-    await prisma.blockword.updateMany({
-        where: { guildId: guild.id },
-        data: { word: [...await getBlockwordList(guild.id), word] },
-    })
-    logSetting?.addBlockword && log({
-        content: `금지어 추가됨 : ${word}`,
-        rawContent: `금지어 추가됨 : ${word}`,
-        guild,
-        type: 'addBlockword'
-    })
+    try {
+        const logSetting = await getGuildLogSetting(guild.id)
+        await prisma.blockword.updateMany({
+            where: { guildId: guild.id },
+            data: { word: [...await getBlockwordList(guild.id), word] },
+        })
+        logSetting?.addBlockword && log({
+            content: `금지어 추가됨 : ${word}`,
+            rawContent: `금지어 추가됨 : ${word}`,
+            guild,
+            type: 'addBlockword'
+        })
+    } catch { addBlockword(guild, word) }
 }
 
 export const removeBlockword = async (guild: Guild, word: string) => {
-    const wordList = await getBlockwordList(guild.id)
-    const logSetting = await getGuildLogSetting(guild.id)
-    if (!wordList.includes(word)) return
+    try {
+        const wordList = await getBlockwordList(guild.id)
+        const logSetting = await getGuildLogSetting(guild.id)
+        if (!wordList.includes(word)) return
 
-    wordList.splice(wordList.indexOf(word), 1)
-    await prisma.blockword.updateMany({
-        where: { guildId: guild.id },
-        data: { word: word  }
-    })
-    logSetting?.removeBlockword && log({
-        content: `금지어 제거됨 : ${word}`,
-        rawContent: `금지어 제거됨 : ${word}`,
-        guild,
-        type: 'removeBlockword'
-    })
+        wordList.splice(wordList.indexOf(word), 1)
+        await prisma.blockword.updateMany({
+            where: { guildId: guild.id },
+            data: { word: word  }
+        })
+        logSetting?.removeBlockword && log({
+            content: `금지어 제거됨 : ${word}`,
+            rawContent: `금지어 제거됨 : ${word}`,
+            guild,
+            type: 'removeBlockword'
+        })
+    } catch { removeBlockword(guild, word) }
 }
 
 export const checkIsBlockword = async (guildId: string, word: string) => {

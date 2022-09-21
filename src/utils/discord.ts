@@ -1,28 +1,27 @@
 import { Guild, GuildMember, ChatInputCommandInteraction, Routes, MessagePayload, MessageOptions, User } from "discord.js"
-import { logToSQL } from "../lib"
 import { getModList } from "./mod"
 
 export const updateMemberCache = async (guild: Guild) => {
     await guild.members.fetch().catch(err => {
-        logToSQL(err)
+        console.log(err)
     })
 }
 
 export const updateChannelCache = async (guild: Guild) => {
     await guild.channels.fetch().catch(err => {
-        logToSQL(err)
+        console.log(err)
     })
 }
 
 export const updateRoleCache = async (guild: Guild) => {
     await guild.roles.fetch().catch(err => {
-        logToSQL(err)
+        console.log(err)
     })
 }
 
 export const updateGuildCache = async (guild: Guild) => {
     await guild.fetch().catch(err => {
-        logToSQL(err)
+        console.log(err)
     })
 }
 

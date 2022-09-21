@@ -109,7 +109,7 @@ model MemberData {
     level Int @default(1)
     warning Int @default(0)
 
-    point BigInt @default(25000)
+    point Int @default(25000)
 }
 
 model Blockword {

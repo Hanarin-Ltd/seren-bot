@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, GuildMember, User } from "discord.js"
-import { BOT_COLOR, logToSQL } from "../lib"
+import { BOT_COLOR } from "../lib"
 import { addBan, removeBan } from "../utils/ban"
 import { noPermissionMessage, errorMessage, completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild, getUser, getMember, isGuildModerator, getChannel, updateMemberCache } from "../utils/discord"
@@ -65,7 +65,6 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
             await interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
         } catch (e) {
             console.log(e)
-            logToSQL(e as string)
             return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 차단되지 않은 사용자입니다!' }] })
         }
     }

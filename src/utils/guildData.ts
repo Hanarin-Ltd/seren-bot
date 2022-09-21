@@ -1,5 +1,4 @@
 import { Guild } from "discord.js"
-import { logToSQL } from "../lib"
 import prisma from "../prisma"
 import { isCommunity } from "./discord"
 
@@ -57,6 +56,6 @@ export const removeGuildData = async (guildId: string) => {
         await prisma.guildLog.deleteMany({ where: { guildId } })
         await prisma.guildLogSetting.deleteMany({ where: { guildId } })
     } catch (err: any) {
-        logToSQL(err)
+        console.log(err)
     }
 }

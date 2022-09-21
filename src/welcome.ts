@@ -1,5 +1,5 @@
 import { GuildMember, PartialGuildMember, userMention } from "discord.js"
-import { logToSQL, BOT_COLOR } from "./lib"
+import { BOT_COLOR } from "./lib"
 import { getChannel } from "./utils/discord"
 import { getGuildOption } from "./utils/guildOption"
 import { getGuildLogSetting, log } from "./utils/log"
@@ -12,7 +12,7 @@ export const welcome = async (member: GuildMember) => {
 
     const channel = await getChannel(member.guild, permission.welcomeChannelId)
     if (!channel) {
-        logToSQL(`Error: Can't get the Channel / guildId : ${member.guild.id} / channelId : ${permission.welcomeChannelId}`)
+        console.log(`Error: Can't get the Channel / guildId : ${member.guild.id} / channelId : ${permission.welcomeChannelId}`)
         return
     }
 
@@ -24,7 +24,7 @@ export const welcome = async (member: GuildMember) => {
             }]
         })
     } else {
-        logToSQL(`TypeError: Unpredictable Type / guildId : ${member.guild.id} / channelId : ${permission.welcomeChannelId}`)
+        console.log(`TypeError: Unpredictable Type / guildId : ${member.guild.id} / channelId : ${permission.welcomeChannelId}`)
         return
     }
 
@@ -44,7 +44,7 @@ export const goodbye = async (member: GuildMember | PartialGuildMember) => {
 
     const channel = await getChannel(member.guild, permission.goodbyeChannelId)
     if (!channel) {
-        logToSQL(`Error: Can't get the Channel / guildId : ${member.guild.id} / channelId : ${permission.goodbyeChannelId}`)
+        console.log(`Error: Can't get the Channel / guildId : ${member.guild.id} / channelId : ${permission.goodbyeChannelId}`)
         return
     }
 
@@ -56,7 +56,7 @@ export const goodbye = async (member: GuildMember | PartialGuildMember) => {
             }]
         })
     } else {
-        logToSQL(`TypeError: Unpredictable Type / guildId : ${member.guild.id} / channelId : ${permission.goodbyeChannelId}`)
+        console.log(`TypeError: Unpredictable Type / guildId : ${member.guild.id} / channelId : ${permission.goodbyeChannelId}`)
         return
     }
 

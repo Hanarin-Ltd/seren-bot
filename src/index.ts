@@ -11,7 +11,7 @@ import { scanMessage } from './Commands/blockword'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openSocketServer from './socket'
-import { BOT_COLOR, logToSQL } from './lib'
+import { BOT_COLOR } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
 import { getChannel, getGuildOwner, getMember } from './utils/discord'
@@ -79,7 +79,6 @@ client.on('interactionCreate', async (interaction) => {
         await checkLevelUp(interaction.member! as GuildMember, interaction.channel!)
     } catch (error: any) {
         console.log(error)
-        logToSQL(error)
         interaction.reply({ embeds: [errorMessage()] })
     }
 })
@@ -96,7 +95,6 @@ client.on('guildDelete', async (guild) => {
         removeGuildData(guild.id)
     } catch (error: any) {
         console.log(error)
-        logToSQL(error)
     }
 })
 
@@ -130,7 +128,6 @@ client.on('guildMemberRemove', async (member) => {
             })
         } catch (e) {
             console.log(e)
-            logToSQL(e)
         }
         return
     }
@@ -171,7 +168,7 @@ client.on('guildBanAdd', async (banMember) => {
             guild: thisGuild,
             type: 'addBan'
         })
-    } catch (e) { logToSQL(e); console.log(e) }
+    } catch (e) { console.log(e) }
 })
 
 client.on('guildBanRemove', async (banMember) => {
@@ -192,7 +189,7 @@ client.on('guildBanRemove', async (banMember) => {
             type: 'removeBan'
         })
 
-    } catch (e) { logToSQL(e); console.log(e) }
+    } catch (e) { console.log(e) }
 })
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
