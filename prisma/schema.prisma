@@ -170,7 +170,7 @@ model GuildLog {
 }
 
 model CoinData {
-    id Int @id @unique
+    id Int @id @default(autoincrement())
     name String
     price Int
     createdAt DateTime @default(now())
@@ -178,8 +178,10 @@ model CoinData {
     priceHistory Int[] @default([])
 }
 
-model MemberCoinData {
+model UserCoinData {
     uniqueId Int @id @default(autoincrement())
+    userId String @unique
+
     name String
     amount Int @default(0)
     createdAt DateTime @default(now())

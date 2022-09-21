@@ -5,8 +5,8 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { ChannelType, Client, GatewayIntentBits, GuildMember, PermissionFlagsBits, userMention } from 'discord.js'
-import { getCommandFunction } from './commands'
+import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
+import { getCommandFunction, usableInDM } from './commands'
 import { scanMessage } from './Commands/blockword'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
@@ -14,16 +14,18 @@ import openSocketServer from './socket'
 import { BOT_COLOR } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
-import { getChannel, getGuildOwner, getMember } from './utils/discord'
+import { getChannel, getGuildOwner } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
 import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
-import ban, { someoneHasBan, someoneHasUnban } from './Commands/ban'
+import { someoneHasBan, someoneHasUnban } from './Commands/ban'
 import { getGuildModRole, getGuildRole } from './utils/role'
 import { getGuildLogSetting, log } from './utils/log'
-import { addMemberExp, checkLevelUp, sendLevelUpMessage } from './utils/level'
+import { addMemberExp, checkLevelUp } from './utils/level'
+import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
+import coinGame from './coin/coin'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -32,13 +34,17 @@ export const client = new Client({ intents: [
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildBans
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessageTyping
 ] })
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}!`)
     console.log(`Version: ${env.VERSION} / Build: ${env.BUILD_DATE}`)
     openSocketServer()
+    coinGame()
     client.user!.setActivity('/안녕 , /도움말')
 
     await addSlashCommands()
@@ -57,29 +63,46 @@ client.on('messageCreate', async (message) => {
 })
 
 client.on('interactionCreate', async (interaction) => {
-	if (!interaction.isChatInputCommand()) return
-    if (!(await getGuildData(interaction.guild!.id))!.isSettingComplete) {
-        await interaction.reply({ embeds: [{ color: BOT_COLOR, title: ':warning: 설정이 완료되지 않았습니다!', description: '기본 설정을 완료한뒤 봇을 사용할 수 있습니다.' }] })
-        return
+    if (interaction.isAutocomplete()) {
+        switch (interaction.commandName) {
+            case '코인가격': { coinNameAutoComplete(interaction); break }
+            case '코인구매': { coinNameAutoComplete(interaction); break }
+            case '코인판매': { ownedCoinAutoComplete(interaction); break }
+        }
     }
-
-    const logSetting = await getGuildLogSetting(interaction.guild!.id)
-
-    try {
-        getCommandFunction()[interaction.commandName](interaction)
-        logSetting?.useCommand && log({
-            content: `명령어 사용 : ${interaction.member!.user.username} / 사용한 명령어 : ${interaction.commandName}`,
-            rawContent: `명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}`,
-            guild: interaction.guild!,
-            type: 'useCommand'
-        })
-        await addMemberExp(interaction.member! as GuildMember, 5)
-        if (interaction.channel!.isDMBased()) return
-        if (interaction.channel!.type !== ChannelType.GuildText) return
-        await checkLevelUp(interaction.member! as GuildMember, interaction.channel!)
-    } catch (error: any) {
-        console.log(error)
-        interaction.reply({ embeds: [errorMessage()] })
+    else if (interaction.isChatInputCommand()) {
+        if (usableInDM.includes(interaction.commandName) && !interaction.channel) {
+            try {
+                return getCommandFunction()[interaction.commandName](interaction)
+            } catch (error: any) {
+                console.log(error)
+                return interaction.reply({ embeds: [errorMessage()] })
+            }
+        } else {
+            if (!(await getGuildData(interaction.guild!.id))!.isSettingComplete) {
+                await interaction.reply({ embeds: [{ color: BOT_COLOR, title: ':warning: 설정이 완료되지 않았습니다!', description: '기본 설정을 완료한뒤 봇을 사용할 수 있습니다.' }] })
+                return
+            }
+        
+            const logSetting = await getGuildLogSetting(interaction.guild!.id)
+        
+            try {
+                getCommandFunction()[interaction.commandName](interaction)
+                logSetting?.useCommand && log({
+                    content: `명령어 사용 : ${interaction.member!.user.username} / 사용한 명령어 : ${interaction.commandName}`,
+                    rawContent: `명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}`,
+                    guild: interaction.guild!,
+                    type: 'useCommand'
+                })
+                await addMemberExp(interaction.member! as GuildMember, 5)
+                if (interaction.channel!.isDMBased()) return
+                if (interaction.channel!.type !== ChannelType.GuildText) return
+                await checkLevelUp(interaction.member! as GuildMember, interaction.channel!)
+            } catch (error: any) {
+                console.log(error)
+                interaction.reply({ embeds: [errorMessage()] })
+            }
+        }
     }
 })
 

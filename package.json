@@ -29,6 +29,7 @@
         "nodemon": "^2.0.19",
         "npm": "^8.19.1",
         "prisma": "^4.2.1",
+        "random-words": "^1.2.0",
         "string-similarity": "^4.0.4",
         "ts-node": "^10.9.1",
         "ts-transformer-keys": "^0.4.3",

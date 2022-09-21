@@ -4,7 +4,7 @@ import prisma from '../prisma'
 import { getChannel } from './discord'
 import { getGuildOption } from './guildOption'
 import { getGuildLogSetting, log } from './log'
-import { addMemberData } from './memberData'
+import { addMemberData, getMemberData } from './memberData'
 
 export const getMemberLevel = async (member: GuildMember) => {
     const result = await prisma.memberData.findFirst({ where: { guildId: member.guild.id, userId: member.id } })
@@ -62,11 +62,12 @@ export const checkLevelUp = async (member: GuildMember, channel: GuildTextBasedC
 
 const levelUpEmbed = async (member: GuildMember, beforeLevel: number | string, afterLevel: number | string) => {
     const content = (await getGuildOption(member.guild.id))!
+    const memberData = await getMemberData(member.id)
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(
             content.levelUpMessage
-            .replaceAll('{user}', member.user.username)
+            .replaceAll('{user}', userMention(memberData.userId))
             .replaceAll('{server}', member.guild.name)
             .replaceAll('{beforelevel}', beforeLevel.toString())
             .replaceAll('{afterlevel}', afterLevel.toString())

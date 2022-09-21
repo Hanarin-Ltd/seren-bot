@@ -11,10 +11,16 @@ const commandsFile = {
     '안녕': 'hello',
     '차단': 'ban',
     '역할': 'role',
-    '로그': 'log'
+    '로그': 'log',
+    '코인가격': 'coinprice',
+    '코인구매': 'coinbuy',
+    '코인판매': 'coinsell',
+    '매도': 'coinsell',
+    '매수': 'coinbuy',
+    '내코인': 'mycoin',
 }
 
-type command = '핑' | '도움말' | '정보' | '금지어' | '관리자' | '리스트' | '경고' | '안녕' | '차단' | '역할' | '로그'
+type command = keyof typeof commandsFile
 
 const commands =  [
     new SlashCommandBuilder()
@@ -53,7 +59,7 @@ const commands =  [
         .setDescription('봇에게 인사를 건네보세요!')
         .setDMPermission(false)
         .toJSON(),
-    
+
 
     new SlashCommandBuilder()
         .setName('금지어')
@@ -207,7 +213,53 @@ const commands =  [
             )
             .setRequired(true)
         )
-        .toJSON()
+        .toJSON(),
+
+    
+    new SlashCommandBuilder()
+        .setName('코인가격')
+        .setDescription('코인 가격을 확인합니다')
+        .addStringOption(coin =>
+            coin.setName('이름')
+            .setDescription('코인 이름을 입력해주세요')
+            .setRequired(true)
+            .setAutocomplete(true)
+        )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('코인구매')
+        .setDescription('코인을 구매합니다')
+        .addStringOption(coin =>
+            coin.setName('이름')
+            .setDescription('코인 이름을 입력해주세요')
+            .setRequired(true)
+            .setAutocomplete(true)
+        )
+        .addIntegerOption(amount =>
+            amount.setName('수량')
+            .setDescription('구매할 수량을 입력해주세요')
+            .setRequired(true)
+        )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('코인판매')
+        .setDescription('코인을 판매합니다')
+        .addStringOption(coin =>
+            coin.setName('이름')
+            .setDescription('코인 이름을 입력해주세요')
+            .setRequired(true)
+            .setAutocomplete(true)
+        )
+        .addIntegerOption(amount =>
+            amount.setName('수량')
+            .setDescription('판매할 수량을 입력해주세요')
+            .setRequired(true)
+        )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('내코인')
+        .setDescription('내 코인을 확인합니다')
+        .toJSON(),
 ]
 
 const getCommands = (): any[] => {
@@ -226,5 +278,6 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
+export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인']
 export default getCommands
 export { getCommandList, getCommandFunction }
