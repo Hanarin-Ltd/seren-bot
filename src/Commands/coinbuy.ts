@@ -1,6 +1,6 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
+import { bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getCoinData } from "../utils/coin"
+import { addUserCoin, getCoinData } from "../utils/coin"
 import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { getUserData, removeUserPoint } from "../utils/userData"
 
@@ -18,13 +18,13 @@ const notEnoughPoint = (point: number, needPoint: number) => (
 const youBoughtCoin = (name: string, amount: number, price: number, point: number, now: Date) => (
     new EmbedBuilder()
         .setColor(BOT_COLOR)
-        .setDescription(`:white_check_mark: 성공적으로 결재되었습니다!`)
+        .setDescription(`:white_check_mark: **성공적으로 결재되었습니다!**`)
         .addFields([
-            { name: '코인 이름', value: `${name}`, inline: true },
-            { name: '코인 가격', value: `${price}`, inline: true }
+            { name: '코인 이름', value: `${bold(name)}`, inline: true },
+            { name: '코인 가격', value: `${bold(price.toString())}`, inline: true }
         ])
         .addFields([
-            { name: '구매 개수', value: `${amount}`, inline: true },
+            { name: '구매 개수', value: `${bold(amount.toString())}`, inline: true },
             { name: '총 가격', value: `${price * amount}`, inline: true },
             { name: '남은 포인트', value: `${point}`, inline: true }
         ])
@@ -36,9 +36,10 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
 
     const args = interaction.options
     const coinId = parseInt(args.getString('이름')!)
-    const amount = parseInt(args.getString('수량')!)
+    const amount = args.getInteger('수량')!
 
-    const coinPrice = await (await getCoinData(coinId)).price
+    const coinData = await getCoinData(coinId)
+    const coinPrice = coinData.price
     const point = (await getUserData(interaction.user.id)).point
 
     if (point < coinPrice * amount) {
@@ -46,6 +47,7 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     }
 
     await removeUserPoint(interaction.user.id, coinPrice * amount)
+    await addUserCoin(interaction.user.id, coinId, amount, new Date())
 
-    await interaction.editReply({ embeds: [youBoughtCoin(coinId.toString(), amount, coinPrice, point - coinPrice * amount, new Date())] })
+    await interaction.editReply({ embeds: [youBoughtCoin(coinData.name, amount, coinPrice, point - coinPrice * amount, new Date())] })
 }

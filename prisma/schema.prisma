@@ -91,6 +91,9 @@ model UserData {
     bannedGuild String[]
     ownedGuild String[]
     point Int @default(25000)
+    isPremium Boolean @default(false)
+    preminumStartedAt DateTime @default(now())
+    createdAt DateTime
 }
 
 model MemberData {
