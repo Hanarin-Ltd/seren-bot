@@ -29,6 +29,5 @@ export default async function coinprice(interaction: ChatInputCommandInteraction
     const coinId = parseInt(args.getString('이름')!)
 
     const coinData = await getCoinData(coinId)
-
     await interaction.editReply({ embeds: [priceEmbed(coinData!)] })
 }

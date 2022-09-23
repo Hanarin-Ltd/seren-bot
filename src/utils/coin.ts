@@ -141,8 +141,8 @@ export const getPriceInfo = (data: number[]) => {
             min = Infinity
         }
     }
-    const priceDiff = cmp(data[dataLength-1], data[dataLength-2]) * Math.abs((data[dataLength - 1] - data[dataLength - 2]))
-    const diffPercent = Math.abs(data[dataLength-1] / data[dataLength-2] * 100)
+    const priceDiff = cmp(data[dataLength-1], data[dataLength-2]) * Math.abs(data[dataLength - 1] - data[dataLength - 2])
+    const diffPercent = Math.abs(priceDiff / data[dataLength-2] * 100)
     return {
         lastLowPrice: lmin,
         lastHighPrice: lmax,
