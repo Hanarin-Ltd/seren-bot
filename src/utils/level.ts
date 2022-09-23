@@ -67,7 +67,7 @@ const levelUpEmbed = async (member: GuildMember, beforeLevel: number | string, a
         .setColor(BOT_COLOR)
         .setTitle(
             content.levelUpMessage
-            .replaceAll('{user}', userMention(memberData.userId))
+            .replaceAll('{user}', memberData.nickname)
             .replaceAll('{server}', member.guild.name)
             .replaceAll('{beforelevel}', beforeLevel.toString())
             .replaceAll('{afterlevel}', afterLevel.toString())
