@@ -18,7 +18,7 @@ const priceEmbed = (data: CoinData) => {
         .setFields([
             { name: '이름', value: blockQuote(bold(data.name)), inline: true },
             { name: '가격', value: blockQuote(bold(parsePrice(data))), inline: true },
-            { name: '변동폭', value: blockQuote(bold(`${priceInfo.diffPercent}%`)), inline: true },
+            { name: '변동폭', value: blockQuote(bold(`${priceInfo.diffPercent.toFixed(2)}%`)), inline: true },
         ])
 }
 
@@ -30,5 +30,5 @@ export default async function coinprice(interaction: ChatInputCommandInteraction
 
     const coinData = await getCoinData(coinId)
 
-    await interaction.editReply({ embeds: [priceEmbed(coinData)] })
+    await interaction.editReply({ embeds: [priceEmbed(coinData!)] })
 }
