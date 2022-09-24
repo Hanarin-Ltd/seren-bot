@@ -1,13 +1,13 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { addUserCoin, errorOccurredWhileTrading, getCoinData } from "../utils/coin"
+import { addUserCoin, errorOccurredWhileTrading, getCoinData, getCoinDataAsName } from "../utils/coin"
 import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { getUserData, removeUserPoint } from "../utils/userData"
 
 const notEnoughPoint = (point: number, needPoint: number) => (
     new EmbedBuilder()
         .setColor(BOT_COLOR)
-        .setDescription(`:x: 포인트가 부족합니다.`)
+        .setDescription(`:x: **포인트가 부족합니다.**`)
         .addFields([
             { name: '보유 포인트', value: `${point}`, inline: true },
             { name: '필요 포인트', value: `${needPoint}`, inline: true },
@@ -35,10 +35,10 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     await interaction.deferReply()
 
     const args = interaction.options
-    const coinId = parseInt(args.getString('이름')!)
+    const coinName = args.getString('이름')!
     const amount = args.getInteger('수량')!
 
-    const coinData = (await getCoinData(coinId))!
+    const coinData = (await getCoinDataAsName(coinName))!
     const coinPrice = coinData.price
     const point = (await getUserData(interaction.user.id)).point
 
@@ -48,7 +48,7 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
 
     try {
         await removeUserPoint(interaction.user.id, coinPrice * amount)
-        await addUserCoin(interaction.user.id, coinId, amount, new Date())
+        await addUserCoin(interaction.user.id, coinData.id, amount, new Date())
         await interaction.editReply({ embeds: [youBoughtCoin(coinData.name, amount, coinPrice, point - coinPrice * amount, new Date())] })
     } catch {
         await interaction.editReply({ embeds: [errorOccurredWhileTrading] })

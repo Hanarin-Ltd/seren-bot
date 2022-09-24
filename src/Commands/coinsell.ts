@@ -1,6 +1,6 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { errorOccurredWhileTrading, getCoinData, removeUserCoin } from "../utils/coin"
+import { errorOccurredWhileTrading, getCoinData, getCoinDataAsName, removeUserCoin } from "../utils/coin"
 import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { addUserPoint, getUserData } from "../utils/userData"
 
@@ -24,14 +24,14 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     await interaction.deferReply()
 
     const args = interaction.options
-    const coinId = parseInt(args.getString('이름')!)
+    const coinName = args.getString('이름')!
     const amount = args.getInteger('수량')!
 
-    const coinData = (await getCoinData(coinId))!
+    const coinData = (await getCoinDataAsName(coinName))!
     const point = (await getUserData(interaction.user.id)).point
 
     try {
-        await removeUserCoin(interaction.user.id, coinId, amount)
+        await removeUserCoin(interaction.user.id, coinData.id, amount)
         await addUserPoint(interaction.user.id, coinData.price * amount)
         await interaction.editReply({ embeds: [youSelledCoin(coinData.name, amount, coinData.price, point, new Date())] })
     } catch {

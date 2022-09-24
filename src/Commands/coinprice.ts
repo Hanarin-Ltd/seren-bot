@@ -1,7 +1,7 @@
 import { CoinData } from "@prisma/client"
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getCoinData, getPriceInfo } from "../utils/coin"
+import { getCoinData, getCoinDataAsName, getPriceInfo } from "../utils/coin"
 
 const parsePrice = (data: CoinData) => {
     const lastPrice = data.priceHistory[data.priceHistory.length - 2]
@@ -22,12 +22,18 @@ const priceEmbed = (data: CoinData) => {
         ])
 }
 
+const coinNotFound = () => new EmbedBuilder()
+    .setColor(BOT_COLOR)
+    .setTitle(':grey_question: **코인을 찾을 수 없습니다**')
+    .setDescription('없는 코인이거나 오타가 있을 수 있습니다. 다시 한번 확인해주세요!')
+
 export default async function coinprice(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply()
 
     const args = interaction.options
-    const coinId = parseInt(args.getString('이름')!)
+    const coinName = args.getString('이름')!
 
-    const coinData = await getCoinData(coinId)
+    const coinData = await getCoinDataAsName(coinName)
+    if (!coinData) return await interaction.editReply({ embeds: [coinNotFound()] })
     await interaction.editReply({ embeds: [priceEmbed(coinData!)] })
 }

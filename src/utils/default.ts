@@ -56,3 +56,37 @@ export const toObject = (string: string) => {
 export const getRandomInt = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
+
+export const getRandomItem = (array: any[], weights?: number[]) => {
+    if (!weights) {
+        return [array[getRandomInt(0, array.length - 1)]]
+    }
+    let sum = 0
+    for (const weight of weights) {
+        sum += weight
+    }
+    const random = getRandomInt(0, sum)
+    let current = 0
+    for (const weight of weights) {
+        current += weight
+        if (random <= current) {
+            return [array[weights.indexOf(weight)]]
+        }
+    }
+    return []
+}
+
+export const abs = (number: number) => Math.abs(number)
+
+export const isSameArray = (a: any[],b: any[]) => {
+    if (a instanceof Array && b instanceof Array) {
+        if (a.length!=b.length)
+            return false
+        for(let i = 0; i < a.length; i++)
+            if (!isSameArray(a[i],b[i]))
+                return false
+        return true
+    } else {
+        return a==b
+    }
+}

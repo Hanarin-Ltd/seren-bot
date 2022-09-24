@@ -190,3 +190,12 @@ model UserCoinData {
     value Int @default(0)
     createdAt DateTime @default(now())
 }
+
+model CoinComment {
+    id Int @id @default(autoincrement())
+    authorId String
+    coinId Int
+    likes Int @default(0)
+    content String
+    createdAt DateTime @default(now())
+}

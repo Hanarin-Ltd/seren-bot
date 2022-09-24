@@ -1,9 +1,11 @@
 import { CoinData } from "@prisma/client"
 import { AutocompleteInteraction, EmbedBuilder } from "discord.js"
 import prisma from "../prisma"
-import { getRandomInt } from "./default"
+import { abs, getRandomInt, getRandomItem, isSameArray } from "./default"
 import randomWords from 'random-words'
 import { BOT_COLOR } from "../lib"
+
+const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
 
 export const makeNewCoin = async () => {
     const name = randomWords(1)[0].toUpperCase()
@@ -37,46 +39,73 @@ export const getOwnedCoin = async (userId: string, coinId: number) => {
     return userCoinData.find(d => d.coinId === coinId)
 }
 
-export const getCoinData = async (id: number) => (
-    await prisma.coinData.findFirst({ where: { id } })
-)
+export const getCoinData = async (id: number) => {
+    return await prisma.coinData.findFirst({ where: { id } })
+}
+
+export const getCoinDataAsName = async (name: string) => {
+    const list = await getCoinList()
+    return list.find(c => c.name.toLowerCase() === name.toLowerCase())
+}
 
 export const getUserCoinData = async (userId: string) => {
     return await prisma.userCoinData.findMany({ where: { userId } })
 }
 
+// Algorithm Made by @smartwe, Refactored by @cottons-kr
 export const updateCoinPrice = async (id: number) => {
     const coin = await getCoinData(id)
     if (!coin) return
-    const priceRange = getRandomInt(10, 1000)
-    const currentStatus = getRandomInt(0, 1) > 0
-    const price = currentStatus ? coin.price + getRandomInt(1, priceRange) : coin.price - getRandomInt(1, priceRange)
-
-    if (price <= 0) {
-        return await deleteCoin(id)
+    const data = coin.priceHistory
+    const dataLength = data.length
+    const priceHistory: number[] = []
+    for (let i = 0; i < dataLength - 1; i++) {
+        let diffPercent = 0
+        let diff = cmp(data[i], data[i+1]) * abs(data[i+1] - data[i])
+        if (diff === 0) diffPercent = 0
+        else diffPercent = cmp(data[i+1], data[i]) * (abs(diff / data[i] * 100) % 100)
+        priceHistory.push(diffPercent)
     }
+    let c1 = []
+    let c2 = []
+    const randomPer = getRandomInt(abs(abs(priceHistory[dataLength - 2] - 60)), abs(priceHistory[dataLength - 2]))
+    if (priceHistory[dataLength-2] >= 0) 
+        c1 = getRandomItem([1, 2], [randomPer, abs(100 - randomPer)])
+    else
+        c1 = getRandomItem([1, 2], [abs(100 - randomPer), randomPer])
+    c2 = getRandomItem([1, 2, 3], [99, 0.8, 0.2])
+    let amt = 0
+    if (isSameArray(c2, [1])) amt = getRandomInt(0, 300)
+    else if (isSameArray(c2, [2])) amt = getRandomInt(300, 800)
+    else amt = getRandomInt(800, 1350)
 
-    return await prisma.coinData.update({ where: { id }, data: {
-        price,
-        priceHistory: [...coin.priceHistory, price]
-    } })
+    if (isSameArray(c1, [1])) {
+        return await prisma.coinData.update({ where: { id }, data: { price: data[dataLength-1] + amt } })
+    } else {
+        if ((data[dataLength-1] - amt) <= 0) {
+            await prisma.coinData.deleteMany({ where: { id } })
+            await prisma.userCoinData.deleteMany({ where: { coinId: id } })
+            return await makeNewCoin()
+        }
+        return await prisma.coinData.update({ where: { id }, data: { price: data[dataLength-1] - amt } })
+    }
 }
 
 export const coinNameAutoComplete = async (interaction: AutocompleteInteraction) => {
     const coins = await getCoinList()
-    const focused = interaction.options.getFocused()
-    const filtered = coins.filter(c => c.name.startsWith(focused))
+    const focused = interaction.options.getFocused().toLowerCase()
+    const filtered = coins.filter(c => c.name.toLowerCase().startsWith(focused))
     await interaction.respond(
-        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}pt`, value: c.id.toString() })) : []
+        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}pt`, value: c.name })) : []
     )
 }
 
 export const ownedCoinAutoComplete = async (interaction: AutocompleteInteraction) => {
     const coins = await getOwnedCoinList(interaction.user.id)
-    const focused = interaction.options.getFocused()
-    const filtered = coins.filter(c => c.name.startsWith(focused))
+    const focused = interaction.options.getFocused().toLowerCase()
+    const filtered = coins.filter(c => c.name.toLowerCase().startsWith(focused))
     await interaction.respond(
-        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}`, value: c.id.toString() })) : []
+        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}`, value: c.name })) : []
     )
 }
 
@@ -111,7 +140,6 @@ export const removeUserCoin = async (userId: string, coinId: number, amount: num
 
 // Algorithm Made by @smartwe, Refactored by @cottons-kr
 export const getPriceInfo = (data: number[]) => {
-    const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
     const dataLength = data.length
     let max: number = 0
     let min: number = 0
@@ -141,8 +169,8 @@ export const getPriceInfo = (data: number[]) => {
             min = Infinity
         }
     }
-    const priceDiff = cmp(data[dataLength-1], data[dataLength-2]) * Math.abs(data[dataLength - 1] - data[dataLength - 2])
-    const diffPercent = Math.abs(priceDiff / data[dataLength-2] * 100)
+    const priceDiff = cmp(data[dataLength-1], data[dataLength-2]) * abs(data[dataLength - 1] - data[dataLength - 2])
+    const diffPercent = abs(priceDiff / data[dataLength-2] * 100)
     return {
         lastLowPrice: lmin,
         lastHighPrice: lmax,
