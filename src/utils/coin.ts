@@ -1,4 +1,3 @@
-import { CoinData } from "@prisma/client"
 import { AutocompleteInteraction, EmbedBuilder } from "discord.js"
 import prisma from "../prisma"
 import { abs, getRandomInt, getRandomItem, isSameArray } from "./default"
@@ -57,7 +56,12 @@ export const updateCoinPrice = async (id: number) => {
     const coin = await getCoinData(id)
     if (!coin) return
     const data = coin.priceHistory
-    const dataLength = data.length
+    let dataLength = data.length
+    if (dataLength === 0) {
+        dataLength++
+        data.push(coin.price)
+    }
+
     const priceHistory: number[] = []
     for (let i = 0; i < dataLength - 1; i++) {
         let diffPercent = 0
@@ -75,19 +79,25 @@ export const updateCoinPrice = async (id: number) => {
         c1 = getRandomItem([1, 2], [abs(100 - randomPer), randomPer])
     c2 = getRandomItem([1, 2, 3], [99, 0.8, 0.2])
     let amt = 0
-    if (isSameArray(c2, [1])) amt = getRandomInt(0, 300)
+    if (isSameArray(c2, [1])) amt = getRandomInt(1, 300)
     else if (isSameArray(c2, [2])) amt = getRandomInt(300, 800)
     else amt = getRandomInt(800, 1350)
 
     if (isSameArray(c1, [1])) {
-        return await prisma.coinData.update({ where: { id }, data: { price: data[dataLength-1] + amt } })
+        return await prisma.coinData.update({ where: { id }, data: {
+            price: data[dataLength-1] + amt,
+            priceHistory: [...data, data[dataLength-1] + amt]
+        } })
     } else {
         if ((data[dataLength-1] - amt) <= 0) {
             await prisma.coinData.deleteMany({ where: { id } })
             await prisma.userCoinData.deleteMany({ where: { coinId: id } })
             return await makeNewCoin()
         }
-        return await prisma.coinData.update({ where: { id }, data: { price: data[dataLength-1] - amt } })
+        return await prisma.coinData.update({ where: { id }, data: {
+            price: data[dataLength-1] - amt,
+            priceHistory: [...data, data[dataLength-1] - amt]
+        } })
     }
 }
 

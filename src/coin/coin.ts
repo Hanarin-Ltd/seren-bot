@@ -1,7 +1,14 @@
 import { CoinData } from "@prisma/client"
-import { getCoinList, makeNewCoin, updateCoinPrice } from "../utils/coin"
+import { createServer } from "http"
+import { Server } from "socket.io"
+import { env } from ".."
+import { getCoinList, getPriceInfo, makeNewCoin, updateCoinPrice } from "../utils/coin"
 
-type CoinGameEvent = 'start' | 'end' | 'addcoin' | 'removecoin' | 'updateprice' | 'buy' | 'sell'
+const coinIo = new Server(createServer(), {
+    cors: {
+        origin: [env.SITE!]
+    }
+})
 
 class CoinGame {
     constructor(
@@ -22,6 +29,13 @@ class CoinGame {
         }
         for (const coin of this.coins) {
             await updateCoinPrice(coin.id)
+            const priceInfo = getPriceInfo(coin.priceHistory)
+            coinIo.emit('price', {
+                ...coin,
+                priceHistory: coin.priceHistory.slice(-15),
+                priceDiff: priceInfo.priceDiff,
+                diffPercent: priceInfo.diffPercent.toFixed(2)
+            })
         }
         this.coins = await getCoinList()
     }
@@ -35,5 +49,6 @@ class CoinGame {
 export default async function coinGame() {
     const coinGame = new CoinGame()
     coinGame.start()
+    coinIo.listen(7777)
     console.log('Coin Game Started')
 }

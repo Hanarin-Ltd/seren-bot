@@ -1,9 +1,12 @@
-import * as net from 'net'
+import { createServer } from 'http'
+import { env } from 'process'
+import { Server } from 'socket.io'
 import { client as botClient } from './index'
 import prisma from './prisma'
 import { updateBanListCache } from './utils/ban'
+import { getCoinList } from './utils/coin'
 import { getMember, updateMemberCache } from './utils/discord'
-import { removeMod, updateGuildMod } from './utils/mod'
+import { updateGuildMod } from './utils/mod'
 import { getGuildModRole } from './utils/role'
 
 type GuildAllData = {
@@ -84,13 +87,14 @@ type Responce = {
     data: GuildAllData
 }
 
-const server = net.createServer(client => {
-    client.setDefaultEncoding('utf8')
-    client.setEncoding('utf8')
-    client.setNoDelay(true)
-    client.setTimeout(10000)
+const dashboardIo = new Server(createServer(), {
+    cors: {
+        origin: [env.SITE!]
+    }
+})
 
-    client.on('data', async (recv) => {
+dashboardIo.on('connection', async socket => {
+    socket.on('data', async recv => {
         const { guildId, changed, data }: Responce = JSON.parse(recv.toString())
 
         // client에서 직접 차단 리스트를 가져와서 data하고 비교
@@ -122,15 +126,10 @@ const server = net.createServer(client => {
                 await guild.members.unban(id)
             })
         }
-
-        if (changed.includes('mentionBlock')) {
-        }
     })
-
 })
 
 export default function openSocketServer() {
-    server.listen(7321, () => {
-        console.log(`Socket Server is Opened`)
-    })
+    dashboardIo.listen(7321)
+    console.log(`Dashboard Socket Server is Opened`)
 }
