@@ -32,7 +32,7 @@ class CoinGame {
             const priceInfo = getPriceInfo(coin.priceHistory)
             coinIo.emit('price', {
                 ...coin,
-                priceHistory: coin.priceHistory.slice(-15),
+                priceHistory: coin.priceHistory.slice(-50),
                 priceDiff: priceInfo.priceDiff,
                 diffPercent: priceInfo.diffPercent.toFixed(2)
             })

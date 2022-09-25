@@ -187,7 +187,6 @@ model UserCoinData {
 
     name String
     amount Int @default(0)
-    value Int @default(0)
     createdAt DateTime @default(now())
 }
 

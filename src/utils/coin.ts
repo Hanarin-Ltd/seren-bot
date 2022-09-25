@@ -131,7 +131,6 @@ export const addUserCoin = async (userId: string, coinId: number, amount: number
         return await prisma.userCoinData.createMany({ data: {
             userId, coinId, amount, createdAt,
             name: coinData.name,
-            value: coinData.price * amount
         } })
     }
 }
