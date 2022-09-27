@@ -17,7 +17,7 @@ class CoinGame {
     ) {}
 
     async addCoin() {
-        await makeNewCoin()
+        await makeNewCoin(coinIo)
         this.coins = await getCoinList()
     }
 
@@ -28,7 +28,7 @@ class CoinGame {
             }
         }
         for (const coin of this.coins) {
-            await updateCoinPrice(coin.id)
+            await updateCoinPrice(coin.id, coinIo)
             const priceInfo = getPriceInfo(coin.priceHistory)
             coinIo.emit('price', {
                 ...coin,

@@ -3,24 +3,32 @@ import prisma from "../prisma"
 import { abs, getRandomInt, getRandomItem, isSameArray } from "./default"
 import randomWords from 'random-words'
 import { BOT_COLOR } from "../lib"
+import { Server } from "socket.io"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
 
-export const makeNewCoin = async () => {
+export const makeNewCoin = async (server: Server) => {
     const name = randomWords(1)[0].toUpperCase()
     const price = getRandomInt(1000, 10000)
 
-    await prisma.coinData.create({ data: {
+    const data = await prisma.coinData.create({ data: {
         name,
         price,
     } })
+    const priceInfo = getPriceInfo(data.priceHistory)
+    server.emit('create', {
+        ...data,
+        priceHistory: data.priceHistory.slice(-50),
+        priceDiff: priceInfo.priceDiff,
+        diffPercent: priceInfo.diffPercent.toFixed(2)
+    })
 }
 
-export const deleteCoin = async (id: number) => {
+export const deleteCoin = async (id: number, server: Server) => {
     await prisma.coinData.delete({ where: { id } })
     await prisma.userCoinData.deleteMany({ where: { coinId: id } })
 
-    await makeNewCoin()
+    await makeNewCoin(server)
 }
 
 export const getCoinList = async () => {
@@ -52,7 +60,7 @@ export const getUserCoinData = async (userId: string) => {
 }
 
 // Algorithm Made by @smartwe, Refactored by @cottons-kr
-export const updateCoinPrice = async (id: number) => {
+export const updateCoinPrice = async (id: number, server: Server) => {
     const coin = await getCoinData(id)
     if (!coin) return
     const data = coin.priceHistory
@@ -92,7 +100,8 @@ export const updateCoinPrice = async (id: number) => {
         if ((data[dataLength-1] - amt) <= 0) {
             await prisma.coinData.deleteMany({ where: { id } })
             await prisma.userCoinData.deleteMany({ where: { coinId: id } })
-            return await makeNewCoin()
+            server.emit('delete', id)
+            return await makeNewCoin(server)
         }
         return await prisma.coinData.update({ where: { id }, data: {
             price: data[dataLength-1] - amt,
