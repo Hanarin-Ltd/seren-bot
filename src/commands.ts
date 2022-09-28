@@ -18,6 +18,7 @@ const commandsFile = {
     '매도': 'coinsell',
     '매수': 'coinbuy',
     '내코인': 'mycoin',
+    '코인댓글': 'coincomment',
 }
 
 type command = keyof typeof commandsFile
@@ -260,6 +261,20 @@ const commands =  [
         .setName('내코인')
         .setDescription('내 코인을 확인합니다')
         .toJSON(),
+    new SlashCommandBuilder()
+        .setName('코인댓글')
+        .setDescription('코인에 댓글을 답니다')
+        .addStringOption(coin => 
+            coin.setName('이름')
+            .setDescription('코인 이름을 입력해주세요')
+            .setRequired(true)
+            .setAutocomplete(true)
+        )
+        .addStringOption(comment => 
+            comment.setName('댓글')
+            .setDescription('댓글을 입력해주세요')
+            .setRequired(true)
+        )
 ]
 
 const getCommands = (): any[] => {
@@ -278,6 +293,6 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인']
+export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글']
 export default getCommands
 export { getCommandList, getCommandFunction }

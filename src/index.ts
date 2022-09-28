@@ -68,6 +68,7 @@ client.on('interactionCreate', async (interaction) => {
             case '코인가격': { coinNameAutoComplete(interaction); break }
             case '코인구매': { coinNameAutoComplete(interaction); break }
             case '코인판매': { ownedCoinAutoComplete(interaction); break }
+            case '코인댓글': { coinNameAutoComplete(interaction); break }
         }
     }
     else if (interaction.isChatInputCommand()) {
