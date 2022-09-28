@@ -1,6 +1,6 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { errorOccurredWhileTrading, getCoinData, getCoinDataAsName, getUserCoinData, removeUserCoin } from "../utils/coin"
+import { errorOccurredWhileTrading, getCoinData, getCoinDataAsName, getUserCoinData, removeUserCoin, userCoinIo } from "../utils/coin"
 import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { addUserPoint, getUserData } from "../utils/userData"
 
@@ -33,13 +33,17 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     const point = userData.point
 
     try {
-        if (userCoinData.amount > amount) {
+        if (userCoinData.amount <= amount) {
             await removeUserCoin(interaction.user.id, coinData.id, userCoinData.amount)
             await addUserPoint(interaction.user.id, coinData.price * userCoinData.amount)
             return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, userCoinData.amount, coinData.price, point, new Date())] })
         }
         await removeUserCoin(interaction.user.id, coinData.id, amount)
         await addUserPoint(interaction.user.id, coinData.price * amount)
+        userCoinIo.emit('update', {
+            amount: userCoinData.amount - amount,
+            point: point + coinData.price * amount,
+        })
         return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, amount, coinData.price, point, new Date())] })
     } catch {
         return await interaction.editReply({ embeds: [errorOccurredWhileTrading] })

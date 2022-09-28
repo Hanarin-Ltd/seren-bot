@@ -28,7 +28,7 @@ export const addUserData = async (userId: string) => {
 
 export const addUserPoint = async (userId: string, point: number) => {
     const userData = await getUserData(userId)
-    return await prisma.userData.update({
+    await prisma.userData.update({
         where: { id: userId },
         data: { point: userData.point + point }
     })
@@ -36,7 +36,7 @@ export const addUserPoint = async (userId: string, point: number) => {
 
 export const removeUserPoint = async (userId: string, point: number) => {
     const userData = await getUserData(userId)
-    return await prisma.userData.update({
+    await prisma.userData.update({
         where: { id: userId },
         data: { point: userData.point - point }
     })

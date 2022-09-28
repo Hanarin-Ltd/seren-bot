@@ -4,8 +4,16 @@ import { abs, getRandomInt, getRandomItem, isSameArray } from "./default"
 import randomWords from 'random-words'
 import { BOT_COLOR } from "../lib"
 import { Server } from "socket.io"
+import { createServer } from "http"
+import { env } from ".."
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
+
+export const userCoinIo = new Server(createServer(), {
+    cors: {
+        origin: [env.SITE!]
+    }
+}).listen(7428)
 
 export const makeNewCoin = async (server: Server) => {
     const name = randomWords(1)[0].toUpperCase()

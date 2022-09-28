@@ -1,6 +1,6 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { addUserCoin, errorOccurredWhileTrading, getCoinData, getCoinDataAsName } from "../utils/coin"
+import { addUserCoin, errorOccurredWhileTrading, getCoinData, getCoinDataAsName, getUserCoinData, userCoinIo } from "../utils/coin"
 import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { getUserData, removeUserPoint } from "../utils/userData"
 
@@ -39,6 +39,7 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     const amount = args.getInteger('수량')!
 
     const coinData = (await getCoinDataAsName(coinName))!
+    const userCoinData = (await getUserCoinData(interaction.user.id)).find(coin => coin.name === coinName)
     const coinPrice = coinData.price
     const point = (await getUserData(interaction.user.id)).point
 
@@ -49,6 +50,10 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     try {
         await removeUserPoint(interaction.user.id, coinPrice * amount)
         await addUserCoin(interaction.user.id, coinData.id, amount, new Date())
+        userCoinIo.emit('update', {
+            amount: userCoinData ? userCoinData.amount + amount : amount,
+            point: point - coinPrice * amount
+        })
         await interaction.editReply({ embeds: [youBoughtCoin(coinData.name, amount, coinPrice, point - coinPrice * amount, new Date())] })
     } catch {
         await interaction.editReply({ embeds: [errorOccurredWhileTrading] })
