@@ -52,7 +52,8 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
         await addUserCoin(interaction.user.id, coinData.id, amount, new Date())
         userCoinIo.emit('update', {
             amount: userCoinData ? userCoinData.amount + amount : amount,
-            point: point - coinPrice * amount
+            point: point - coinPrice * amount,
+            coinId: coinData.id,
         })
         await interaction.editReply({ embeds: [youBoughtCoin(coinData.name, amount, coinPrice, point - coinPrice * amount, new Date())] })
     } catch {

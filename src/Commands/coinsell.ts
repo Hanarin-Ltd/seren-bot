@@ -36,13 +36,20 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
         if (userCoinData.amount <= amount) {
             await removeUserCoin(interaction.user.id, coinData.id, userCoinData.amount)
             await addUserPoint(interaction.user.id, coinData.price * userCoinData.amount)
+            userCoinIo.emit('update', {
+                amount: 0,
+                point: point + coinData.price * userCoinData.amount,
+                coinId: coinData.id,
+            })
             return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, userCoinData.amount, coinData.price, point, new Date())] })
+        } else if (userCoinData.amount > amount) {
+            await removeUserCoin(interaction.user.id, coinData.id, amount)
+            await addUserPoint(interaction.user.id, coinData.price * amount)
         }
-        await removeUserCoin(interaction.user.id, coinData.id, amount)
-        await addUserPoint(interaction.user.id, coinData.price * amount)
         userCoinIo.emit('update', {
             amount: userCoinData.amount - amount,
             point: point + coinData.price * amount,
+            coinId: coinData.id,
         })
         return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, amount, coinData.price, point, new Date())] })
     } catch {
