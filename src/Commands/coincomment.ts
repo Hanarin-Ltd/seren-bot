@@ -30,6 +30,7 @@ export default async function coincomment(interaction: ChatInputCommandInteracti
         if (result) await interaction.editReply({ embeds: [youCommentedCoin(coinName, content)] })
         else await interaction.editReply({ embeds: [coinNotFound(coinName)] })
     } catch (e) {
+        console.log(e)
         await interaction.editReply({ embeds: [errorMessage()] })
     }
 }

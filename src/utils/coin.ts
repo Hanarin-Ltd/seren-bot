@@ -7,6 +7,7 @@ import { Server } from "socket.io"
 import { createServer } from "http"
 import { env } from ".."
 import { getUserData } from "./userData"
+import fetch from "node-fetch"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
 
@@ -15,12 +16,6 @@ export const userCoinIo = new Server(createServer(), {
         origin: [env.SITE!]
     }
 }).listen(7428)
-
-export const commentIo = new Server(createServer(), {
-    cors: {
-        origin: [env.SITE!]
-    }
-}).listen(7214)
 
 export const makeNewCoin = async (server: Server) => {
     const name = randomWords(1)[0].toUpperCase()
@@ -215,20 +210,15 @@ export const getPriceInfo = (data: number[]) => {
 export const addCoinComment = async (coinId: number, userId: string, content: string) => {
     const coinData = await getCoinData(coinId)
     if (!coinData) return false
-    const userData = await getUserData(userId)
-    commentIo.emit('comment', {
-        authorId: userId,
-        authorName: userData.username,
-        authorProfileImg: userData.profileImg,
-        createdAt: new Date(),
-        coinId,
-        content,
+    return await fetch('http://localhost:3000/api/coin/comment', {
+        method: 'POST',
+        body: JSON.stringify({
+            coinId,
+            userId,
+            content,
+            secret: env.BOT_TOKEN
+        })
     })
-    return await prisma.coinComment.createMany({ data: {
-        authorId: userId,
-        coinId,
-        content,
-    } })
 }
 
 export const errorOccurredWhileTrading = new EmbedBuilder()

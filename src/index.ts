@@ -26,6 +26,7 @@ import { getGuildLogSetting, log } from './utils/log'
 import { addMemberExp, checkLevelUp } from './utils/level'
 import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
 import coinGame from './coin/coin'
+import { addUserData, getUserData } from './utils/userData'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
@@ -59,6 +60,9 @@ client.on('messageCreate', async (message) => {
         scanMessage(message)
         await addMemberExp(message.member!, 10)
         await checkLevelUp(message.member!, message.channel)
+
+        const exist = await getUserData(message.author.id)
+        if (!exist) await addUserData(message.author.id)
     } catch { return }
 })
 
