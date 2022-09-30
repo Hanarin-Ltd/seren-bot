@@ -218,7 +218,7 @@ export const addCoinComment = async (coinId: number, userId: string, content: st
             content,
             secret: env.BOT_TOKEN
         })
-    })
+    }).then(res => res.json())
 }
 
 export const errorOccurredWhileTrading = new EmbedBuilder()

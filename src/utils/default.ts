@@ -1,4 +1,4 @@
-import { Routes, EmbedBuilder } from "discord.js"
+import { Routes, EmbedBuilder, blockQuote } from "discord.js"
 import { env } from ".."
 import getCommands from "../commands"
 import { rest, BOT_COLOR } from "../lib"
@@ -19,10 +19,19 @@ export const getCurrentDate = (now: Date = new Date()) => {
     return `${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}`
 }
 
-export const errorMessage = () => {
-    return new EmbedBuilder()
+export const errorMessage = (content?: string) => {
+    if (!content) {
+        return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(':x: 오류가 발생했습니다!')
+    } else {
+        return new EmbedBuilder()
+        .setColor(BOT_COLOR)
+        .setTitle(':x: 오류가 발생했습니다!')
+        .setFields([
+            { name: '오류 내용', value: blockQuote(content) }
+        ])
+    }
 }
 
 export const noPermissionMessage = () => {

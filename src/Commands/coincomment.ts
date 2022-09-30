@@ -27,8 +27,9 @@ export default async function coincomment(interaction: ChatInputCommandInteracti
 
     try {
         const result = await addCoinComment(coinData.id, interaction.user.id, content)
-        if (result) await interaction.editReply({ embeds: [youCommentedCoin(coinName, content)] })
-        else await interaction.editReply({ embeds: [coinNotFound(coinName)] })
+        if (result.error) return await interaction.editReply({ embeds: [errorMessage(result.error)] })
+        if (result) return await interaction.editReply({ embeds: [youCommentedCoin(coinName, content)] })
+        else return await interaction.editReply({ embeds: [coinNotFound(coinName)] })
     } catch (e) {
         console.log(e)
         await interaction.editReply({ embeds: [errorMessage()] })
