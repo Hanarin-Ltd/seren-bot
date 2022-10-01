@@ -21,7 +21,7 @@ export const addOrUpdateGuildData = async (guild: Guild) => {
             isVerified: guild.verified,
             premiumTier: guild.premiumTier,
             premiumSubscriptionCount: guild.premiumSubscriptionCount || 0,
-            description: guild.description || '설정되지 않음',
+            description: guild.description || '설명 없음',
             isCommunityGuild: isCommunity(guild)
         },
         create: {

@@ -12,11 +12,10 @@ const commandsFile = {
     '차단': 'ban',
     '역할': 'role',
     '로그': 'log',
+    '코인': 'coin',
     '코인가격': 'coinprice',
     '코인구매': 'coinbuy',
     '코인판매': 'coinsell',
-    '매도': 'coinsell',
-    '매수': 'coinbuy',
     '내코인': 'mycoin',
     '코인댓글': 'coincomment',
 }
@@ -216,7 +215,10 @@ const commands =  [
         )
         .toJSON(),
 
-    
+    new SlashCommandBuilder()
+        .setName('코인')
+        .setDescription('코인게임이 참가하시겠습니까?')
+        .toJSON(),
     new SlashCommandBuilder()
         .setName('코인가격')
         .setDescription('코인 가격을 확인합니다')
@@ -293,6 +295,6 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글']
+export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인']
 export default getCommands
 export { getCommandList, getCommandFunction }
