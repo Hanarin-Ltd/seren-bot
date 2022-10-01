@@ -188,14 +188,15 @@ client.on('guildBanAdd', async (banMember) => {
         const logSetting = await getGuildLogSetting(thisGuild.id)
         const channel = await getChannel(thisGuild, option.banChannelId)
 
-        if (!channel || !channel.isTextBased()) return
-        option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(banMember.user.username, banMember.reason || '공개되지 않음')] })
         logSetting?.addBan && log({
             content: `차단 추가됨 : ${banMember.user.username}`,
             rawContent: `차단 추가됨 : ${userMention(banMember.user.id)}`,
             guild: thisGuild,
             type: 'addBan'
         })
+
+        if (!channel || !channel.isTextBased()) return
+        option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(banMember.user.username, banMember.reason || '공개되지 않음')] })
     } catch (e) { console.log(e) }
 })
 
@@ -208,14 +209,15 @@ client.on('guildBanRemove', async (banMember) => {
 
         await removeBan(thisGuild.id, banMember.user.id)
 
-        if (!channel || !channel.isTextBased()) return
-        option.unbanMessageEnabled && channel.send({ embeds: [someoneHasUnban(banMember.user.username, banMember.reason || '공개되지 않음')] })
         logSetting?.removeBan && log({
             content: `차단 해제됨 : ${banMember.user.username}`,
             rawContent: `차단 해제됨 : ${userMention(banMember.user.id)}`,
             guild: thisGuild,
             type: 'removeBan'
         })
+
+        if (!channel || !channel.isTextBased()) return
+        option.unbanMessageEnabled && channel.send({ embeds: [someoneHasUnban(banMember.user.username, banMember.reason || '공개되지 않음')] })
 
     } catch (e) { console.log(e) }
 })
@@ -274,8 +276,8 @@ client.on('messageDelete', async (message) => {
         if (!message.guild) return
         const logSetting = await getGuildLogSetting(message.guildId!)
         logSetting?.removeMessage && log({
-            content: `메세지 작성자 : ${message.member!.user.username} / 내용 : ${message.content || '알 수 없음 (null)'}`,
-            rawContent: `메세지 작성자 : ${userMention(message.member!.id)} / 내용 : ${message.content || '알 수 없음 (null)'}`,
+            content: `메세지 삭제됨 / 메세지 작성자 : ${message.member!.user.username} / 내용 : ${message.content || '알 수 없음 (null)'}`,
+            rawContent: `메세지 삭제됨 / 메세지 작성자 : ${userMention(message.member!.id)} / 내용 : ${message.content || '알 수 없음 (null)'}`,
             guild: message.guild,
             type: 'removeMessage'
         })
@@ -294,7 +296,7 @@ useBlockword : O
 addBlockword : O
 removeBlockword : O
 removeMessage : O
-levelUp : X
+levelUp : O
 addRoleToMember : O
 removeRoleToMember : O
 addBan : X
