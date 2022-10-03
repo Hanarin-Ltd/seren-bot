@@ -1,4 +1,4 @@
-import { Guild, GuildMember, ChatInputCommandInteraction, Routes, MessagePayload, MessageOptions, User } from "discord.js"
+import { Guild, GuildMember, ChatInputCommandInteraction, Routes, MessagePayload, BaseMessageOptions, User } from "discord.js"
 import { getModList } from "./mod"
 
 export const updateMemberCache = async (guild: Guild) => {
@@ -51,7 +51,7 @@ export const getMember = async (guild: Guild, id: string) => {
     return guild.members.cache.get(id)
 }
 
-export const sendDM = async (interaction: ChatInputCommandInteraction, message: string | MessagePayload | MessageOptions) => {
+export const sendDM = async (interaction: ChatInputCommandInteraction, message: string | MessagePayload | BaseMessageOptions) => {
     await interaction.client.users.cache.get(interaction.user.id)?.send(message)
 }
 
