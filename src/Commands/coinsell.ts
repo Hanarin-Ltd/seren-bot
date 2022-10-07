@@ -41,7 +41,7 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
                 point: point + coinData.price * userCoinData.amount,
                 coinId: coinData.id,
             })
-            return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, userCoinData.amount, coinData.price, point, new Date())] })
+            return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, userCoinData.amount, coinData.price, point + coinData.price * amount, new Date())] })
         } else if (userCoinData.amount > amount) {
             await removeUserCoin(interaction.user.id, coinData.id, amount)
             await addUserPoint(interaction.user.id, coinData.price * amount)
@@ -51,7 +51,7 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
             point: point + coinData.price * amount,
             coinId: coinData.id,
         })
-        return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, amount, coinData.price, point, new Date())] })
+        return await interaction.editReply({ embeds: [youSelledCoin(coinData.name, amount, coinData.price, point + coinData.price * amount, new Date())] })
     } catch {
         return await interaction.editReply({ embeds: [errorOccurredWhileTrading] })
     }

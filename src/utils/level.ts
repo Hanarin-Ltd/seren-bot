@@ -33,7 +33,8 @@ export const addMemberLevel = async (member: GuildMember) => {
     return await prisma.memberData.updateMany({
         where: { guildId: member.guild.id, userId: member.id },
         data: {
-            level: exist ? exist.level + 1 : 1
+            level: exist ? exist.level + 1 : 1,
+            exp: 0
         }
     })
 }

@@ -217,7 +217,7 @@ const commands =  [
 
     new SlashCommandBuilder()
         .setName('코인')
-        .setDescription('코인게임이 참가하시겠습니까?')
+        .setDescription('코인게임에 참가하시겠습니까?')
         .toJSON(),
     new SlashCommandBuilder()
         .setName('코인가격')
