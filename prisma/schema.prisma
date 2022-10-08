@@ -35,6 +35,7 @@ model GuildOption {
 
     checkModsMessage Boolean @default(false)
     blockwordDisabledChannel String[] @default([])
+    useEnhancedFilter Boolean @default(true)
 
     useLevelSystem Boolean @default(true)
     levelUpMessage String @default(":partying_face: {user}님의 레벨이 올랐습니다! Level {beforelevel} -> {afterlevel}")
@@ -70,6 +71,7 @@ model GuildData {
 
     isCommunityGuild Boolean @default(false)
     isSettingComplete Boolean @default(false)
+    isSubscribed Boolean @default(false)
 }
 
 model GuildBan {

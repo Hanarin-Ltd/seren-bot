@@ -10,7 +10,7 @@ import { getCommandFunction, usableInDM } from './commands'
 import { scanMessage } from './Commands/blockword'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
-import openSocketServer from './socket'
+import openAPIServer from './guildApi'
 import { BOT_COLOR } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
@@ -44,7 +44,7 @@ export const client = new Client({ intents: [
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}!`)
     console.log(`Version: ${env.VERSION} / Build: ${env.BUILD_DATE}`)
-    openSocketServer()
+    openAPIServer()
     coinGame()
     client.user!.setActivity('/안녕 , /도움말')
 
@@ -285,22 +285,3 @@ client.on('messageDelete', async (message) => {
 })
 
 client.login(env.BOT_TOKEN)
-
-/*
-userCreate : O
-userDelete : O
-addMod : O
-removeMod : O
-useCommand : O
-useBlockword : O
-addBlockword : O
-removeBlockword : O
-removeMessage : O
-levelUp : O
-addRoleToMember : O
-removeRoleToMember : O
-addBan : X
-removeBan : X
-getWarning : O
-removeWarning : O
-*/

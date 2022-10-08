@@ -74,15 +74,23 @@ export const scanMessage = async (message: Message) => {
     const logSetting = await getGuildLogSetting(guildId)
 
     blockwordList.forEach(blockword => {
-        if (message.content.toLowerCase().includes(blockword.toLowerCase())) {
+        const word = blockword.toLowerCase()
+        
+        if (message.content.toLowerCase().includes(word)) {
             catchedWordList.push(blockword)
             return
         }
 
         message.content.toLowerCase().split(' ').forEach(word => {
-            if (compareTwoStrings(word, blockword) > 0.8) {
-                catchedWordList.push(blockword)
-                return
+            if (data.isSubscribed && option.useEnhancedFilter) {
+                // TODO: Enhanced Filtering
+                // ~/Downloads/al.js
+            }
+            else {
+                if (compareTwoStrings(word, blockword) > 0.8) {
+                    catchedWordList.push(blockword)
+                    return
+                }
             }
         })
     })
