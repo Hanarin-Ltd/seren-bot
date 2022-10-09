@@ -69,11 +69,12 @@ client.on('messageCreate', async (message) => {
 client.on('interactionCreate', async (interaction) => {
     if (interaction.isAutocomplete()) {
         switch (interaction.commandName) {
-            case '코인가격': { coinNameAutoComplete(interaction); break }
-            case '코인구매': { coinNameAutoComplete(interaction); break }
-            case '코인판매': { ownedCoinAutoComplete(interaction); break }
-            case '코인댓글': { coinNameAutoComplete(interaction); break }
+            case '코인가격': { await coinNameAutoComplete(interaction); break }
+            case '코인구매': { await coinNameAutoComplete(interaction); break }
+            case '코인판매': { await ownedCoinAutoComplete(interaction); break }
+            case '코인댓글': { await coinNameAutoComplete(interaction); break }
         }
+        return
     }
     else if (interaction.isChatInputCommand()) {
         if (usableInDM.includes(interaction.commandName) && !interaction.channel) {

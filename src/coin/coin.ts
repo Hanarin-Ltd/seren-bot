@@ -1,14 +1,9 @@
 import { CoinData } from "@prisma/client"
 import { createServer } from "http"
+import fetch from "node-fetch"
 import { Server } from "socket.io"
 import { env } from ".."
 import { getCoinList, getPriceInfo, makeNewCoin, updateCoinPrice } from "../utils/coin"
-
-const coinIo = new Server(createServer(), {
-    cors: {
-        origin: [env.SITE!]
-    }
-})
 
 class CoinGame {
     constructor(
@@ -17,24 +12,33 @@ class CoinGame {
     ) {}
 
     async addCoin() {
-        await makeNewCoin(coinIo)
+        await makeNewCoin()
         this.coins = await getCoinList()
     }
 
     private async updateCoinPrice() {
-        if (this.coins.length === 0) {
-            for (let i = 0; i < 10; i++) {
+        this.coins = await getCoinList()
+        if (this.coins.length < 10) {
+            for (let i = this.coins.length; i < 10; i++) {
                 await this.addCoin()
             }
         }
         for (const coin of this.coins) {
-            await updateCoinPrice(coin.id, coinIo)
+            await updateCoinPrice(coin.id)
             const priceInfo = getPriceInfo(coin.priceHistory)
-            coinIo.emit('price', {
-                ...coin,
-                priceHistory: coin.priceHistory.slice(-50),
-                priceDiff: priceInfo.priceDiff,
-                diffPercent: priceInfo.diffPercent.toFixed(2)
+            fetch('http://localhost:3000/api/coin/price', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: 'price',
+                    ...coin,
+                    priceHistory: coin.priceHistory.slice(-50),
+                    priceDiff: priceInfo.priceDiff,
+                    diffPercent: priceInfo.diffPercent.toFixed(2),
+                    secret: env.BOT_TOKEN
+                })
             })
         }
         this.coins = await getCoinList()
@@ -49,6 +53,5 @@ class CoinGame {
 export default async function coinGame() {
     const coinGame = new CoinGame()
     coinGame.start()
-    coinIo.listen(7777)
     console.log('Coin Game Started')
 }

@@ -6,7 +6,6 @@ import { BOT_COLOR } from "../lib"
 import { Server } from "socket.io"
 import { createServer } from "http"
 import { env } from ".."
-import { getUserData } from "./userData"
 import fetch from "node-fetch"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
@@ -17,7 +16,7 @@ export const userCoinIo = new Server(createServer(), {
     }
 }).listen(7428)
 
-export const makeNewCoin = async (server: Server) => {
+export const makeNewCoin = async () => {
     const name = randomWords(1)[0].toUpperCase()
     const price = getRandomInt(1000, 10000)
 
@@ -26,11 +25,19 @@ export const makeNewCoin = async (server: Server) => {
         price,
     } })
     const priceInfo = getPriceInfo(data.priceHistory)
-    server.emit('create', {
-        ...data,
-        priceHistory: data.priceHistory.slice(-50),
-        priceDiff: priceInfo.priceDiff,
-        diffPercent: priceInfo.diffPercent.toFixed(2)
+    await fetch('http://localhost:3000/api/coin/price', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            type: 'create',
+            ...data,
+            priceHistory: data.priceHistory.slice(-50),
+            priceDiff: priceInfo.priceDiff,
+            diffPercent: priceInfo.diffPercent.toFixed(2),
+            secret: env.BOT_TOKEN
+        })
     })
 }
 
@@ -38,7 +45,7 @@ export const deleteCoin = async (id: number, server: Server) => {
     await prisma.coinData.delete({ where: { id } })
     await prisma.userCoinData.deleteMany({ where: { coinId: id } })
 
-    await makeNewCoin(server)
+    await makeNewCoin()
 }
 
 export const getCoinList = async () => {
@@ -70,7 +77,7 @@ export const getUserCoinData = async (userId: string) => {
 }
 
 // Algorithm Made by @smartwe, Refactored by @cottons-kr
-export const updateCoinPrice = async (id: number, server: Server) => {
+export const updateCoinPrice = async (id: number) => {
     const coin = await getCoinData(id)
     if (!coin) return
     const data = coin.priceHistory
@@ -110,8 +117,18 @@ export const updateCoinPrice = async (id: number, server: Server) => {
         if ((data[dataLength-1] - amt) <= 0) {
             await prisma.coinData.deleteMany({ where: { id } })
             await prisma.userCoinData.deleteMany({ where: { coinId: id } })
-            server.emit('delete', id)
-            return await makeNewCoin(server)
+            await fetch('http://localhost:3000/api/coin/price', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: 'delete',
+                    coinId: id,
+                    secret: env.BOT_TOKEN,
+                })
+            })
+            return await makeNewCoin()
         }
         return await prisma.coinData.update({ where: { id }, data: {
             price: data[dataLength-1] - amt,

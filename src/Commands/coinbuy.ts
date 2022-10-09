@@ -1,4 +1,6 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
+import fetch from "node-fetch"
+import { env } from ".."
 import { BOT_COLOR } from "../lib"
 import { addUserCoin, errorOccurredWhileTrading, getCoinData, getCoinDataAsName, getUserCoinData, userCoinIo } from "../utils/coin"
 import { getCurrentDate, getCurrentTime } from "../utils/default"
@@ -50,13 +52,23 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     try {
         await removeUserPoint(interaction.user.id, coinPrice * amount)
         await addUserCoin(interaction.user.id, coinData.id, amount, new Date())
-        userCoinIo.emit('update', {
-            amount: userCoinData ? userCoinData.amount + amount : amount,
-            point: point - coinPrice * amount,
-            coinId: coinData.id,
-        })
+        const res = await fetch('http://localhost:3000/api/coin/trade', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                amount: userCoinData ? userCoinData.amount + amount : amount,
+                point: point - coinPrice * amount,
+                coinId: coinData.id,
+                secret: env.BOT_TOKEN
+            })
+        }).then(res => res.json())
+        
+        if (res.error) return await interaction.editReply({ embeds: [errorOccurredWhileTrading] })
         await interaction.editReply({ embeds: [youBoughtCoin(coinData.name, amount, coinPrice, point - coinPrice * amount, new Date())] })
-    } catch {
+    } catch (e) {
+        console.log(e)
         await interaction.editReply({ embeds: [errorOccurredWhileTrading] })
     }
 }
