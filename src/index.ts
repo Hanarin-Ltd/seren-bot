@@ -7,7 +7,6 @@ export const env = process.env
 
 import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
 import { getCommandFunction, usableInDM } from './commands'
-import { scanMessage } from './Commands/blockword'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openAPIServer from './guildApi'
@@ -27,6 +26,7 @@ import { addMemberExp, checkLevelUp } from './utils/level'
 import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
 import coinGame from './coin/coin'
 import { addUserData, getUserData } from './utils/userData'
+import { scanMessage } from './utils/blockWord'
 
 export const client = new Client({ intents: [
     GatewayIntentBits.Guilds,

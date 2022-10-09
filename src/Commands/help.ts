@@ -1,6 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import getCommands from "../commands"
 import { BOT_COLOR } from "../lib"
+import { deferReply } from "../utils/default"
 import { updateMemberCache, sendDM } from "../utils/discord"
 
 const helpMessage = () => {
@@ -16,9 +17,9 @@ const helpMessage = () => {
 }
 
 export default async function help(interaction: ChatInputCommandInteraction<CacheType>) {
+    await deferReply(interaction)
+    
     await updateMemberCache(interaction.guild!)
-
-    await interaction.deferReply()
 
     try {
         await sendDM(interaction, { embeds: [helpMessage()] })

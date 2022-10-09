@@ -1,6 +1,6 @@
 import { CacheType, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { BOT_COLOR } from "../lib";
-import { getCurrentTime } from "../utils/default";
+import { deferReply, getCurrentTime } from "../utils/default";
 
 const message = (latency: number, apiLatency:number, timestamp: string, responce: string) => {
     return new EmbedBuilder()
@@ -16,7 +16,8 @@ const message = (latency: number, apiLatency:number, timestamp: string, responce
 }
 
 export default async function ping(interaction: ChatInputCommandInteraction<CacheType>) {
-    await interaction.deferReply()
+    await deferReply(interaction)
+    
     const date = getCurrentTime(interaction.createdAt)
     const responce = getCurrentTime()
     await interaction.editReply({ embeds: [message(Date.now() - interaction.createdTimestamp, Math.round(interaction.client.ws.ping), date, responce)] })

@@ -2,13 +2,14 @@ import { ChatInputCommandInteraction, CacheType, userMention, bold, GuildMember 
 import { BOT_COLOR } from "../lib"
 import { getBanListFromSQL } from "../utils/ban"
 import { getBlockwordList } from "../utils/blockWord"
-import { getCurrentDate } from "../utils/default"
+import { deferReply, getCurrentDate } from "../utils/default"
 import { updateMemberCache, getThisGuild, isGuildModerator, sendDM } from "../utils/discord"
 import { getModList } from "../utils/mod"
 import { getWarningList } from "../utils/warning"
 
 export default async function list(interaction: ChatInputCommandInteraction<CacheType>) {
-    await interaction.deferReply()
+    await deferReply(interaction)
+    
     await updateMemberCache(interaction.guild!)
 
     const args = interaction.options

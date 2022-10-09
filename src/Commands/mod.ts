@@ -1,11 +1,11 @@
 import { ChatInputCommandInteraction, CacheType, GuildMember } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { noPermissionMessage } from "../utils/default"
+import { deferReply, noPermissionMessage } from "../utils/default"
 import { getThisGuild, updateMemberCache, isGuildOwner, isGuildModerator } from "../utils/discord"
 import { addMod, removeMod } from "../utils/mod"
 
 export default async function mod(interaction: ChatInputCommandInteraction<CacheType>) {
-    await interaction.deferReply()
+    await deferReply(interaction)
 
     const args = interaction.options
     const thisGuild = await getThisGuild(interaction)

@@ -7,6 +7,7 @@ const commandsFile = {
     '금지어': 'blockword',
     '관리자': 'mod',
     '리스트': 'list',
+    '랭킹': 'ranking',
     '경고': 'warning',
     '안녕': 'hello',
     '차단': 'ban',
@@ -59,7 +60,20 @@ const commands =  [
         .setDescription('봇에게 인사를 건네보세요!')
         .setDMPermission(false)
         .toJSON(),
-
+    new SlashCommandBuilder()
+        .setName('랭킹')
+        .setDescription('랭킹을 출력합니다')
+        .setDMPermission(false)
+        .addStringOption(content =>
+            content.setName('종류')
+            .setRequired(true)
+            .setDescription('랭킹 종류를 선택합니다')
+            .addChoices(
+                { name: '포인트', value: 'point' },
+                { name: '레벨', value: 'level' },
+            )
+        )
+        .toJSON(),
 
     new SlashCommandBuilder()
         .setName('금지어')

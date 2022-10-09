@@ -5,7 +5,7 @@ import randomWords from 'random-words'
 import { BOT_COLOR } from "../lib"
 import { Server } from "socket.io"
 import { createServer } from "http"
-import { env } from ".."
+import { client, env } from ".."
 import fetch from "node-fetch"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
@@ -41,10 +41,31 @@ export const makeNewCoin = async () => {
     })
 }
 
-export const deleteCoin = async (id: number, server: Server) => {
+export const deleteCoin = async (id: number) => {
+    const users = await prisma.userCoinData.findMany({ where: { coinId: id } })
+    const coin = (await prisma.coinData.findUnique({ where: { id } }))!
     await prisma.coinData.delete({ where: { id } })
     await prisma.userCoinData.deleteMany({ where: { coinId: id } })
-
+    users.forEach(async u => {
+        const user = await client.users.fetch(u.userId)
+        await user.send({ embeds: [{
+            color: BOT_COLOR,
+            title: `아쉽게도 ${user.username} 님의 ${coin.name}이(가) 삭제되었습니다.`,
+            description: `코인의 가격이 0원 이하로 내려가면 자동으로 삭제됩니다.`
+        }] })
+    })
+    await fetch('http://localhost:3000/api/coin/price', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            type: 'delete',
+            coinId: id,
+            secret: env.BOT_TOKEN,
+        })
+    })
+    
     await makeNewCoin()
 }
 
@@ -115,20 +136,7 @@ export const updateCoinPrice = async (id: number) => {
         } })
     } else {
         if ((data[dataLength-1] - amt) <= 0) {
-            await prisma.coinData.deleteMany({ where: { id } })
-            await prisma.userCoinData.deleteMany({ where: { coinId: id } })
-            await fetch('http://localhost:3000/api/coin/price', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    type: 'delete',
-                    coinId: id,
-                    secret: env.BOT_TOKEN,
-                })
-            })
-            return await makeNewCoin()
+            return await deleteCoin(id)
         }
         return await prisma.coinData.update({ where: { id }, data: {
             price: data[dataLength-1] - amt,

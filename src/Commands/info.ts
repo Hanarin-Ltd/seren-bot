@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, CacheType, EmbedBuilder, Guild, GuildPremiumTier } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getCurrentDate } from "../utils/default"
+import { deferReply, getCurrentDate } from "../utils/default"
 import { updateMemberCache } from "../utils/discord"
 
 type messageProp = {
@@ -29,7 +29,8 @@ const message = ({ name, memberCount, botCount, ownerName, boostCount, premiumTi
 }
 
 export default async function info(interaction: ChatInputCommandInteraction<CacheType>) {
-    await interaction.deferReply()
+    await deferReply(interaction)
+    
     await updateMemberCache(interaction.guild!)
 
     const owner = await interaction.guild!.fetchOwner()!
