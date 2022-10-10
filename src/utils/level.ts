@@ -63,7 +63,7 @@ export const checkLevelUp = async (member: GuildMember, channel: GuildTextBasedC
 
 const levelUpEmbed = async (member: GuildMember, beforeLevel: number | string, afterLevel: number | string) => {
     const content = (await getGuildOption(member.guild.id))!
-    const memberData = await getMemberData(member.id)
+    const memberData = await getMemberData(member.guild.id, member.id)
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(

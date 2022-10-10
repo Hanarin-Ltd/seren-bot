@@ -17,7 +17,7 @@ export const getWarningList = async (guildId: string) => {
 }
 
 export const giveWarning = async (guildId: string, member: GuildMember, num = 1) => {
-    const exist = await getMemberData(member.id)
+    const exist = await getMemberData(member.guild.id, member.id)
     const logSetting = await getGuildLogSetting(guildId)
     try {
         await prisma.memberData.updateMany({
