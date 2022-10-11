@@ -5,7 +5,7 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { ChannelType, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
+import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
 import { getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
