@@ -102,8 +102,8 @@ export const isSameArray = (a: any[],b: any[]) => {
 }
 
 export const deferReply = async (interaction: ChatInputCommandInteraction) => {
-    const option = await getGuildOption(interaction.guildId!)
-    console.log(option)
+    if (!interaction.guildId) return await interaction.deferReply()
+    const option = await getGuildOption(interaction.guildId)
     if (!option) return await interaction.deferReply()
 
     if (option.setCommandMessageAsEphemeral) return await interaction.deferReply({ ephemeral: true })

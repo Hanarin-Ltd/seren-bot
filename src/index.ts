@@ -20,7 +20,7 @@ import { addMod, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
 import { someoneHasBan, someoneHasUnban } from './Commands/ban'
-import { getGuildModRole, getGuildRole } from './utils/role'
+import { addGuildRole, getGuildModRole, getGuildRole } from './utils/role'
 import { getGuildLogSetting, log } from './utils/log'
 import { addMemberExp, checkLevelUp } from './utils/level'
 import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
@@ -42,7 +42,7 @@ const clientIntents = [
     GatewayIntentBits.DirectMessageTyping
 ]
 const KOREAN_TOKEN = env.KOREAN_TOKEN
-export let client: KoreanbotsClient = new Client({ intents: clientIntents }) as KoreanbotsClient
+export let client: Client = new Client({ intents: clientIntents }) as KoreanbotsClient
 
 if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
@@ -302,6 +302,12 @@ client.on('messageDelete', async (message) => {
         })
     } catch { return }
 })
+
+client.on('roleCreate', async role => {
+    await addGuildRole(role)
+})
+
+// DELETE, UPDATE ROLE
 
 export default client
 
