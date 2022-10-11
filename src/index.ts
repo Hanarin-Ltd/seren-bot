@@ -33,7 +33,7 @@ const KOREAN_BOT_TOKEN = env.KOREAN_TOKEN
 let client: Client | null = null
 
 
-if(process.env.NODE_ENV === 'production'){
+if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
         intents: [
         GatewayIntentBits.Guilds,
