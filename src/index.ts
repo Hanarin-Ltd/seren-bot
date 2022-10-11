@@ -61,6 +61,7 @@ if(env.NODE_ENV === 'production'){
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}!`)
     console.log(`Version: ${env.VERSION} / Build: ${env.BUILD_DATE}`)
+    console.log(`Mode : ${env.NODE_ENV}`)
     openAPIServer()
     coinGame()
     client.user!.setActivity('/안녕 , /도움말')
