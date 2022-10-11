@@ -29,24 +29,24 @@ import { addUserData, getUserData } from './utils/userData'
 import { scanMessage } from './utils/blockWord'
 import { KoreanbotsClient } from "koreanbots"
 
+const clientIntents = [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildBans,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessageTyping
+]
 const KOREAN_BOT_TOKEN = env.KOREAN_TOKEN
 let client: Client | null = null
 
-
 if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
-        intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildPresences,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildBans,
-        GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.DirectMessageTyping
-        ],
+        intents: clientIntents,
         koreanbots: {
             api: {
                 token: KOREAN_BOT_TOKEN
@@ -57,18 +57,7 @@ if(env.NODE_ENV === 'production'){
         }
     })
   } else {
-    client = new Client({ intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildPresences,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildBans,
-        GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildMessageTyping,
-        GatewayIntentBits.DirectMessageTyping
-    ] })
+    client = new Client({ intents: clientIntents })
   }
 
 
