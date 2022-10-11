@@ -5,7 +5,7 @@ dotenv.config({ path: __dirname+'../.env' })
 
 export const env = process.env
 
-import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
+import { ChannelType, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
 import { getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
@@ -27,8 +27,12 @@ import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
 import coinGame from './coin/coin'
 import { addUserData, getUserData } from './utils/userData'
 import { scanMessage } from './utils/blockWord'
+import { KoreanbotsClient } from "koreanbots"
 
-export const client = new Client({ intents: [
+const KOREAN_BOT_TOKEN = env.KOREAN_TOKEN
+
+export const client = new KoreanbotsClient({ 
+    intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMembers,
@@ -39,7 +43,17 @@ export const client = new Client({ intents: [
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildMessageTyping,
     GatewayIntentBits.DirectMessageTyping
-] })
+    ],
+    koreanbots: {
+        api: {
+            token: KOREAN_BOT_TOKEN
+        }
+    },
+    koreanbotsClient: {
+        updateInterval: 600000 //10분마다 서버 수를 업데이트합니다. (기본값 30분)
+    }
+})
+
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}!`)
