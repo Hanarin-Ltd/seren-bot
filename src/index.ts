@@ -41,24 +41,22 @@ const clientIntents = [
     GatewayIntentBits.GuildMessageTyping,
     GatewayIntentBits.DirectMessageTyping
 ]
-const KOREAN_BOT_TOKEN = env.KOREAN_TOKEN
-let client: Client | null = null
+const KOREAN_TOKEN = env.KOREAN_TOKEN
+export let client: Client = new Client({ intents: clientIntents })
 
 if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
         intents: clientIntents,
         koreanbots: {
             api: {
-                token: KOREAN_BOT_TOKEN
+                token: KOREAN_TOKEN!
             }
         },
         koreanbotsClient: {
             updateInterval: 600000 //10분마다 서버 수를 업데이트합니다. (기본값 30분)
         }
     })
-  } else {
-    client = new Client({ intents: clientIntents })
-  }
+}
 
 
 client.on('ready', async () => {
