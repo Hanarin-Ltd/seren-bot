@@ -42,7 +42,7 @@ const clientIntents = [
     GatewayIntentBits.DirectMessageTyping
 ]
 const KOREAN_TOKEN = env.KOREAN_TOKEN
-export let client: Client = new Client({ intents: clientIntents })
+export let client: KoreanbotsClient = new Client({ intents: clientIntents }) as KoreanbotsClient
 
 if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
@@ -58,7 +58,6 @@ if(env.NODE_ENV === 'production'){
     })
 }
 
-
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}!`)
     console.log(`Version: ${env.VERSION} / Build: ${env.BUILD_DATE}`)
@@ -69,7 +68,7 @@ client.on('ready', async () => {
     await addSlashCommands()
 })
 
-client.on('messageCreate', async (message) => {
+client.on('messageCreate', async message => {
     try {
         if (!message.guild) return
         if (!message.member) return
