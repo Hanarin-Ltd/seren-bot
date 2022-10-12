@@ -245,7 +245,6 @@ client.on('guildBanRemove', async (banMember) => {
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (oldMember.user.id === client.user?.id) return
-    console.log('updated')
 
     await updateMemberData(newMember)
     try {

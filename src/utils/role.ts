@@ -1,7 +1,9 @@
 import { Guild, Role, PermissionFlagsBits } from "discord.js"
+import role from "../Commands/role"
 import prisma from "../prisma"
 import { updateRoleCache } from "./discord"
-import { getGuildLogSetting, log } from './utils/log'
+import { getGuildLogSetting, log } from "./log"
+
 
 export const addAllGuildRole = async (guild: Guild) => {
     await updateRoleCache(guild)
@@ -16,7 +18,7 @@ export const addGuildRole = async (role: Role) => {
     if (role.name === '@everyone' || role.name === 'Seren') return
     const logSetting = await getGuildLogSetting(role.guild.id)
 
-    logSetting.createRole && log({
+    logSetting?.roleCreate && log({
         content: `역할 추가됨 / 이름 : ${role.name}`,
         rawContent: `역할 추가됨 / 이름 : ${role.name}`,
         guild: role.guild,
@@ -41,7 +43,7 @@ export const getGuildRole = async (guild: Guild, roleId: string) => {
 export const removeGuildRole = async (role: Role) => {
     const logSetting = await getGuildLogSetting(role.guild.id)
 
-    logSetting.createRole && log({
+    logSetting?.roleDelete && log({
         content: `역할 삭제됨 / 이름 : ${role.name}`,
         rawContent: `역할 삭제됨 / 이름 : ${role.name}`,
         guild: role.guild,
@@ -51,12 +53,12 @@ export const removeGuildRole = async (role: Role) => {
 }
 
 export const modifyGuildRole = async (oldRole: Role, newRole: Role) => {
-    const logSetting = await getGuildLogSetting(role.guild.id)
+    const logSetting = await getGuildLogSetting(newRole.guild.id)
 
-    logSetting.createRole && log({
+    logSetting?.roleUpdate && log({
         content: `역할 편집됨 / 이름 : ${role.name}`,
         rawContent: `역할 편집됨 / 이름 : ${role.name}`,
-        guild: role.guild,
+        guild: newRole.guild,
         type: 'roleUpdate'
     })
     return await prisma.guildRole.updateMany({

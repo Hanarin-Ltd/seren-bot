@@ -1,5 +1,6 @@
 import { Guild, GuildMember } from "discord.js"
 import prisma from "../prisma"
+import { removeWarning, resetWarning } from "./warning"
 
 export const updateBanListCache = async (guild: Guild) => {
     await guild.bans.fetch().catch(err => { return })
@@ -48,6 +49,8 @@ export const addBan = async (guildId: string, member: GuildMember, reason?: stri
             createdAt: member.user.createdAt
         }
     })
+
+    return await resetWarning(guildId, member.id)
 }
 
 export const removeBan = async (guildId: string, userId: string) => {
@@ -61,4 +64,5 @@ export const removeBan = async (guildId: string, userId: string) => {
         where: { id: userId },
         data: { bannedGuild: bannedGuild }
     })
+    return await resetWarning(guildId, userId)
 }

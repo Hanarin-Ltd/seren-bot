@@ -63,15 +63,14 @@ export const checkLevelUp = async (member: GuildMember, channel: GuildTextBasedC
 
 const levelUpEmbed = async (member: GuildMember, beforeLevel: number | string, afterLevel: number | string) => {
     const content = (await getGuildOption(member.guild.id))!
-    const memberData = await getMemberData(member.guild.id, member.id)
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(
             content.levelUpMessage
-            .replaceAll('{user}', memberData.nickname)
-            .replaceAll('{server}', member.guild.name)
-            .replaceAll('{beforelevel}', beforeLevel.toString())
-            .replaceAll('{afterlevel}', afterLevel.toString())
+                .replaceAll('{user}', member.nickname || member.user.username)
+                .replaceAll('{server}', member.guild.name)
+                .replaceAll('{beforelevel}', beforeLevel.toString())
+                .replaceAll('{afterlevel}', afterLevel.toString())
         )
 }
 

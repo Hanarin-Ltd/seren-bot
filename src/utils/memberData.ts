@@ -4,8 +4,7 @@ import prisma from "../prisma"
 import { getGuildOwner } from "./discord"
 
 export const getMemberData = async (guildId: string, memberId: string) => {
-    const result = await prisma.memberData.findFirst({ where: { userId: memberId, guildId: memberId } })
-    return result ? result : {} as MemberData
+    return await prisma.memberData.findFirst({ where: { userId: memberId, guildId } })
 }
 
 export const addMemberData = async (member: GuildMember) => {

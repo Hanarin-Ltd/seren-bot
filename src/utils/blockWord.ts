@@ -17,7 +17,7 @@ export const getBlockwordList = async (guildId: string) => {
 
 export const getBlockwordDisabledChannel = async (guildId: string) => {
     const result = await prisma.guildOption.findFirst({ where: { guildId } })
-    return result ? result.blockwordDisabledChannel : ''
+    return result ? result.blockwordDisabledChannelId : ''
 }
 
 export const setDefaultBlockword = async (guildId: string) => {
@@ -90,7 +90,7 @@ export const scanMessage = async (message: Message) => {
     const data = await getGuildData(guildId)
     const blockwordDisabledChannel = await getBlockwordDisabledChannel(guildId)
     if (!data) return
-    if (message.channelId === blockwordDisabledChannel) return
+    if (option.useBlockwordDisabledChannel && message.channelId === blockwordDisabledChannel) return
 
     const blockwordList = await getBlockwordList(guildId)
     const catchedWordList: string[] = []

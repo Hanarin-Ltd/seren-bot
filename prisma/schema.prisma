@@ -34,7 +34,8 @@ model GuildOption {
     logEnabled Boolean @default(false)
 
     checkModsMessage Boolean @default(false)
-    blockwordDisabledChannel String @default("")
+    useBlockwordDisabledChannel Boolean @default(false)
+    blockwordDisabledChannelId String @default("")
     useEnhancedFilter Boolean @default(true)
 
     useLevelSystem Boolean @default(true)
@@ -45,6 +46,8 @@ model GuildOption {
 
     setCommandMessageAsEphemeral Boolean @default(false)
     enableLegacyCommand Boolean @default(false)
+
+    warningLimit Int @default(10)
 }
 
 model GuildChannel {
