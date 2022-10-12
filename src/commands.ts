@@ -11,6 +11,7 @@ const commandsFile = {
     '경고': 'warning',
     '안녕': 'hello',
     '차단': 'ban',
+    '차단경고갯수': 'warninglimit',
     '역할': 'role',
     '로그': 'log',
     '코인': 'coin',
@@ -167,6 +168,17 @@ const commands =  [
             reason.setName('사유')
             .setDescription('차단 사유')
         ),
+    new SlashCommandBuilder()
+        .setName('차단경고갯수')
+        .setDescription('설정한 경고 갯수에 도달하면 차단합니다')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDMPermission(false)
+        .addNumberOption(count =>
+            count.setName('갯수')
+            .setDescription('설정할 갯수')
+            .setRequired(true)
+        )
+        .toJSON(),
 
     new SlashCommandBuilder()
         .setName('관리자')

@@ -1,4 +1,4 @@
-import { Routes, EmbedBuilder, blockQuote, ChatInputCommandInteraction } from "discord.js"
+import { Routes, EmbedBuilder, blockQuote, ChatInputCommandInteraction, GuildMember, User } from "discord.js"
 import { env } from ".."
 import getCommands from "../commands"
 import { rest, BOT_COLOR } from "../lib"
@@ -41,8 +41,16 @@ export const noPermissionMessage = () => {
         .setTitle(':no_entry_sign: 권한이 없습니다.')
 }
 
-export const completeSuccessfullyMessage = () => {
-    return { color: BOT_COLOR, title: ':white_check_mark: 성공적으로 처리되었습니다.' }
+export const completeSuccessfullyMessage = (author: User, content?: string) => {
+    return new EmbedBuilder()
+        .setColor(BOT_COLOR)
+        .setTitle(':white_check_mark: 성공적으로 처리되었습니다.')
+        .setDescription(content || '')
+        .setTimestamp(new Date())
+        .setAuthor({
+            name: author.tag,
+            iconURL: author.displayAvatarURL()
+        })
 }
 
 export const makeRandomString = (length: number) => {

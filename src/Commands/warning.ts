@@ -18,5 +18,5 @@ export default async function warning(interaction: ChatInputCommandInteraction) 
         await removeWarning(thisGuild.id, targetMember, warningAmount ? warningAmount : 1)
     }
 
-    await  interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
+    await  interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] })
 }

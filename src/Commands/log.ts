@@ -48,6 +48,6 @@ export default async function log(interaction: ChatInputCommandInteraction) {
         else result = true
     }
     return result ?
-        await interaction.editReply({ embeds: [completeSuccessfullyMessage()] }) :
+        await interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] }) :
         await interaction.editReply({ embeds: [sameValue(setting === 'on')] })
 }

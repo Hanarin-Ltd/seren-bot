@@ -33,7 +33,7 @@ export default async function role(interaction: ChatInputCommandInteraction) {
             await target.roles.remove(role)
         }
 
-        await interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
+        await interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] })
     } catch (e) {
         await interaction.editReply({ embeds: [{
             color: BOT_COLOR,

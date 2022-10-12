@@ -56,13 +56,13 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
 
         await thisGuild.bans.create(targetMember, { reason: reason ? reason : '공개하지 않음' })
         await addBan(thisGuild.id, targetMember, reason)
-        await interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
+        await interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] })
     } else if (setting === 'remove') {
         try {
             await updateMemberCache(thisGuild)
             await thisGuild.members.unban(targetUser.id, reason ? reason : '공개하지 않음')
             await removeBan(thisGuild.id, targetUser.id)
-            await interaction.editReply({ embeds: [completeSuccessfullyMessage()] })
+            await interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] })
         } catch (e) {
             console.log(e)
             return await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 차단되지 않은 사용자입니다!' }] })

@@ -69,3 +69,12 @@ export const resetWarning = async (guildId: string, memberId: string) => {
         }
     })
 }
+
+export const setWarningLimit = async (guildId: string, count: number) => {
+    return await prisma.guildOption.update({
+        where: { guildId },
+        data: {
+            warningLimit: count
+        }
+    })
+}
