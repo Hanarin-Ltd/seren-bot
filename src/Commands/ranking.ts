@@ -1,15 +1,14 @@
-import { ChatInputCommandInteraction, EmbedBuilder, userMention } from "discord.js"
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import fetch from "node-fetch"
 import { BOT_COLOR } from "../lib"
 import prisma from "../prisma"
 import { deferReply, errorMessage } from "../utils/default"
-import { getMemberExp } from "../utils/level"
 
 const rankingEmbed = (option: string, data: { username: string, tag: string, value: number }[]) => new EmbedBuilder()
     .setColor(BOT_COLOR)
     .setTitle(`:trophy: ${option} 랭킹`)
     .setDescription(
-        `\n${data.map((d, i: number) => `#${i + 1}  **${d.username}(${d.tag})** : **${option === '레벨' ? 'Lv.' : ''}${d.value}**${option === '포인트' ? '포인트' : ''}`
+        `\n${data.map((d, i: number) => `#${i + 1}  **${d.tag}** : **${option === '레벨' ? 'Lv.' : ''}${d.value}**${option === '포인트' ? '포인트' : ''}`
     ).join('\n')}`)
 
 export default async function ranking(interaction: ChatInputCommandInteraction) {
