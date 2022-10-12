@@ -28,6 +28,8 @@ import coinGame from './coin/coin'
 import { addUserData, getUserData } from './utils/userData'
 import { scanMessage } from './utils/blockWord'
 import { KoreanbotsClient } from "koreanbots"
+import { removeGuildRole } from './utils/role'
+import { modifyGuildRole } from './utils/role'
 
 const clientIntents = [
     GatewayIntentBits.Guilds,
@@ -307,7 +309,13 @@ client.on('roleCreate', async role => {
     await addGuildRole(role)
 })
 
-// DELETE, UPDATE ROLE
+client.on('roleDelete', async role => {
+    await removeGuildRole(role)
+})
+
+client.on('roleUpdate', async (oldRole, newRole) => {
+    await modifyGuildRole(oldRole, newRole)
+})
 
 export default client
 

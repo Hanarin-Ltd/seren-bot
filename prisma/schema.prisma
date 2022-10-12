@@ -157,6 +157,9 @@ model GuildLogSetting {
 
     addRoleToMember Boolean @default(false)
     removeRoleToMember Boolean @default(false)
+    roleCreate Boolean @default(false)
+    roleDelete Boolean @default(false)
+    roleUpdate Boolean @default(false)
 
     addBan Boolean @default(false)
     removeBan Boolean @default(false)
