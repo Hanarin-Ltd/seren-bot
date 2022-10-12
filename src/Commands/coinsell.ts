@@ -32,6 +32,8 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     const userData = await getUserData(interaction.user.id)
     const userCoinData = (await getUserCoinData(interaction.user.id)).find(coin => coin.name === coinName)!
     const coinData = (await getCoinDataAsName(coinName))!
+
+    if (!userData) return await interaction.editReply({ embeds: [errorOccurredWhileTrading] })
     const point = userData.point
 
     try {

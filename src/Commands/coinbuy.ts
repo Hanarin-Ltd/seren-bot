@@ -40,10 +40,14 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
     const coinName = args.getString('이름')!
     const amount = args.getInteger('수량')!
 
-    const coinData = (await getCoinDataAsName(coinName))!
+    const userData = await getUserData(interaction.user.id)
+    const coinData = (await getCoinDataAsName(coinName))
+
+    if (!userData || !coinData) return await interaction.editReply({ embeds: [errorOccurredWhileTrading] })
+
     const userCoinData = (await getUserCoinData(interaction.user.id)).find(coin => coin.name === coinName)
     const coinPrice = coinData.price
-    const point = (await getUserData(interaction.user.id)).point
+    const point = userData.point
 
     if (point < coinPrice * amount) {
         return await interaction.editReply({ embeds: [notEnoughPoint(point, coinPrice * amount)] })

@@ -42,7 +42,7 @@ export const getGuildOwner = async (guild: Guild) => {
 }
 
 export const getUser = async (interaction: ChatInputCommandInteraction, id: string) => {
-    const data = await interaction.client.rest.get(Routes.user(id))
+    const data = await interaction.client.users.fetch(id)
     return data
 }
 

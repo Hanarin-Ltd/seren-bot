@@ -3,10 +3,8 @@ import { client } from ".."
 import prisma from "../prisma"
 import { getBannedGuildList } from "./ban"
 
-export const getUserData = async (userId: string): Promise<UserData> => {
-    const result = await prisma.userData.findUnique({ where: { id: userId } })
-    if (!result) await addUserData(userId)
-    return result ? result : await getUserData(userId)
+export const getUserData = async (userId: string) => {
+    return await prisma.userData.findUnique({ where: { id: userId } })
 }
 
 export const addUserData = async (userId: string) => {
@@ -28,6 +26,7 @@ export const addUserData = async (userId: string) => {
 
 export const addUserPoint = async (userId: string, point: number) => {
     const userData = await getUserData(userId)
+    if (!userData) return
     await prisma.userData.update({
         where: { id: userId },
         data: { point: userData.point + point }
@@ -36,6 +35,7 @@ export const addUserPoint = async (userId: string, point: number) => {
 
 export const removeUserPoint = async (userId: string, point: number) => {
     const userData = await getUserData(userId)
+    if (!userData) return
     await prisma.userData.update({
         where: { id: userId },
         data: { point: userData.point - point }

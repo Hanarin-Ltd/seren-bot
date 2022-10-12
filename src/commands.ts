@@ -10,6 +10,8 @@ const commandsFile = {
     '랭킹': 'ranking',
     '경고': 'warning',
     '안녕': 'hello',
+    '아이디': 'getid',
+    '내아이디': 'myid',
     '차단': 'ban',
     '차단경고갯수': 'warninglimit',
     '역할': 'role',
@@ -20,6 +22,7 @@ const commandsFile = {
     '코인판매': 'coinsell',
     '내코인': 'mycoin',
     '코인댓글': 'coincomment',
+    '포인트전송': 'sendpoint' // NEW
 }
 
 type command = keyof typeof commandsFile
@@ -74,6 +77,19 @@ const commands =  [
                 { name: '레벨', value: 'level' },
             )
         )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('아이디')
+        .setDescription('유저의 아이디를 출력합니다')
+        .addUserOption(target =>
+            target.setName('유저')
+            .setDescription('아이디를 출력할 유저')
+            .setRequired(true)
+        )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('내아이디')
+        .setDescription('자신의 아이디를 출력합니다')
         .toJSON(),
 
     new SlashCommandBuilder()
@@ -306,6 +322,21 @@ const commands =  [
             .setDescription('댓글을 입력해주세요')
             .setRequired(true)
         )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('포인트전송')
+        .setDescription('다른 사람에게 포인트를 보냅니다')
+        .addStringOption(userId =>
+            userId.setName('아이디')
+            .setDescription('받을 사람의 아이디를 입력해주세요')
+            .setRequired(true)
+        )
+        .addNumberOption(amount =>
+            amount.setName('수량')
+            .setDescription('보낼 수량을 입력해주세요')
+            .setRequired(true)
+        )
+        .toJSON(),
 ]
 
 const getCommands = (): any[] => {
@@ -324,6 +355,6 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인']
+export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디']
 export default getCommands
 export { getCommandList, getCommandFunction }

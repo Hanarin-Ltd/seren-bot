@@ -2,7 +2,7 @@ import { UserCoinData } from "@prisma/client"
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { getCoinData, getUserCoinData } from "../utils/coin"
-import { deferReply } from "../utils/default"
+import { deferReply, errorMessage } from "../utils/default"
 import { getUserData } from "../utils/userData"
 
 const coinEmbed = async (data: UserCoinData[], point: number) => {
@@ -29,6 +29,8 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
 
     const userCoinData = await getUserCoinData(interaction.user.id)
     const userData = await getUserData(interaction.user.id)
+
+    if (!userData) return await interaction.editReply({ embeds: [errorMessage('유저를 찾을 수 없습니다.')] })
 
     await interaction.editReply({ embeds: [await coinEmbed(userCoinData, userData.point)] })
 }
