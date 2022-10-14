@@ -77,7 +77,13 @@ client.on('messageCreate', async message => {
         if (!message.member) return
         if (message.author.bot) return
         if (!message.channel || message.channel.type !== ChannelType.GuildText) return
+        
+        const guildData = await getGuildData(message.guild.id)
+        if (!guildData) return
+        if (!guildData.isSettingComplete) return
+
         scanMessage(message)
+
         await addMemberExp(message.member!, 10)
         await checkLevelUp(message.member!, message.channel)
 
