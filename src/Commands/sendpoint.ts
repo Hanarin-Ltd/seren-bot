@@ -13,7 +13,7 @@ const theTradeHasBeenCanceled = (author: User, cause?: string) => new EmbedBuild
     })
     .setTimestamp(new Date())
 
-const areYouSure = (author: User, targetTag: string, amount: number) => new EmbedBuilder()
+const areYouSure = (author: User, targetTag: string, amount: number, tax: number) => new EmbedBuilder()
     .setColor(BOT_COLOR)
     .setTitle(':warning: 정말 진행하시겠습니까?')
     .setDescription('거래는 취소할 수 없습니다. 진행하시려면 `예`를 눌러주세요.')
@@ -21,8 +21,8 @@ const areYouSure = (author: User, targetTag: string, amount: number) => new Embe
         { name: '보내는 사람', value: blockQuote(author.tag), inline: true },
         { name: '받는 사람', value: blockQuote(`**${targetTag}**`), inline: true },
         { name: '거래 금액', value: blockQuote(`${amount}포인트`), inline: true },
-        { name: '수수료', value: blockQuote(`**10% (${amount * (1 / 10)}포인트)**`), inline: true },
-        { name: '실 수료 금액', value: blockQuote(`${amount - amount * (1 / 10)}포인트`), inline: true }
+        { name: '수수료', value: blockQuote(`**10% (${tax}포인트)**`), inline: true },
+        { name: '실 수료 금액', value: blockQuote(`${amount - tax}포인트`), inline: true }
     )
 
 const pleaseWait = (author: User) => new EmbedBuilder()
@@ -35,14 +35,14 @@ const pleaseWait = (author: User) => new EmbedBuilder()
     })
     .setTimestamp(new Date())
 
-const tradeSuccess = (author: User, targetTag: string, amount: number, point: number, time: Date) => new EmbedBuilder()
+const tradeSuccess = (author: User, targetTag: string, amount: number, point: number, tax: number, time: Date) => new EmbedBuilder()
     .setColor(BOT_COLOR)
     .setTitle(':white_check_mark: 거래가 완료되었습니다.')
     .addFields(
         { name: '보낸 사람', value: blockQuote(author.tag), inline: true },
         { name: '받은 사람', value: blockQuote(`**${targetTag}**`), inline: true },
         { name: '거래 금액', value: blockQuote(`${amount}포인트`), inline: true },
-        { name: '수수료', value: blockQuote(`**10% (${amount * (1 / 10)}포인트)**`), inline: true },
+        { name: '수수료', value: blockQuote(`**10% (${tax}포인트)**`), inline: true },
         { name: '실 수료 금액', value: blockQuote(`${amount - amount * (1 / 10)}포인트`), inline: true },
         { name: '남은 포인트', value: blockQuote(`**${point - amount}포인트**`), inline: true }
     )
@@ -58,7 +58,7 @@ const youGotCoin = (author: User, targetTag: string, amount: number, point: numb
     .addFields(
         { name: '보낸 사람', value: blockQuote(author.tag), inline: true },
         { name: '받은 사람', value: blockQuote(`**${targetTag}**`), inline: true },
-        { name: '수료 금액', value: blockQuote(`${amount - amount * (1 / 10)}포인트`), inline: true },
+        { name: '수료 금액', value: blockQuote(`${amount}포인트`), inline: true },
         { name: '현재 포인트', value: blockQuote(`**${point + amount}포인트**`), inline: true }
     )
     .setAuthor({
@@ -100,6 +100,7 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
         return await interaction.editReply({ embeds: [theTradeHasBeenCanceled(interaction.user, '최소 10포인트 이상부터 전송 가능합니다.')] })
     }
 
+    const tax = Math.round(amount * (1 / 10))
     const collector = interaction.channel?.createMessageComponentCollector({
         max: 1,
         filter: i => i.user.id === interaction.user.id,
@@ -110,10 +111,10 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
             const tradeTime = new Date()
             try {
                 await removeUserPoint(interaction.user.id, amount)
-                await addUserPoint(target.id, amount - amount * (1 / 10))
+                await addUserPoint(target.id, amount - tax)
                 const user = await getUser(interaction, target.id)
-                user.send({ embeds: [youGotCoin(interaction.user, target.tag, amount, target.point, tradeTime)] })
-                interaction.editReply({ embeds: [tradeSuccess(i.user, target.tag, amount, userData.point, tradeTime)] })
+                user.send({ embeds: [youGotCoin(interaction.user, target.tag, amount - tax, target.point, tradeTime)] })
+                interaction.editReply({ embeds: [tradeSuccess(i.user, target.tag, amount, userData.point, tax, tradeTime)] })
             } catch {
                 interaction.editReply({ embeds: [theTradeHasBeenCanceled(i.user)] })
             }
@@ -122,5 +123,5 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
             interaction.editReply({ embeds: [theTradeHasBeenCanceled(interaction.user, '거래가 취소되었습니다.')] })
         }
     })
-    await interaction.editReply({ embeds: [areYouSure(interaction.user, target.tag, amount)], components: [tradeQuestion()] })
+    await interaction.editReply({ embeds: [areYouSure(interaction.user, target.tag, amount, tax)], components: [tradeQuestion()] })
 }

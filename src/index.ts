@@ -9,7 +9,7 @@ import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from
 import { getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
-import openAPIServer from './guildApi'
+import openAPIServer from './api'
 import { BOT_COLOR } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
