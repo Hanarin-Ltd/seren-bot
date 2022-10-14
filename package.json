@@ -1,10 +1,10 @@
 {
-    "name": "seren",
-    "version": "1.0.0",
-    "description": "For Security & Tools",
+    "name": "seren-bot",
+    "version": "1.20-beta",
+    "description": "편하고 즐거운 디스코드 서버를 위한 봇",
+    "private": true,
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
         "start": "nodemon --files --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
         "build": "tsc"
     },

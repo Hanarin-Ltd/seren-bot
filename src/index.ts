@@ -44,7 +44,7 @@ const clientIntents = [
     GatewayIntentBits.DirectMessageTyping
 ]
 const KOREAN_TOKEN = env.KOREAN_TOKEN
-export let client: Client = new Client({ intents: clientIntents }) as KoreanbotsClient
+export let client = new Client({ intents: clientIntents }) as KoreanbotsClient
 
 if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
