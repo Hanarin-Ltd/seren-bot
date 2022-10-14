@@ -50,7 +50,7 @@ export const deleteCoin = async (id: number) => {
         const user = await client.users.fetch(u.userId)
         await user.send({ embeds: [{
             color: BOT_COLOR,
-            title: `아쉽게도 ${user.username} 님의 ${coin.name}이(가) 삭제되었습니다.`,
+            title: `:cry: 아쉽게도 ${user.username} 님의 ${coin.name}이(가) 삭제되었습니다.`,
             description: `코인의 가격이 0원 이하로 내려가면 자동으로 삭제됩니다.`
         }] })
     })

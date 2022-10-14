@@ -1,4 +1,4 @@
-import { Guild, Role, PermissionFlagsBits } from "discord.js"
+import { Guild, Role, PermissionFlagsBits, codeBlock, inlineCode } from "discord.js"
 import role from "../Commands/role"
 import prisma from "../prisma"
 import { updateRoleCache } from "./discord"
@@ -44,7 +44,7 @@ export const removeGuildRole = async (role: Role) => {
     const logSetting = await getGuildLogSetting(role.guild.id)
 
     logSetting?.roleDelete && log({
-        content: `역할 삭제됨 / 이름 : ${role.name}`,
+        content: `역할 삭제됨 / 이름 : ${inlineCode(role.name)}`,
         rawContent: `역할 삭제됨 / 이름 : ${role.name}`,
         guild: role.guild,
         type: 'roleDelete'
@@ -56,8 +56,8 @@ export const modifyGuildRole = async (oldRole: Role, newRole: Role) => {
     const logSetting = await getGuildLogSetting(newRole.guild.id)
 
     logSetting?.roleUpdate && log({
-        content: `역할 편집됨 / 이름 : ${role.name}`,
-        rawContent: `역할 편집됨 / 이름 : ${role.name}`,
+        content: `역할 편집됨 / 이름 : ${newRole.name}`,
+        rawContent: `역할 편집됨 / 이름 : ${newRole.name}`,
         guild: newRole.guild,
         type: 'roleUpdate'
     })

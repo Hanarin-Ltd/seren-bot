@@ -253,7 +253,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 
         if (newMember.roles.cache.has(modRoleId)) {
             await addMod(thisGuild, newMember)
-        } else if (!newMember.roles.cache.has(modRoleId)) {
+        } else if (!newMember.roles.cache.has(modRoleId) && oldMember.roles.cache.has(modRoleId)) {
             await removeMod(thisGuild, newMember)
         }
 
