@@ -16,6 +16,7 @@ const commandsFile = {
     '차단경고갯수': 'warninglimit',
     '역할': 'role',
     '로그': 'log',
+    '투표': 'vote',
     '코인': 'coin',
     '코인가격': 'coinprice',
     '코인구매': 'coinbuy',
@@ -257,6 +258,32 @@ const commands =  [
                 { name: '경고 삭제', value: 'removeWarning' },
             )
             .setRequired(true)
+        )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('투표')
+        .setDescription('현재 채널에 투표를 생성합니다')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDMPermission(false)
+        .addBooleanOption(mention =>
+            mention.setName('everyone')
+            .setDescription('모든 멤버에게 투표를 알립니다. (기본값: X)')
+            .setRequired(false)
+        )
+        .addBooleanOption(hideResult =>
+            hideResult.setName('투표현황비공개')
+            .setDescription('투표 종료시까지 결과를 볼 수 없습니다. (기본값: X)')
+            .setRequired(false)
+        )
+        .addBooleanOption(onlyAdmin =>
+            onlyAdmin.setName('결과비공개')
+            .setDescription('투표 종료시 투표 진행자만 결과를 볼 수 있습니다. (기본값: X)')
+            .setRequired(false)
+        )
+        .addBooleanOption(allowChange =>
+            allowChange.setName('선택변경')
+            .setDescription('투표 종료시까지 선택을 변경할 수 있습니다. (기본값 : O)')
+            .setRequired(false)
         )
         .toJSON(),
 

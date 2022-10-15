@@ -8,7 +8,7 @@ export default async function warning(interaction: ChatInputCommandInteraction) 
 
     const args = interaction.options
     const targetMember = args.getMember('멤버')! as GuildMember
-    const option = args.getString('설정')!
+    const option = args.getString('설정', true)
     const warningAmount = args.getNumber('갯수')
     const thisGuild = await getThisGuild(interaction)
 

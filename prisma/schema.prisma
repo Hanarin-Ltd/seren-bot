@@ -208,3 +208,25 @@ model CoinComment {
     content String
     createdAt DateTime @default(now())
 }
+
+model VoteSetting {
+    uniqueId Int @id @default(autoincrement())
+    id String @unique
+    authorId String
+    title String
+    description String
+    options String[]
+    
+    mentionEveryone Boolean @default(false)
+    hideResult Boolean @default(false)
+    onlyAdmin Boolean @default(false)
+    allowChange Boolean @default(true)
+}
+
+model VoteData {
+    uniqueId Int @id @default(autoincrement())
+    targetId String
+    voterTag String
+    voterId String
+    value String
+}

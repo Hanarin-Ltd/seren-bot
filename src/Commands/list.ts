@@ -65,7 +65,7 @@ export default async function list(interaction: ChatInputCommandInteraction<Cach
 
     try {
         await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':incoming_envelope: DM으로 리스트가 전송되었습니다!', description: 'DM을 확인해주세요.' }] })
-        await sendDM(interaction, { embeds: [{ color: BOT_COLOR, title: `:scroll: ${dataName} 목록`, description: dataListString }] })
+        await sendDM(interaction.user.id, { embeds: [{ color: BOT_COLOR, title: `:scroll: ${dataName} 목록`, description: dataListString }] })
     } catch {
         await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':no_entry_sign: DM을 전송할 수 없습니다!' }] })
     }

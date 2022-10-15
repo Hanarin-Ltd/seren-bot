@@ -45,7 +45,7 @@ export const completeSuccessfullyMessage = (author: User, content?: string) => {
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(':white_check_mark: 성공적으로 처리되었습니다.')
-        .setDescription(content || '')
+        .setDescription(content || '아무문제 없어요!')
         .setTimestamp(new Date())
         .setAuthor({
             name: author.tag,

@@ -22,7 +22,7 @@ export default async function help(interaction: ChatInputCommandInteraction<Cach
     await updateMemberCache(interaction.guild!)
 
     try {
-        await sendDM(interaction, { embeds: [helpMessage()] })
+        await sendDM(interaction.user.id, { embeds: [helpMessage()] })
         await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':incoming_envelope: DM으로 도움말이 전송되었습니다!', description: 'DM을 확인해주세요.' }] })
     } catch {
         await interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':no_entry_sign: DM을 전송할 수 없습니다!' }] })

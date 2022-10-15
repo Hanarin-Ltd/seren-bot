@@ -78,7 +78,7 @@ client.on('messageCreate', async message => {
         if (!message.guild) return
         if (!message.member) return
         if (message.author.bot) return
-        if (!message.channel || message.channel.type !== ChannelType.GuildText) return
+        if (!message.channel || message.channel.isDMBased()) return
         
         const guildData = await getGuildData(message.guild.id)
         if (!guildData) return
