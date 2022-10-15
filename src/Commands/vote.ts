@@ -29,7 +29,7 @@ const voteDescriptionInput = new TextInputBuilder()
 
 const voteOptionInput = new TextInputBuilder()
     .setLabel('투표 항목')
-    .setPlaceholder('투표 항목을 입력해주세요.')
+    .setPlaceholder('투표 항목을 입력해주세요. (최대 15개)')
     .setMaxLength(1000)
     .setMinLength(1)
     .setRequired(true)
@@ -99,7 +99,7 @@ export default async function vote(interaction: ChatInputCommandInteraction) {
         isSubmit.reply({ embeds: [completeSuccessfullyMessage(isSubmit.user, '투표가 생성되었습니다')], ephemeral: true })
         const title = isSubmit.fields.getTextInputValue('voteTitle')
         const description = isSubmit.fields.getTextInputValue('voteDescription')
-        const options = isSubmit.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '')
+        const options = isSubmit.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '').slice(0, 15)
         const values = Array(options.length).fill(0)
 
         await makeVote(interaction.id, interaction.user.id, title, description, options, {
