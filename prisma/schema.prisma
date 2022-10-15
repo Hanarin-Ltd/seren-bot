@@ -96,7 +96,9 @@ model UserData {
     bannedGuild String[]
     ownedGuild String[]
     point Int @default(25000)
-    isPremium Boolean @default(false)
+    isNitro Boolean @default(false)
+    currentPlan String @default("Free") @map("serenPlan")
+    nitroStartedAt DateTime @default(now())
     preminumStartedAt DateTime @default(now())
     createdAt DateTime
 }

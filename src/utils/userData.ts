@@ -1,10 +1,14 @@
-import { UserData } from "@prisma/client"
 import { client } from ".."
 import prisma from "../prisma"
 import { getBannedGuildList } from "./ban"
 
 export const getUserData = async (userId: string) => {
     return await prisma.userData.findUnique({ where: { id: userId } })
+}
+
+export const getUserDataPlanList = async (plan: SerenPlan) => {
+    const data = await prisma.userData.findMany({ where: { currentPlan: plan } })
+    return data.map(d => d.id)
 }
 
 export const addUserData = async (userId: string) => {

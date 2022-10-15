@@ -30,6 +30,7 @@ import { scanMessage } from './utils/blockWord'
 import { KoreanbotsClient } from "koreanbots"
 import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
+import startWeeklyPoint from './coin/weeklyPoint'
 
 const clientIntents = [
     GatewayIntentBits.Guilds,
@@ -66,6 +67,7 @@ client.on('ready', async () => {
     console.log(`Mode : ${env.NODE_ENV}`)
     openAPIServer()
     coinGame()
+    startWeeklyPoint()
     client.user!.setActivity('/안녕 , /도움말')
 
     await addSlashCommands()
