@@ -9,7 +9,7 @@ export const someoneHasBan = (name: string, reason: string | null) => {
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(`:no_entry: ${name}이(가) 차단되었습니다.`)
-        .setDescription(`사유: ${reason ? reason : '공개하지 않음'}`)
+        .setDescription(`차단 사유: ${reason ? reason : '공개하지 않음'}`)
         .setTimestamp()
 }
 
@@ -17,7 +17,7 @@ export const someoneHasUnban = (name: string, reason: string | null) => {
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(`:white_check_mark: ${name}이(가) 차단 해제되었습니다.`)
-        .setDescription(`사유: ${reason ? reason : '공개하지 않음'}`)
+        .setDescription(`차단 사유: ${reason ? reason : '공개하지 않음'}`)
         .setTimestamp()
 }
 

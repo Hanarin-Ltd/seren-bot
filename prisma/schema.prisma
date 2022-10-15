@@ -82,7 +82,6 @@ model GuildBan {
     userId String @unique
     guildId String
     username String
-    nickname String
     tag String
     profileImg String
     reason String
@@ -122,7 +121,7 @@ model MemberData {
 
 model Blockword {
     uniqueId Int @id @default(autoincrement())
-    guildId String 
+    guildId String @unique
     word String[] @default([])
 }
 

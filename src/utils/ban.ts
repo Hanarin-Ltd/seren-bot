@@ -1,4 +1,4 @@
-import { Guild, GuildMember } from "discord.js"
+import { Guild, GuildBan, GuildMember } from "discord.js"
 import prisma from "../prisma"
 import { removeWarning, resetWarning } from "./warning"
 
@@ -21,36 +21,35 @@ export const getBannedGuildList = async (userId: string) => {
     return result ? result.bannedGuild : []
 }
 
-export const addBan = async (guildId: string, member: GuildMember, reason?: string | null) => {
-    const exist = await prisma.guildBan.findFirst({ where: { guildId, userId: member.user.id } })
+export const addBan = async (guildId: string, target: GuildBan, reason?: string | null) => {
+    const exist = await prisma.guildBan.findFirst({ where: { guildId, userId: target.user.id } })
     if (exist) return
     await prisma.guildBan.create({
         data: {
-            userId: member.id,
+            userId: target.user.id,
             guildId,
-            username: member.user.username,
-            nickname: member.nickname ? member.nickname : member.user.username,
-            tag: member.user.tag,
-            profileImg: member.displayAvatarURL(),
+            username: target.user.username,
+            tag: target.user.tag,
+            profileImg: target.user.displayAvatarURL(),
             reason: reason || '공개하지 않음'
         }
     })
 
-    const list =  [...await getBannedGuildList(member.user.id), guildId]
+    const list =  [...await getBannedGuildList(target.user.id), guildId]
     await prisma.userData.upsert({
-        where: { id: member.user.id },
+        where: { id: target.user.id },
         update: { bannedGuild: list },
         create: {
-            id: member.id,
-            username: member.user.username,
-            tag: member.user.tag,
-            profileImg: member.displayAvatarURL(),
+            id: target.user.id,
+            username: target.user.username,
+            tag: target.user.tag,
+            profileImg: target.user.displayAvatarURL(),
             bannedGuild: list,
-            createdAt: member.user.createdAt
+            createdAt: target.user.createdAt
         }
     })
 
-    return await resetWarning(guildId, member.id)
+    return await resetWarning(guildId, target.user.id)
 }
 
 export const removeBan = async (guildId: string, userId: string) => {

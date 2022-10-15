@@ -13,7 +13,7 @@ import openAPIServer from './api'
 import { BOT_COLOR } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
-import { getChannel, getGuildOwner } from './utils/discord'
+import { getChannel, getGuildOwner, getMember } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
 import { addMod, removeMod } from './utils/mod'
@@ -161,31 +161,6 @@ client.on('guildMemberAdd', async (member) => {
 client.on('guildMemberRemove', async (member) => {
     if (member.id === client.user?.id) return
     await removeMemberData(member)
-
-    await updateBanListCache(member.guild)
-    const banList = (await getBanListFromAPI(member.guild)).map(m => m.user.id)
-
-    if (banList.includes(member.id)) {
-        try {
-            const option = (await getGuildOption(member.guild.id))!
-            const channel = (await getChannel(member.guild, option.banChannelId))!
-            const logSetting = await getGuildLogSetting(member.guild.id)
-    
-            await addBan(member.guild.id, member as GuildMember, '알 수 없음')
-    
-            if (!channel || !channel.isTextBased()) return
-            option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(member.user.username, '알 수 없음')] })
-            logSetting?.addBan && log({
-                content: `차단 추가됨 : ${member.user.username}`,
-                rawContent: `차단 추가됨 : ${userMention(member.user.id)}`,
-                guild: member.guild,
-                type: 'addBan'
-            })
-        } catch (e) {
-            console.log(e)
-        }
-        return
-    }
     await goodbye(member)
 })
 
@@ -207,11 +182,15 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
     await modifyGuildChannel(oldChannel, newChannel)
 })
 
-client.on('guildBanAdd', async (banMember) => {
+client.on('guildBanAdd', async banMember => {
     if (banMember.user.id === client.user?.id) return
     try {
         const thisGuild = banMember.guild
-        const option = (await getGuildOption(thisGuild.id))!
+        await addBan(thisGuild.id, banMember)
+
+        const option = (await getGuildOption(thisGuild.id))
+        if (!option) return
+
         const logSetting = await getGuildLogSetting(thisGuild.id)
         const channel = await getChannel(thisGuild, option.banChannelId)
 
@@ -223,7 +202,7 @@ client.on('guildBanAdd', async (banMember) => {
         })
 
         if (!channel || !channel.isTextBased()) return
-        option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(banMember.user.username, banMember.reason || '공개되지 않음')] })
+        option.banMessageEnabled && channel.send({ embeds: [someoneHasBan(banMember.user.tag, banMember.reason || '공개되지 않음')] })
     } catch (e) { console.log(e) }
 })
 
@@ -271,7 +250,8 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
         const addedRole = newRoles.filter(r => !oldRoles.includes(r))
 
         deletedRole.forEach(async id => {
-            const role = (await getGuildRole(thisGuild, id))!
+            const role = await getGuildRole(thisGuild, id)
+            if (!role) return
             logSetting?.removeRoleToMember && log({
                 content: `역할 제거됨 : ${newMember.user.username} / 제거된 역할 : ${role.name}`,
                 rawContent: `역할 제거됨 : ${userMention(newMember.id)} / 제거된 역할 : ${role.name}`,
@@ -280,7 +260,8 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
             })
         })
         addedRole.forEach(async id => {
-            const role = (await getGuildRole(thisGuild, id))!
+            const role = await getGuildRole(thisGuild, id)
+            if (!role) return
             logSetting?.addRoleToMember && log({
                 content: `역할 추가됨 : ${newMember.user.username} / 추가된 역할 : ${role.name}`,
                 rawContent: `역할 추가됨 : ${userMention(newMember.id)} / 추가된 역할 : ${role.name}`,
