@@ -23,7 +23,30 @@ export const addUserData = async (userId: string) => {
             profileImg: user.displayAvatarURL(),
             bannedGuild: await getBannedGuildList(userId),
             ownedGuild: (await getOwnedGuildList(userId)).map(g => g.guildId),
+            modGuild: (await getOwnedGuildList(userId)).map(g => g.guildId),
             createdAt: user.createdAt
+        }
+    })
+}
+
+export const addUserModGuild = async (userId: string, guildId: string) => {
+    const user = await getUserData(userId)
+    if (!user) return
+    return await prisma.userData.update({
+        where: { id: userId },
+        data: {
+            modGuild: [...user.modGuild, guildId]
+        }
+    })
+}
+
+export const removeUserModGuild = async (userId: string, guildId: string) => {
+    const user = await getUserData(userId)
+    if (!user) return
+    return await prisma.userData.update({
+        where: { id: userId },
+        data: {
+            modGuild: user.modGuild.filter(g => g !== guildId)
         }
     })
 }

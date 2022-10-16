@@ -71,8 +71,7 @@ export const modifyGuildRole = async (oldRole: Role, newRole: Role) => {
 }
 
 export const setRoleToMod = async (role: Role) => {
-    role.setPermissions(PermissionFlagsBits.Administrator)
-    return await prisma.guildRole.update({
+    return await prisma.guildRole.updateMany({
         where: { id: role.id },
         data: { type: 'mod' }
     })

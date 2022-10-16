@@ -49,7 +49,6 @@ export const removeGuildData = async (guildId: string) => {
         await prisma.guildBan.deleteMany({ where: { guildId } })
         await prisma.guildChannel.deleteMany({ where: { guildId } })
         await prisma.guildOption.deleteMany({ where: { guildId } })
-        await prisma.guildPermission.deleteMany({ where: { guildId } })
         await prisma.blockword.deleteMany({ where: { guildId } })
         await prisma.memberData.deleteMany({ where: { guildId } })
         await prisma.guildRole.deleteMany({ where: { guildId } })

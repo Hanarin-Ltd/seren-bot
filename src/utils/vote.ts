@@ -33,6 +33,11 @@ export const updateVote = async (targetId: string, userId: string, value: string
     } })
 }
 
+export const removeVote = async (id: string) => {
+    await prisma.voteSetting.deleteMany({ where: { id } })
+    await prisma.voteData.deleteMany({ where: { targetId: id } })
+}
+
 export const getVoter = async (targetId: string, userId: string) => {
     return await prisma.voteData.findFirst({ where: {
         targetId,

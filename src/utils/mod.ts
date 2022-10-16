@@ -3,6 +3,7 @@ import prisma from "../prisma"
 import { getGuildLogSetting, log } from "./log"
 import { addMemberData } from "./memberData"
 import { getGuildModRole } from "./role"
+import { addUserModGuild, removeUserModGuild } from "./userData"
 
 export const getModList = async (guildId: string) => {
     const modList = await prisma.memberData.findMany({ where: {
@@ -22,6 +23,7 @@ export const addMod = async (guild: Guild, member: GuildMember) => {
             where: { guildId: guild.id, userId: member.id },
             data: { mod: true },
         })
+        await addUserModGuild(member.id, guild.id)
         member.roles.add((await getGuildModRole(guild))!.id)
         logSetting?.addMod && log({
             content: `관리자 임명됨 : ${member.user.username}`,
@@ -43,6 +45,7 @@ export const removeMod = async (guild: Guild, member: GuildMember) => {
             where: { guildId: guild.id, userId: member.id },
             data: { mod: false }
         })
+        await removeUserModGuild(member.id, guild.id)
         member.roles.remove((await getGuildModRole(guild))!.id)
         logSetting?.removeMod && log({
             content: `관리자 해임됨 : ${member.user.username}`,

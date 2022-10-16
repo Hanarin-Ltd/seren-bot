@@ -1,7 +1,7 @@
 import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextInputBuilder, TextInputStyle, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { chunkArray, completeSuccessfullyMessage, deferReply, errorMessage } from "../utils/default"
-import { addVote, getVoter, makeVote, updateVote } from "../utils/vote"
+import { addVote, getVoter, makeVote, removeVote, updateVote } from "../utils/vote"
 
 const makeVoteButton = (disabled: boolean = false) => new ActionRowBuilder<ButtonBuilder>()
 .addComponents(
@@ -133,7 +133,7 @@ const generateVote = async (
     ) => {
     const title = modalInteraction.fields.getTextInputValue('voteTitle')
     const description = modalInteraction.fields.getTextInputValue('voteDescription')
-    const voteOptions = modalInteraction.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '').slice(0, 10)
+    const voteOptions = modalInteraction.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '')
     const values = Array(voteOptions.length).fill(0)
     const { mentionEveryone, hideResult, onlyAdmin, allowChange } = setting
 
@@ -170,6 +170,7 @@ const generateVote = async (
                 components: [],
             })
             collecter?.stop()
+            await removeVote(modalInteraction.id)
             onlyAdmin && await author.send({ embeds: [voteResultEmbed(title, description, voteOptions, values)] })
         }
         else {

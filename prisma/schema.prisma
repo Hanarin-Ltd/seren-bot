@@ -7,12 +7,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model GuildPermission {
-    guildId String @unique
-    collectBlockword Boolean @default(false)
-    collectBan Boolean @default(false)
-}
-
 model GuildOption {
     guildId String @unique
 
@@ -48,6 +42,8 @@ model GuildOption {
     enableLegacyCommand Boolean @default(false)
 
     warningLimit Int @default(10)
+
+    allowModAccessDashboard Boolean @default(true)
 }
 
 model GuildChannel {
@@ -74,7 +70,6 @@ model GuildData {
     description String
 
     isCommunityGuild Boolean @default(false)
-    isSettingComplete Boolean @default(false)
     isSubscribed Boolean @default(false)
 }
 
@@ -95,10 +90,9 @@ model UserData {
     profileImg String
     bannedGuild String[]
     ownedGuild String[]
+    modGuild String[]
     point Int @default(25000)
-    isNitro Boolean @default(false)
-    currentPlan String @default("Free") @map("serenPlan")
-    nitroStartedAt DateTime @default(now())
+    currentPlan String @default("Free")
     preminumStartedAt DateTime @default(now())
     createdAt DateTime
 }
@@ -114,6 +108,8 @@ model MemberData {
 
     mod Boolean @default(false)
     isOwner Boolean @default(false)
+    isBot Boolean @default(false)
+    isBoosting Boolean @default(false)
 
     joinedAt DateTime
     exp Int @default(0)

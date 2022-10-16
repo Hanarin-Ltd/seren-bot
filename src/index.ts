@@ -82,7 +82,6 @@ client.on('messageCreate', async message => {
         
         const guildData = await getGuildData(message.guild.id)
         if (!guildData) return
-        if (!guildData.isSettingComplete) return
 
         scanMessage(message)
 
@@ -113,11 +112,6 @@ client.on('interactionCreate', async (interaction) => {
                 return interaction.reply({ embeds: [errorMessage()] })
             }
         } else {
-            if (!(await getGuildData(interaction.guild!.id))!.isSettingComplete) {
-                await interaction.reply({ embeds: [{ color: BOT_COLOR, title: ':warning: 설정이 완료되지 않았습니다!', description: '기본 설정을 완료한뒤 봇을 사용할 수 있습니다.' }] })
-                return
-            }
-        
             const logSetting = await getGuildLogSetting(interaction.guild!.id)
         
             try {
@@ -157,6 +151,7 @@ client.on('guildDelete', async (guild) => {
 
 client.on('guildMemberAdd', async (member) => {
     await addMemberData(member)
+    await addUserData(member.id)
     await welcome(member)
 })
 

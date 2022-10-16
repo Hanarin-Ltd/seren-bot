@@ -1,4 +1,3 @@
-import { MemberData } from "@prisma/client"
 import { GuildMember, PartialGuildMember } from "discord.js"
 import prisma from "../prisma"
 import { getGuildOwner } from "./discord"
@@ -20,6 +19,8 @@ export const addMemberData = async (member: GuildMember) => {
             tag: member.user.tag,
             profileImg: member.displayAvatarURL(),
             joinedAt: member.joinedAt ? member.joinedAt : new Date(),
+            isBot: member.user.bot,
+            isBoosting: member.premiumSince ? true : false,
             isOwner: (await getGuildOwner(member.guild)).id === member.id
         }
     })
@@ -38,7 +39,9 @@ export const updateMemberData = async (member: GuildMember) => {
             tag: member.user.tag,
             profileImg: member.displayAvatarURL(),
             joinedAt: member.joinedAt ? member.joinedAt : new Date(),
-            isOwner: (await getGuildOwner(member.guild)).id === member.id
+            isOwner: (await getGuildOwner(member.guild)).id === member.id,
+            isBot: member.user.bot,
+            isBoosting: member.premiumSince ? true : false,
         }
     })
 }
