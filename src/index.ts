@@ -16,7 +16,7 @@ import { addSlashCommands, errorMessage } from './utils/default'
 import { getChannel, getGuildOwner, getMember } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
-import { addMod, removeMod } from './utils/mod'
+import { addMod, hasModRole, removeMod } from './utils/mod'
 import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
 import { someoneHasBan, someoneHasUnban } from './Commands/ban'
@@ -230,12 +230,11 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 
     await updateMemberData(newMember)
     try {
-        const modRoleId = (await getGuildModRole(newMember.guild)).id
         const thisGuild = oldMember.guild
 
-        if (newMember.roles.cache.has(modRoleId)) {
+        if (!await hasModRole(oldMember) && await hasModRole(newMember)) {
             await addMod(thisGuild, newMember)
-        } else if (!newMember.roles.cache.has(modRoleId) && oldMember.roles.cache.has(modRoleId)) {
+        } else if (await hasModRole(oldMember) && !await hasModRole(newMember)) {
             await removeMod(thisGuild, newMember)
         }
 

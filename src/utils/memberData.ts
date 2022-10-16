@@ -1,6 +1,8 @@
 import { GuildMember, PartialGuildMember } from "discord.js"
 import prisma from "../prisma"
 import { getGuildOwner } from "./discord"
+import { hasModRole } from "./mod"
+import { getGuildModRole } from "./role"
 
 export const getMemberData = async (guildId: string, memberId: string) => {
     return await prisma.memberData.findFirst({ where: { userId: memberId, guildId } })
@@ -9,7 +11,7 @@ export const getMemberData = async (guildId: string, memberId: string) => {
 export const addMemberData = async (member: GuildMember) => {
     const exist = await prisma.memberData.findFirst({ where: { userId: member.id, guildId: member.guild.id } })
     if (exist) return
-
+    
     await prisma.memberData.create({
         data: {
             userId: member.id,
@@ -21,7 +23,8 @@ export const addMemberData = async (member: GuildMember) => {
             joinedAt: member.joinedAt ? member.joinedAt : new Date(),
             isBot: member.user.bot,
             isBoosting: member.premiumSince ? true : false,
-            isOwner: (await getGuildOwner(member.guild)).id === member.id
+            isOwner: (await getGuildOwner(member.guild)).id === member.id,
+            mod: await hasModRole(member),
         }
     })
 }
@@ -42,6 +45,7 @@ export const updateMemberData = async (member: GuildMember) => {
             isOwner: (await getGuildOwner(member.guild)).id === member.id,
             isBot: member.user.bot,
             isBoosting: member.premiumSince ? true : false,
+            mod: await hasModRole(member),
         }
     })
 }

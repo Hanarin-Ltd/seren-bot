@@ -33,7 +33,10 @@ app.post('/guild', async (req: Request, res: Response) => {
         oldModList.forEach(async id => {
             if (newModList.includes(id)) return
             const target = await getMember(guild, id)
-            target!.roles.remove((await getGuildModRole(guild))!.id)
+            const modRoleList = (await getGuildModRole(guild)).map(r => r.id)
+            target?.roles.cache.forEach(async role => {
+                if (modRoleList.includes(role.id)) await target?.roles.remove(role)
+            })
         })
         updateGuildMod(guildId, data)
     }

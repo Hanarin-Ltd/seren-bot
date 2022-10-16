@@ -5,7 +5,6 @@ const commandsFile = {
     '도움말': 'help',
     '정보': 'info',
     '금지어': 'blockword',
-    '관리자': 'mod',
     '리스트': 'list',
     '랭킹': 'ranking',
     '경고': 'warning',
@@ -197,27 +196,6 @@ const commands =  [
         )
         .toJSON(),
 
-    new SlashCommandBuilder()
-        .setName('관리자')
-        .setDescription('관리자를 설정합니다')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .setDMPermission(false)
-        .addStringOption(setting => 
-            setting.setRequired(true)
-            .setName('설정')
-            .setDescription('임명 / 해임')
-            .addChoices(
-                { name: '임명', value: 'add' },
-                { name: '해임', value: 'remove' }
-            )
-            .setRequired(true)
-        )
-        .addUserOption(target => 
-            target.setName('멤버')
-            .setDescription('설정할 멤버')
-            .setRequired(true)    
-        )
-        .toJSON(),
     new SlashCommandBuilder()
         .setName('로그')
         .setDescription('로그를 설정합니다')

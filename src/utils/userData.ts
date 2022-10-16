@@ -1,6 +1,7 @@
 import { client } from ".."
 import prisma from "../prisma"
 import { getBannedGuildList } from "./ban"
+import { getGuildListThatUserMod } from "./mod"
 
 export const getUserData = async (userId: string) => {
     return await prisma.userData.findUnique({ where: { id: userId } })
@@ -23,7 +24,7 @@ export const addUserData = async (userId: string) => {
             profileImg: user.displayAvatarURL(),
             bannedGuild: await getBannedGuildList(userId),
             ownedGuild: (await getOwnedGuildList(userId)).map(g => g.guildId),
-            modGuild: (await getOwnedGuildList(userId)).map(g => g.guildId),
+            modGuild: await getGuildListThatUserMod(userId),
             createdAt: user.createdAt
         }
     })

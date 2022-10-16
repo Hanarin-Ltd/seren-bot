@@ -33,7 +33,7 @@ export const addGuildRole = async (role: Role) => {
 }
 
 export const getGuildModRole = async (guild: Guild) => {
-    return (await prisma.guildRole.findFirst({ where: { guildId: guild.id, type: 'mod' } }))!
+    return (await prisma.guildRole.findMany({ where: { guildId: guild.id, type: 'mod' } }))!
 }
 
 export const getGuildRole = async (guild: Guild, roleId: string) => {

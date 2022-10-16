@@ -8,6 +8,7 @@ import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"
 import { addGuildLogSetting } from "./utils/log"
 import { addMemberData } from "./utils/memberData"
+import { addMod, hasModRole } from "./utils/mod"
 import { addAllGuildRole, setRoleToMod } from "./utils/role"
 import { addUserData } from "./utils/userData"
 
@@ -37,6 +38,7 @@ export default async function guildSetting(guild: Guild) {
             if (member.user.bot) continue
             addMemberData(member)
             addUserData(member.user.id)
+            if (await hasModRole(member)) await addMod(guild, member)
         }
     })
 

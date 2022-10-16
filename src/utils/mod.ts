@@ -1,7 +1,7 @@
-import { Guild, GuildMember, PermissionFlagsBits, userMention } from "discord.js"
+import { Guild, GuildMember, PartialGuildMember, PermissionFlagsBits, userMention } from "discord.js"
 import prisma from "../prisma"
 import { getGuildLogSetting, log } from "./log"
-import { addMemberData } from "./memberData"
+import { addMemberData, updateMemberData } from "./memberData"
 import { getGuildModRole } from "./role"
 import { addUserModGuild, removeUserModGuild } from "./userData"
 
@@ -13,50 +13,39 @@ export const getModList = async (guildId: string) => {
     return modList
 }
 
+export const getGuildListThatUserMod = async (userId: string) => {
+    const modList = await prisma.memberData.findMany({ where: {
+        userId,
+        mod: true
+    } })
+    return modList.map(m => m.guildId)
+}
+
 export const addMod = async (guild: Guild, member: GuildMember) => {
-    try {
-        const logSetting = await getGuildLogSetting(guild.id)
-        const exist = await prisma.memberData.findMany({ where: { guildId: guild.id, mod: true, userId: member.id } })
-        if (exist.length > 0) return
-        await addMemberData(member)
-        await prisma.memberData.updateMany({
-            where: { guildId: guild.id, userId: member.id },
-            data: { mod: true },
-        })
-        await addUserModGuild(member.id, guild.id)
-        member.roles.add((await getGuildModRole(guild))!.id)
-        logSetting?.addMod && log({
-            content: `관리자 임명됨 : ${member.user.username}`,
-            rawContent: `관리자 임명됨 : ${userMention(member.id)}`,
-            guild,
-            type: 'addMod'
-        })
-    } catch {
-        await addMemberData(member)
-        await addMod(guild, member)
-    }
+    const logSetting = await getGuildLogSetting(guild.id)
+    const exist = await prisma.memberData.findMany({ where: { guildId: guild.id, mod: true, userId: member.id } })
+    if (exist.length > 0) return
+    await addUserModGuild(member.id, guild.id)
+    await updateMemberData(member)
+    logSetting?.addMod && log({
+        content: `관리자 임명됨 : ${member.user.username}`,
+        rawContent: `관리자 임명됨 : ${userMention(member.id)}`,
+        guild,
+        type: 'addMod'
+    })
 }
 
 export const removeMod = async (guild: Guild, member: GuildMember) => {
-    try {
-        const logSetting = await getGuildLogSetting(guild.id)
-        await addMemberData(member)
-        await prisma.memberData.updateMany({
-            where: { guildId: guild.id, userId: member.id },
-            data: { mod: false }
-        })
-        await removeUserModGuild(member.id, guild.id)
-        member.roles.remove((await getGuildModRole(guild))!.id)
-        logSetting?.removeMod && log({
-            content: `관리자 해임됨 : ${member.user.username}`,
-            rawContent: `관리자 해임됨 : ${userMention(member.id)}`,
-            guild,
-            type: 'removeMod'
-        })
-    } catch {
-        await addMemberData(member)
-        removeMod(guild, member)
-    }
+    const logSetting = await getGuildLogSetting(guild.id)
+    await addMemberData(member)
+    await updateMemberData(member)
+    await removeUserModGuild(member.id, guild.id)
+    logSetting?.removeMod && log({
+        content: `관리자 해임됨 : ${member.user.username}`,
+        rawContent: `관리자 해임됨 : ${userMention(member.id)}`,
+        guild,
+        type: 'removeMod'
+    })
 }
 
 export const updateGuildMod = async (guildId: string, data: any) => {
@@ -69,4 +58,11 @@ export const updateGuildMod = async (guildId: string, data: any) => {
             data: { mod: false }
         })
     })
+}
+
+export const hasModRole = async (member: GuildMember | PartialGuildMember) => {
+    const modRoleList = (await getGuildModRole(member.guild)).map(b => b.id)
+    const memberRoleList = member.roles.cache.map(r => r.id)
+
+    return modRoleList.some(r => memberRoleList.includes(r))
 }
