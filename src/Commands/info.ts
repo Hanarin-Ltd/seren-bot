@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, CacheType, EmbedBuilder, Guild, GuildPremiumTier } from "discord.js"
+import { ChatInputCommandInteraction, CacheType, EmbedBuilder, GuildPremiumTier } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { deferReply, getCurrentDate } from "../utils/default"
 import { updateMemberCache } from "../utils/discord"

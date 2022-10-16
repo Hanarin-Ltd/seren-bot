@@ -2,7 +2,6 @@ import { GuildMember, PartialGuildMember } from "discord.js"
 import prisma from "../prisma"
 import { getGuildOwner } from "./discord"
 import { hasModRole } from "./mod"
-import { getGuildModRole } from "./role"
 
 export const getMemberData = async (guildId: string, memberId: string) => {
     return await prisma.memberData.findFirst({ where: { userId: memberId, guildId } })

@@ -14,11 +14,12 @@ export default async function role(interaction: ChatInputCommandInteraction) {
     const role = args.getRole('역할')! as Role
     const target = args.getMember('멤버')! as GuildMember
     const thisGuild = interaction.guild!
+    const modRole = (await getGuildModRole(thisGuild)).map(role => role.name)
 
     try {
         if (setting === 'add') {
-            if (role.name === (await getGuildModRole(thisGuild))?.name) 
-                return interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 관리자 역할은 추가할 수 없습니다.', description: '/관리자 명령어를 써주세요.' }] })
+            if (modRole.includes(role.name)) 
+                return interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 관리자 역할은 추가할 수 없습니다.' }] })
             if (target.roles.cache.has(role.id))
                 return interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':no_entry_sign: 이미 부여된 역할입니다.' }] })
 
@@ -26,8 +27,8 @@ export default async function role(interaction: ChatInputCommandInteraction) {
     
         }
         else if (setting === 'remove') {
-            if (role.name === (await getGuildModRole(thisGuild))?.name) 
-                return interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 관리자 역할은 제거할 수 없습니다.', description: '/관리자 명령어를 써주세요.' }] })
+            if (modRole.includes(role.name) )
+                return interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':x: 관리자 역할은 제거할 수 없습니다.' }] })
             if (!target.roles.cache.has(role.id))return interaction.editReply({ embeds: [{ color: BOT_COLOR, title: ':no_entry_sign: 부여되지 않은 역할입니다.' }] })
             
             await target.roles.remove(role)

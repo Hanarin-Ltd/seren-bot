@@ -10,17 +10,16 @@ import { getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openAPIServer from './api'
-import { BOT_COLOR } from './lib'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
 import { addSlashCommands, errorMessage } from './utils/default'
-import { getChannel, getGuildOwner, getMember } from './utils/discord'
+import { getChannel, getGuildOwner } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
 import { addMod, hasModRole, removeMod } from './utils/mod'
-import { addBan, getBanListFromAPI, removeBan, updateBanListCache } from './utils/ban'
+import { addBan, removeBan } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
 import { someoneHasBan, someoneHasUnban } from './Commands/ban'
-import { addGuildRole, getGuildModRole, getGuildRole } from './utils/role'
+import { addGuildRole, getGuildRole } from './utils/role'
 import { getGuildLogSetting, log } from './utils/log'
 import { addMemberExp, checkLevelUp } from './utils/level'
 import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
@@ -68,7 +67,6 @@ client.on('ready', async () => {
     openAPIServer()
     coinGame()
     startWeeklyPoint()
-    client.user!.setActivity('/안녕 , /도움말')
 
     await addSlashCommands()
 })

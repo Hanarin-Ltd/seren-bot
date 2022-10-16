@@ -2,7 +2,7 @@ import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "dis
 import fetch from "node-fetch"
 import { env } from ".."
 import { BOT_COLOR } from "../lib"
-import { addUserCoin, errorOccurredWhileTrading, getCoinData, getCoinDataAsName, getUserCoinData, userCoinIo } from "../utils/coin"
+import { addUserCoin, errorOccurredWhileTrading, getCoinDataAsName, getUserCoinData } from "../utils/coin"
 import { deferReply, getCurrentDate, getCurrentTime } from "../utils/default"
 import { getUserData, removeUserPoint } from "../utils/userData"
 

@@ -1,9 +1,8 @@
-import { EmbedBuilder, Guild, PermissionFlagsBits, spoiler } from "discord.js"
+import { EmbedBuilder, Guild, PermissionFlagsBits } from "discord.js"
 import { env } from '.'
 import { BOT_COLOR } from "./lib"
 import { setDefaultBlockword } from "./utils/blockWord"
 import { addAllGuildChannel } from "./utils/channel"
-import { getGuildOwner } from "./utils/discord"
 import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"
 import { addGuildLogSetting } from "./utils/log"

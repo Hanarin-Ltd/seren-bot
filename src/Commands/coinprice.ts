@@ -1,7 +1,7 @@
 import { CoinData } from "@prisma/client"
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getCoinData, getCoinDataAsName, getPriceInfo } from "../utils/coin"
+import { getCoinDataAsName, getPriceInfo } from "../utils/coin"
 import { deferReply } from "../utils/default"
 
 const parsePrice = (data: CoinData) => {

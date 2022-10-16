@@ -7,7 +7,7 @@ import { addUserPoint, getUserData, getUserDataPlanList } from '../utils/userDat
 export const serenPlanList = ['Free', 'Serendard', 'Seren Pass'] as const
 
 const youGotPoint = (plan: SerenPlan, point: number) => {
-    const planPoint = plan === 'Free' ? 20000 : plan === 'Serendard' ? 50000 : 100000
+    const planPoint = plan === 'Free' ? 6000 : plan === 'Serendard' ? 12000 : 20000
     return (
         new EmbedBuilder()
             .setColor(BOT_COLOR)
@@ -27,7 +27,7 @@ export default function startWeeklyPoint() {
         for (const plan of serenPlanList) { // foreach는 성능이 떨어짐
             const userIdList = await getUserDataPlanList(plan)
             userIdList.forEach(async userId => {
-                addUserPoint(userId, plan === 'Free' ? 20000 : plan === 'Serendard' ? 50000 : 100000)
+                addUserPoint(userId, plan === 'Free' ? 6000 : plan === 'Serendard' ? 12000 : 20000)
                 const userData = await getUserData(userId)
                 if (!userData) return
                 await sendDM(userId, { embeds: [youGotPoint(plan, userData.point)] })

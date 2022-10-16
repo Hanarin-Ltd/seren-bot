@@ -1,7 +1,5 @@
 import { CoinData } from "@prisma/client"
-import { createServer } from "http"
 import fetch from "node-fetch"
-import { Server } from "socket.io"
 import { env } from ".."
 import { getCoinList, getPriceInfo, makeNewCoin, updateCoinPrice } from "../utils/coin"
 

@@ -1,6 +1,6 @@
-import { Guild, GuildBan, GuildMember } from "discord.js"
+import { Guild, GuildBan } from "discord.js"
 import prisma from "../prisma"
-import { removeWarning, resetWarning } from "./warning"
+import { resetWarning } from "./warning"
 
 export const updateBanListCache = async (guild: Guild) => {
     await guild.bans.fetch().catch(err => { return })

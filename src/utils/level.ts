@@ -1,10 +1,10 @@
-import { ChannelType, EmbedBuilder, Guild, GuildChannel, GuildMember, GuildTextBasedChannel, userMention } from 'discord.js'
+import { ChannelType, EmbedBuilder, GuildMember, GuildTextBasedChannel, userMention } from 'discord.js'
 import { BOT_COLOR } from '../lib'
 import prisma from '../prisma'
 import { getChannel } from './discord'
 import { getGuildOption } from './guildOption'
 import { getGuildLogSetting, log } from './log'
-import { addMemberData, getMemberData } from './memberData'
+import { addMemberData } from './memberData'
 
 export const getMemberLevel = async (member: GuildMember) => {
     const result = await prisma.memberData.findFirst({ where: { guildId: member.guild.id, userId: member.id } })

@@ -1,4 +1,4 @@
-import { Routes, EmbedBuilder, blockQuote, ChatInputCommandInteraction, GuildMember, User } from "discord.js"
+import { Routes, EmbedBuilder, blockQuote, ChatInputCommandInteraction, User } from "discord.js"
 import { env } from ".."
 import getCommands from "../commands"
 import { rest, BOT_COLOR } from "../lib"

@@ -1,4 +1,4 @@
-import { Guild, GuildMember, PartialGuildMember, PermissionFlagsBits, userMention } from "discord.js"
+import { Guild, GuildMember, PartialGuildMember, userMention } from "discord.js"
 import prisma from "../prisma"
 import { getGuildLogSetting, log } from "./log"
 import { addMemberData, updateMemberData } from "./memberData"

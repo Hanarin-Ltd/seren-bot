@@ -1,5 +1,4 @@
-import { Guild, Role, PermissionFlagsBits, codeBlock, inlineCode } from "discord.js"
-import role from "../Commands/role"
+import { Guild, Role, inlineCode } from "discord.js"
 import prisma from "../prisma"
 import { updateRoleCache } from "./discord"
 import { getGuildLogSetting, log } from "./log"
