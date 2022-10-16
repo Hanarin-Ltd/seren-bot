@@ -1,11 +1,21 @@
-import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, User } from "discord.js"
+import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextInputBuilder, TextInputStyle, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { completeSuccessfullyMessage } from "../utils/default"
+import { chunkArray, completeSuccessfullyMessage, deferReply, errorMessage } from "../utils/default"
 import { addVote, getVoter, makeVote, updateVote } from "../utils/vote"
+
+const makeVoteButton = (disabled: boolean = false) => new ActionRowBuilder<ButtonBuilder>()
+.addComponents(
+    new ButtonBuilder()
+        .setEmoji('🗳️')
+        .setLabel('투표 생성하기')
+        .setStyle(ButtonStyle.Primary)
+        .setCustomId('makeVote')
+        .setDisabled(disabled)
+)
 
 const voteModal = () => new ModalBuilder()
     .setTitle('투표 생성하기')
-    .setCustomId('makeVote')
+    .setCustomId('submitVote')
 
 const voteTitleInput = new TextInputBuilder()
     .setLabel('투표 제목')
@@ -29,7 +39,7 @@ const voteDescriptionInput = new TextInputBuilder()
 
 const voteOptionInput = new TextInputBuilder()
     .setLabel('투표 항목')
-    .setPlaceholder('투표 항목을 입력해주세요. (최대 15개)')
+    .setPlaceholder('투표 항목을 입력해주세요. (최대 10개)')
     .setMaxLength(1000)
     .setMinLength(1)
     .setRequired(true)
@@ -52,12 +62,12 @@ const voteEmbed = (
         .setAuthor({ iconURL: author.displayAvatarURL(), name: author.tag })
 )
 
-const voteButton = (id: string, options: string[]) => new ActionRowBuilder<ButtonBuilder>()
+const voteButton = (id: string, options: string[], idGenerator: (i: number) => string) => new ActionRowBuilder<ButtonBuilder>()
     .addComponents(options.map((option, i) => (
         new ButtonBuilder()
             .setLabel(option)
             .setStyle(ButtonStyle.Primary)
-            .setCustomId(`${id}-${i}`)
+            .setCustomId(idGenerator(i))
     )))
 
 const voteEndButton = (id: string) => new ActionRowBuilder<ButtonBuilder>()
@@ -77,78 +87,107 @@ const voteResultEmbed = (title: string, desc: string, options: string[], value: 
     )))
 
 export default async function vote(interaction: ChatInputCommandInteraction) {
+    await deferReply(interaction)
+
     const args = interaction.options
-    const mentionEveryone = args.getBoolean('everyone')
-    const hideResult = args.getBoolean('투표현황비공개')
-    const onlyAdmin = args.getBoolean('결과비공개')
-    const allowChange = args.getBoolean('선택변경') || true
+    const mentionEveryone = args.getBoolean('everyone') || false
+    const hideResult = args.getBoolean('투표현황비공개') || false
+    const onlyAdmin = args.getBoolean('결과비공개') || false
+    const allowChange = args.getBoolean('선택변경') === null ? true : args.getBoolean('선택변경')! // default true
 
-    const modal = voteModal()
-    const titleInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(voteTitleInput)
-    const descriptionInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(voteDescriptionInput)
-    const optionInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(voteOptionInput)
-    modal.addComponents(titleInput, descriptionInput, optionInput)
-
-    await interaction.showModal(modal)
-    const isSubmit = await interaction.awaitModalSubmit({
-        time: 60000,
+    const collecter = interaction.channel?.createMessageComponentCollector({
+        time: 100000,
         filter: i => i.user.id === interaction.user.id,
     })
 
-    if (isSubmit) {
-        isSubmit.reply({ embeds: [completeSuccessfullyMessage(isSubmit.user, '투표가 생성되었습니다')], ephemeral: true })
-        const title = isSubmit.fields.getTextInputValue('voteTitle')
-        const description = isSubmit.fields.getTextInputValue('voteDescription')
-        const options = isSubmit.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '').slice(0, 15)
-        const values = Array(options.length).fill(0)
+    collecter?.on('collect', async i => {
+        if (i.customId !== 'makeVote') return
+        const modal = voteModal()
+        const titleInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(voteTitleInput)
+        const descriptionInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(voteDescriptionInput)
+        const optionInput = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(voteOptionInput)
+        modal.addComponents(titleInput, descriptionInput, optionInput)
 
-        await makeVote(interaction.id, interaction.user.id, title, description, options, {
-            mentionEveryone,
-            hideResult,
-            onlyAdmin,
-            allowChange,
+        await i.showModal(modal)
+        const isSubmit = await i.awaitModalSubmit({
+            time: 60000,
+            filter: i => i.user.id === i.user.id,
         })
 
-        const collecter = interaction.channel?.createMessageComponentCollector({
-            max: 1000000,
-            time: 50000000,
-        })
+        if (!isSubmit) return
+        await generateVote(isSubmit, isSubmit.user, {
+            mentionEveryone, hideResult, onlyAdmin, allowChange,
+        }, isSubmit.channel)
+        await interaction.editReply({ components: [makeVoteButton(true)] })
+        collecter.stop()
+    })
 
-        const voteEmbedId = await interaction.channel?.send({
-            content: mentionEveryone ? '@everyone' : '',
-            embeds: [voteEmbed(interaction.user, title, description, options, hideResult ? true : onlyAdmin ? true: false)],
-            components: [voteButton(interaction.id, options), voteEndButton(interaction.id)],
-        })
-
-        collecter?.on('collect', async i => {
-            const targetId = i.customId.split('-')[0]
-            const optionId = i.customId.split('-')[1]
-            console.log(targetId, optionId, i.user.tag)
-
-            if (optionId === 'end' && interaction.user.id === i.user.id) {
-                ;(await interaction.channel?.messages?.fetch(voteEmbedId!.id))?.edit({
-                    embeds: [voteEmbed(interaction.user, title, description, options, onlyAdmin ? true : false, values, true)],
-                    components: [],
-                })
-                collecter?.stop()
-                onlyAdmin && await interaction.user.send({ embeds: [voteResultEmbed(title, description, options, values)] })
-            }
-            else {
-                const voter = await getVoter(targetId, i.user.id)
-                if (voter && !allowChange) {
-                    i.deferUpdate()
-                    return
-                } else if (voter) {
-                    await updateVote(targetId, i.user.id, optionId)
-                    values[parseInt(voter.value)]--
-                }
-                values[Number(optionId)] += 1
-                await addVote(targetId, i.user.tag, i.user.id, optionId)
-                ;(await interaction.channel?.messages?.fetch(voteEmbedId!.id))?.edit({
-                    embeds: [voteEmbed(interaction.user, title, description, options, hideResult ? true : onlyAdmin ? true: false, values)],
-                })
-                i.deferUpdate()
-            }
-        })
-    }
+    return await interaction.editReply({ components: [makeVoteButton()] })
 }
+
+const generateVote = async (
+    modalInteraction: ModalSubmitInteraction, author: User, setting: {
+        mentionEveryone: boolean, hideResult: boolean, onlyAdmin: boolean, allowChange: boolean
+    },
+    channel: TextBasedChannel | null
+    ) => {
+    const title = modalInteraction.fields.getTextInputValue('voteTitle')
+    const description = modalInteraction.fields.getTextInputValue('voteDescription')
+    const voteOptions = modalInteraction.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '').slice(0, 10)
+    const values = Array(voteOptions.length).fill(0)
+    const { mentionEveryone, hideResult, onlyAdmin, allowChange } = setting
+
+    if (voteOptions.length < 2) {
+        return modalInteraction.reply({ embeds: [errorMessage('투표 항목은 최소 2개 이상이어야 합니다.')] })
+    } else if (voteOptions.length > 10) {
+        return modalInteraction.reply({ embeds: [errorMessage('투표 항목은 최대 10개까지만 가능합니다.')] })
+    }
+    await modalInteraction.reply({ embeds: [completeSuccessfullyMessage(modalInteraction.user, '투표가 생성되었습니다.')]})
+
+    await makeVote(modalInteraction.id, author.id, title, description, voteOptions, setting)
+
+    const collecter = channel?.createMessageComponentCollector({
+        max: 1000000,
+        time: 50000000,
+    })
+
+    const voteEmbedId = await channel?.send({
+        content: mentionEveryone ? '@everyone' : '',
+        embeds: [voteEmbed(author, title, description, voteOptions, hideResult ? true : onlyAdmin ? true: false)],
+        components: voteOptions.length > 5 ?
+            [...chunkArray(voteOptions, 2).map((option, index) => (voteButton(author.id, option, i => `${author.id}-${index === 0 ? i : i+5}`))), voteEndButton(author.id)] :
+            [voteButton(author.id, voteOptions, i => `${author.id}-${i}`), voteEndButton(author.id)],
+    })
+
+    collecter?.on('collect', async i => {
+        const targetId = i.customId.split('-')[0]
+        const optionId = i.customId.split('-')[1]
+        console.log(targetId, optionId, i.user.tag)
+
+        if (optionId === 'end' && author.id === i.user.id) {
+            ;(await channel?.messages?.fetch(voteEmbedId!.id))?.edit({
+                embeds: [voteEmbed(author, title, description, voteOptions, onlyAdmin ? true : false, values, true)],
+                components: [],
+            })
+            collecter?.stop()
+            onlyAdmin && await author.send({ embeds: [voteResultEmbed(title, description, voteOptions, values)] })
+        }
+        else {
+            const voter = await getVoter(targetId, i.user.id)
+            if (voter && !allowChange) {
+                i.deferUpdate()
+                return
+            } else if (voter && allowChange) {
+                await updateVote(targetId, i.user.id, optionId)
+                values[parseInt(voter.value)]--
+            }
+            values[Number(optionId)] += 1
+            await addVote(targetId, i.user.tag, i.user.id, optionId)
+            ;(await channel?.messages?.fetch(voteEmbedId!.id))?.edit({
+                embeds: [voteEmbed(author, title, description, voteOptions, hideResult ? true : onlyAdmin ? true: false, values)],
+            })
+            i.deferUpdate()
+        }
+    })
+}
+
