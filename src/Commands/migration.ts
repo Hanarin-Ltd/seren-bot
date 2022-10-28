@@ -1,11 +1,13 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { addBlockword, getBlockwordList, setDefaultBlockword } from "../utils/blockword"
+import { getBlockwordList, setDefaultBlockword } from "../utils/blockword"
 import { addAllGuildChannel } from "../utils/channel"
 import { deferReply } from "../utils/default"
 import { addOrUpdateGuildData } from "../utils/guildData"
+import { addAllGuildMemberData } from "../utils/memberData"
 import { updateAllMod } from "../utils/mod"
 import { addAllGuildRole } from "../utils/role"
+import { addGuildAllUserData } from "../utils/userData"
 
 const areYouSure = new EmbedBuilder()
     .setColor(BOT_COLOR)
@@ -70,6 +72,8 @@ export default async function migration(interaction: ChatInputCommandInteraction
                 await addOrUpdateGuildData(interaction.guild)
                 await addAllGuildChannel(interaction.guild)
                 await addAllGuildRole(interaction.guild)
+                await addGuildAllUserData(interaction.guild)
+                await addAllGuildMemberData(interaction.guild)
                 await updateAllMod(interaction.guild)
                 await setDefaultBlockword(interaction.guildId, formerBlockword)
                 await i.editReply({ embeds: [migrationSuccess], components: [] })

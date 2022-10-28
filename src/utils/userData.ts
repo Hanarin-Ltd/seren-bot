@@ -1,3 +1,4 @@
+import { Guild } from "discord.js"
 import { client } from ".."
 import prisma from "../prisma"
 import { getBannedGuildList } from "./ban"
@@ -28,6 +29,13 @@ export const addUserData = async (userId: string) => {
             createdAt: user.createdAt
         }
     })
+}
+
+export const addGuildAllUserData = async (guild: Guild) => {
+    const users = await guild.members.fetch()
+    for (const user of users.values()) {
+        await addUserData(user.id)
+    }
 }
 
 export const addUserModGuild = async (userId: string, guildId: string) => {

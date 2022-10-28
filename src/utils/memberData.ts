@@ -1,4 +1,4 @@
-import { GuildMember, PartialGuildMember } from "discord.js"
+import { Guild, GuildMember, PartialGuildMember } from "discord.js"
 import prisma from "../prisma"
 import { getGuildOwner } from "./discord"
 import { hasModRole } from "./mod"
@@ -26,6 +26,13 @@ export const addMemberData = async (member: GuildMember) => {
             mod: await hasModRole(member),
         }
     })
+}
+
+export const addAllGuildMemberData = async (guild: Guild) => {
+    const members = await guild.members.fetch()
+    for (const member of members.values()) {
+        await addMemberData(member)
+    }
 }
 
 export const removeMemberData = async (member: GuildMember | PartialGuildMember) => {
