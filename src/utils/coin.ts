@@ -2,7 +2,7 @@ import { AutocompleteInteraction, EmbedBuilder } from "discord.js"
 import prisma from "../prisma"
 import { abs, getRandomInt, getRandomItem, isSameArray } from "./default"
 import randomWords from 'random-words'
-import { BOT_COLOR } from "../lib"
+import { BOT_COLOR, WEB_PORT } from "../lib"
 import { Server } from "socket.io"
 import { createServer } from "http"
 import { client, env } from ".."
@@ -25,7 +25,7 @@ export const makeNewCoin = async () => {
         price,
     } })
     const priceInfo = getPriceInfo(data.priceHistory)
-    await fetch('http://localhost:3000/api/coin/price', {
+    await fetch(`http://localhost:${WEB_PORT}/api/coin/price`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -54,7 +54,7 @@ export const deleteCoin = async (id: number) => {
             description: `코인의 가격이 0원 이하로 내려가면 자동으로 삭제됩니다.`
         }] })
     })
-    await fetch('http://localhost:3000/api/coin/price', {
+    await fetch(`http://localhost:${WEB_PORT}/api/coin/price`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -235,7 +235,7 @@ export const getPriceInfo = (data: number[]) => {
 export const addCoinComment = async (coinId: number, userId: string, content: string) => {
     const coinData = await getCoinData(coinId)
     if (!coinData) return false
-    return await fetch('http://localhost:3000/api/coin/comment', {
+    return await fetch(`http://localhost:${WEB_PORT}/api/coin/comment`, {
         method: 'POST',
         body: JSON.stringify({
             coinId,

@@ -1,6 +1,7 @@
 import { CoinData } from "@prisma/client"
 import fetch from "node-fetch"
 import { env } from ".."
+import { WEB_PORT } from "../lib"
 import { getCoinList, getPriceInfo, makeNewCoin, updateCoinPrice } from "../utils/coin"
 
 class CoinGame {
@@ -24,7 +25,7 @@ class CoinGame {
         for (const coin of this.coins) {
             await updateCoinPrice(coin.id)
             const priceInfo = getPriceInfo(coin.priceHistory)
-            fetch('http://localhost:3000/api/coin/price', {
+            fetch(`http://localhost:${WEB_PORT}/api/coin/price`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

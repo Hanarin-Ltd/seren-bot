@@ -1,7 +1,7 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import fetch from "node-fetch"
 import { env } from "process"
-import { BOT_COLOR } from "../lib"
+import { BOT_COLOR, WEB_PORT } from "../lib"
 import { errorOccurredWhileTrading, getCoinDataAsName, getUserCoinData, removeUserCoin, userCoinIo } from "../utils/coin"
 import { deferReply, getCurrentDate, getCurrentTime } from "../utils/default"
 import { addUserPoint, getUserData } from "../utils/userData"
@@ -74,7 +74,7 @@ export default async function coinbuy(interaction: ChatInputCommandInteraction) 
             await removeUserCoin(interaction.user.id, coinData.id, amount)
             await addUserPoint(interaction.user.id, coinData.price * amount- tax)
         }
-        const res = await fetch('http://localhost:3000/api/coin/trade', {
+        const res = await fetch(`http://localhost:${WEB_PORT}/api/coin/trade`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

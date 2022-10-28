@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import fetch from "node-fetch"
-import { BOT_COLOR } from "../lib"
+import { BOT_COLOR, WEB_PORT } from "../lib"
 import prisma from "../prisma"
 import { deferReply, errorMessage } from "../utils/default"
 
@@ -18,7 +18,7 @@ export default async function ranking(interaction: ChatInputCommandInteraction) 
      
     try {
         if (option === 'point') {
-            const data = await fetch('http://localhost:3000/api/rank/point').then(res => res.json())
+            const data = await fetch(`http://localhost:${WEB_PORT}/api/rank/point`).then(res => res.json())
             return await interaction.editReply({ embeds: [rankingEmbed('포인트', data.map((d: any) => ({ ...d, value: d.point })))] })
         }
         else if (option === 'level') {

@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser'
 import express, { Request, Response } from 'express'
-import { client as botClient } from './index'
+import { client as botClient, env } from './index'
 import prisma from './prisma'
 import { GuildAllData } from './types/api'
 import { getBanListFromSQL, updateBanListCache } from './utils/ban'
@@ -12,6 +12,8 @@ type DashboardResponce = {
     guildId: string,
     data: GuildAllData
 }
+
+const API_PORT = env.NODE_ENV === 'production' ? 7321 : 5868 as const
 
 const app = express()
 app.use(bodyParser.json())
@@ -58,5 +60,5 @@ app.post('/guild', async (req: Request, res: Response) => {
 })
 
 export default function openAPIServer() {
-    app.listen(7321, () => console.log(`Dashboard API Server is Opened`))
+    app.listen(API_PORT, () => console.log(`Dashboard API Server is Opened`))
 }
