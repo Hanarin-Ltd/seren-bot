@@ -22,7 +22,8 @@ const commandsFile = {
     '코인판매': 'coinsell',
     '내코인': 'mycoin',
     '코인댓글': 'coincomment',
-    '포인트전송': 'sendpoint' // NEW
+    '포인트전송': 'sendpoint',
+    '마이그레이션': 'migration'
 }
 
 type command = keyof typeof commandsFile
@@ -341,6 +342,13 @@ const commands =  [
             .setDescription('보낼 수량을 입력해주세요')
             .setRequired(true)
         )
+        .toJSON(),
+
+    new SlashCommandBuilder()
+        .setName('마이그레이션')
+        .setDescription('데이터 마이그레이션을 진행합니다, ⚠️ 데이터가 손실될 수 있습니다! ⚠️')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDMPermission(false)
         .toJSON(),
 ]
 

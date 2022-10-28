@@ -61,8 +61,28 @@ export const updateGuildMod = async (guildId: string, data: any) => {
 }
 
 export const hasModRole = async (member: GuildMember | PartialGuildMember) => {
+    if (member.user.bot) return false
+    if (member.guild.ownerId === member.id) return true
+
     const modRoleList = (await getGuildModRole(member.guild)).map(b => b.id)
     const memberRoleList = member.roles.cache.map(r => r.id)
 
     return modRoleList.some(r => memberRoleList.includes(r))
+}
+
+export const updateAllMod = async (guild: Guild) => {
+    const modList = await getModList(guild.id)
+    if (modList.length === 0) await addMod(guild, await guild.fetchOwner())
+    modList.forEach(async m => {
+        const member = await guild.members.fetch(m.userId)
+        if (!member) return
+        if (!await hasModRole(member)) {
+            await removeMod(guild, member)
+        }
+    })
+    const memberList = await guild.members.fetch()
+    memberList.forEach(async m => {
+        if (await hasModRole(m)) await addMod(guild, m)
+        else await removeMod(guild, m)
+    })
 }

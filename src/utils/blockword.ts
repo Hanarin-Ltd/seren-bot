@@ -20,10 +20,13 @@ export const getBlockwordDisabledChannel = async (guildId: string) => {
     return result ? result.blockwordDisabledChannelId : ''
 }
 
-export const setDefaultBlockword = async (guildId: string) => {
+export const setDefaultBlockword = async (guildId: string, word: string[] = []) => {
+    const exist = await prisma.blockword.findFirst({ where: { guildId } })
+    if (exist) return
     return await prisma.blockword.create({
         data: {
             guildId,
+            word
         }
     })
 }

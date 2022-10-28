@@ -1,4 +1,4 @@
-import { Guild, Role, inlineCode } from "discord.js"
+import { Guild, Role, inlineCode, PermissionFlagsBits } from "discord.js"
 import prisma from "../prisma"
 import { updateRoleCache } from "./discord"
 import { getGuildLogSetting, log } from "./log"
@@ -32,7 +32,9 @@ export const addGuildRole = async (role: Role) => {
 }
 
 export const getGuildModRole = async (guild: Guild) => {
-    return (await prisma.guildRole.findMany({ where: { guildId: guild.id, type: 'mod' } }))!
+    const contained = await prisma.guildRole.findMany({ where: { guildId: guild.id, type: 'mod' } })
+    const modRole = guild.roles.cache.filter(r => r.permissions.has(PermissionFlagsBits.Administrator))
+    return [...contained, ...modRole.map(r => ({ id: r.id, name: r.name, guildId: r.guild.id, type: 'mod' }))]
 }
 
 export const getGuildRole = async (guild: Guild, roleId: string) => {
