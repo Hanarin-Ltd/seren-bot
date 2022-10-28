@@ -25,7 +25,7 @@ import { addMemberExp, checkLevelUp } from './utils/level'
 import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
 import coinGame from './coin/coin'
 import { addUserData, getUserData } from './utils/userData'
-import { scanMessage } from './utils/blockWord'
+import { scanMessage } from './utils/blockword'
 import { KoreanbotsClient } from "koreanbots"
 import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
@@ -79,9 +79,9 @@ client.on('messageCreate', async message => {
         if (!message.channel || message.channel.isDMBased()) return
         
         const guildData = await getGuildData(message.guild.id)
-        if (!guildData) return
+        if (!guildData) await addOrUpdateGuildData(message.guild)
 
-        scanMessage(message)
+        await scanMessage(message)
 
         await addMemberExp(message.member!, 10)
         await checkLevelUp(message.member!, message.channel)

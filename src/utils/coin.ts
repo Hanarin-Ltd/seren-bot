@@ -10,11 +10,13 @@ import fetch from "node-fetch"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
 
+const IO_PORT = env.NODE_ENV === 'production' ? 7428 : 5878 as const
+
 export const userCoinIo = new Server(createServer(), {
     cors: {
         origin: [env.SITE!]
     }
-}).listen(7428)
+}).listen(IO_PORT)
 
 export const makeNewCoin = async () => {
     const name = randomWords(1)[0].toUpperCase()

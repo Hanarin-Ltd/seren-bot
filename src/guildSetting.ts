@@ -1,7 +1,7 @@
 import { EmbedBuilder, Guild, PermissionFlagsBits } from "discord.js"
 import { env } from '.'
 import { BOT_COLOR } from "./lib"
-import { setDefaultBlockword } from "./utils/blockWord"
+import { setDefaultBlockword } from "./utils/blockword"
 import { addAllGuildChannel } from "./utils/channel"
 import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"

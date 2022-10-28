@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, CacheType, GuildMember } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { checkIsBlockword, addBlockword, removeBlockword } from "../utils/blockWord"
+import { checkIsBlockword, addBlockword, removeBlockword } from "../utils/blockword"
 import { deferReply, noPermissionMessage } from "../utils/default"
 import { getThisGuild, updateMemberCache, isGuildModerator } from "../utils/discord"
 

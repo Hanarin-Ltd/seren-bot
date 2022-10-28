@@ -4,7 +4,7 @@ import { BOT_COLOR, FILTERING_MESSAGE_TYPE } from "../lib"
 import prisma from "../prisma"
 import { isGuildModerator } from "./discord"
 import { getGuildData } from "./guildData"
-import { getGuildOption } from "./guildOption"
+import { getGuildOption, setDefaultGuildOption } from "./guildOption"
 import { getGuildLogSetting, log } from "./log"
 import { giveWarning } from "./warning"
 
@@ -80,7 +80,9 @@ export const scanMessage = async (message: Message) => {
     if (message.content.length < 1) return
     if (!message.channelId || !message.guildId) return
 
-    const option = (await getGuildOption(message.guildId))!
+    let option = await getGuildOption(message.guildId)
+    if (!option) option = await setDefaultGuildOption(message.guildId)
+
     if (!option.checkModsMessage) {
         if (await isGuildModerator(message.guild!, message.author as unknown as GuildMember)) return
     }
@@ -105,7 +107,7 @@ export const scanMessage = async (message: Message) => {
         }
 
         message.content.toLowerCase().split(' ').forEach(word => {
-            if (data.isSubscribed && option.useEnhancedFilter) {
+            if (data.isSubscribed && option?.useEnhancedFilter) {
                 // TODO: Enhanced Filtering
                 // ~/Downloads/al.js
             }

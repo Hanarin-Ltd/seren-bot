@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, CacheType, userMention, bold, GuildMember } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { getBanListFromSQL } from "../utils/ban"
-import { getBlockwordList } from "../utils/blockWord"
+import { getBlockwordList } from "../utils/blockword"
 import { deferReply, getCurrentDate } from "../utils/default"
 import { updateMemberCache, getThisGuild, isGuildModerator, sendDM } from "../utils/discord"
 import { getModList } from "../utils/mod"
