@@ -11,6 +11,8 @@ export const getGuildLogSetting = async (guildId: string) => {
 }
 
 export const setGuildLogSetting = async (guildId: string, initial: any = {}) => {
+    const exist = await prisma.guildLogSetting.findUnique({ where: { guildId } })
+    if (exist) return exist
     return await prisma.guildLogSetting.create({ data: { guildId, ...initial } })
 }
 

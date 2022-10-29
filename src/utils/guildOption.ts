@@ -6,6 +6,8 @@ export const getGuildOption = async (guildId: string) => {
 }
 
 export const setDefaultGuildOption = async (guildId: string, initial: any = {}) => {
+    const exist = await prisma.guildOption.findUnique({ where: { guildId } })
+    if (exist) return exist
     return await prisma.guildOption.create({
         data: {
             guildId,
