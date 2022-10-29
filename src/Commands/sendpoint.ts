@@ -1,4 +1,4 @@
-import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, User } from "discord.js"
+import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { getUser } from "../utils/discord"
 import { addUserPoint, getUserData, removeUserPoint } from "../utils/userData"
@@ -101,7 +101,7 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
     }
 
     const tax = Math.round(amount * (1 / 10))
-    const collector = interaction.channel?.createMessageComponentCollector({
+    const collector = interaction.channel?.createMessageComponentCollector<ComponentType.Button>({
         max: 1,
         filter: i => i.user.id === interaction.user.id,
     })

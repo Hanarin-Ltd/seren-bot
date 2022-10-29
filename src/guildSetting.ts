@@ -5,7 +5,7 @@ import { setDefaultBlockword } from "./utils/blockword"
 import { addAllGuildChannel } from "./utils/channel"
 import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"
-import { addGuildLogSetting } from "./utils/log"
+import { setGuildLogSetting } from "./utils/log"
 import { addMemberData } from "./utils/memberData"
 import { addMod, hasModRole } from "./utils/mod"
 import { addAllGuildRole, setRoleToMod } from "./utils/role"
@@ -26,7 +26,7 @@ export default async function guildSetting(guild: Guild) {
     await setDefaultBlockword(guildId)
     await addAllGuildChannel(guild)
     await addAllGuildRole(guild)
-    await addGuildLogSetting(guild.id)
+    await setGuildLogSetting(guild.id)
 
     const owner = await guild.fetchOwner()
     const adminRoleList = (await guild.roles.fetch()).filter(r => r.permissions.has(PermissionFlagsBits.Administrator))

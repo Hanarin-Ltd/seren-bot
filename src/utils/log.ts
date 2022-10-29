@@ -10,8 +10,8 @@ export const getGuildLogSetting = async (guildId: string) => {
     return await prisma.guildLogSetting.findUnique({ where: { guildId } })
 }
 
-export const addGuildLogSetting = async (guildId: string) => {
-    return await prisma.guildLogSetting.create({ data: { guildId } })
+export const setGuildLogSetting = async (guildId: string, initial: any = {}) => {
+    return await prisma.guildLogSetting.create({ data: { guildId, ...initial } })
 }
 
 export const modifyGuildLogSetting = async (guildId: string, data: GuildLogSetting) => {

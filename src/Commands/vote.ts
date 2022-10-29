@@ -1,4 +1,4 @@
-import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextInputBuilder, TextInputStyle, User } from "discord.js"
+import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextInputBuilder, TextInputStyle, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { chunkArray, completeSuccessfullyMessage, deferReply, errorMessage } from "../utils/default"
 import { addVote, getVoter, makeVote, removeVote, updateVote } from "../utils/vote"
@@ -95,7 +95,7 @@ export default async function vote(interaction: ChatInputCommandInteraction) {
     const onlyAdmin = args.getBoolean('결과비공개') || false
     const allowChange = args.getBoolean('선택변경') === null ? true : args.getBoolean('선택변경')! // default true
 
-    const collecter = interaction.channel?.createMessageComponentCollector({
+    const collecter = interaction.channel?.createMessageComponentCollector<ComponentType.Button>({
         time: 100000,
         filter: i => i.user.id === interaction.user.id,
     })
@@ -146,7 +146,7 @@ const generateVote = async (
 
     await makeVote(modalInteraction.id, author.id, title, description, voteOptions, setting)
 
-    const collecter = channel?.createMessageComponentCollector({
+    const collecter = channel?.createMessageComponentCollector<ComponentType.Button>({
         max: 1000000,
         time: 50000000,
     })

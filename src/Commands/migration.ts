@@ -1,9 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { getBlockwordList, setDefaultBlockword } from "../utils/blockword"
 import { addAllGuildChannel } from "../utils/channel"
 import { deferReply } from "../utils/default"
 import { addOrUpdateGuildData } from "../utils/guildData"
+import { getGuildOption, setDefaultGuildOption } from "../utils/guildOption"
+import { getGuildLogSetting, setGuildLogSetting } from "../utils/log"
 import { addAllGuildMemberData } from "../utils/memberData"
 import { updateAllMod } from "../utils/mod"
 import { addAllGuildRole } from "../utils/role"
@@ -54,7 +56,7 @@ const checkButtons = new ActionRowBuilder<ButtonBuilder>()
 export default async function migration(interaction: ChatInputCommandInteraction) {
     await deferReply(interaction)
 
-    const collector = interaction.channel?.createMessageComponentCollector({
+    const collector = interaction.channel?.createMessageComponentCollector<ComponentType.Button>({
         filter: i => i.user.id === interaction.user.id,
         time: 10000,
         max: 1
@@ -68,14 +70,18 @@ export default async function migration(interaction: ChatInputCommandInteraction
                 if (!interaction.guildId) throw new Error('서버 ID를 얻어올 수 없음')
 
                 const formerBlockword = await getBlockwordList(interaction.guildId)
+                const formerLogSetting = await getGuildLogSetting(interaction.guildId)
+                const formerOption = await getGuildOption(interaction.guildId)
                 
                 await addOrUpdateGuildData(interaction.guild)
                 await addAllGuildChannel(interaction.guild)
                 await addAllGuildRole(interaction.guild)
                 await addGuildAllUserData(interaction.guild)
                 await addAllGuildMemberData(interaction.guild)
+                await setGuildLogSetting(interaction.guildId, formerLogSetting)
                 await updateAllMod(interaction.guild)
                 await setDefaultBlockword(interaction.guildId, formerBlockword)
+                await setDefaultGuildOption(interaction.guildId, formerOption)
                 await i.editReply({ embeds: [migrationSuccess], components: [] })
             } catch (e) {
                 console.log(e)
