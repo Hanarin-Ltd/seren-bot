@@ -27,9 +27,10 @@ export default function startWeeklyPoint() {
         for (const plan of serenPlanList) { // foreach는 성능이 떨어짐
             const userIdList = await getUserDataPlanList(plan)
             userIdList.forEach(async userId => {
-                addUserPoint(userId, plan === 'Free' ? 6000 : plan === 'Serendard' ? 12000 : 20000)
                 const userData = await getUserData(userId)
                 if (!userData) return
+                if (userData.point >= 30000) return
+                addUserPoint(userId, plan === 'Free' ? 6000 : plan === 'Serendard' ? 12000 : 20000)
                 await sendDM(userId, { embeds: [youGotPoint(plan, userData.point)] })
             })
         }
