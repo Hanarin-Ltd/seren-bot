@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CacheType, ChatInputCommandInteraction, ComponentType, EmbedBuilder } from "discord.js";
 import { BOT_COLOR } from "../lib";
 import { deferReply } from "../utils/default";
+import { sendDM } from "../utils/discord";
 
 const helloUser = (name: string) => {
     return new EmbedBuilder()
@@ -40,7 +41,7 @@ const howtoUse = new EmbedBuilder()
 export default async function hello(interaction: ChatInputCommandInteraction<CacheType>) {
     await deferReply(interaction)
 
-    await interaction.user.send({ embeds: [helloUser(interaction.user.username)], components: [helpButton] })
+    await sendDM(interaction.user.id, { embeds: [helloUser(interaction.user.username)], components: [helpButton] })
     const collector = interaction.user.dmChannel?.createMessageComponentCollector({
         max: 1,
         time: 30000,

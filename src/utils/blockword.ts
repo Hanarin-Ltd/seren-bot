@@ -2,7 +2,7 @@ import { EmbedBuilder, Guild, GuildMember, Message, userMention } from "discord.
 import { compareTwoStrings } from "string-similarity"
 import { BOT_COLOR, FILTERING_MESSAGE_TYPE } from "../lib"
 import prisma from "../prisma"
-import { isGuildModerator } from "./discord"
+import { isGuildModerator, sendDM } from "./discord"
 import { getGuildData } from "./guildData"
 import { getGuildOption, setDefaultGuildOption } from "./guildOption"
 import { getGuildLogSetting, log } from "./log"
@@ -125,7 +125,7 @@ export const scanMessage = async (message: Message) => {
 
     if (catchedWordList.length > 0) {
         await message.delete()
-        await message.author.send({ embeds: [youUsedBlockword(catchedWordList)] })
+        await sendDM(message.author.id, { embeds: [youUsedBlockword(catchedWordList)] })
         await giveWarning(guildId, message.member!)
         logSetting?.useBlockword && await log({
             content: `금지어 사용 멤버 : ${message.member!.user.username} / 사용 금지어 : ${catchedWordList.join(', ')}`,

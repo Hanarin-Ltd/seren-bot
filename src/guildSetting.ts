@@ -3,6 +3,7 @@ import { env } from '.'
 import { BOT_COLOR } from "./lib"
 import { setDefaultBlockword } from "./utils/blockword"
 import { addAllGuildChannel } from "./utils/channel"
+import { sendDM } from "./utils/discord"
 import { addOrUpdateGuildData } from "./utils/guildData"
 import { setDefaultGuildOption } from "./utils/guildOption"
 import { setGuildLogSetting } from "./utils/log"
@@ -41,5 +42,5 @@ export default async function guildSetting(guild: Guild) {
         }
     })
 
-    await (owner.send({ embeds: [thanksForUsing(guildId)] }))
+    await sendDM(owner.id, { embeds: [thanksForUsing(guildId)] })
 }

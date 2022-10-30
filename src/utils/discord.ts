@@ -53,7 +53,9 @@ export const getMember = async (guild: Guild, id: string) => {
 }
 
 export const sendDM = async (userId: string, message: string | MessagePayload | BaseMessageOptions) => {
-    await client.users.cache.get(userId)?.send(message)
+    try {
+        await client.users.cache.get(userId)?.send(message)
+    } catch { return }
 }
 
 export const getChannel = async (guild: Guild, channelId: string) => {

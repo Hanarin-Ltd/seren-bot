@@ -1,6 +1,6 @@
 import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getUser } from "../utils/discord"
+import { getUser, sendDM } from "../utils/discord"
 import { addUserPoint, getUserData, removeUserPoint } from "../utils/userData"
 
 const theTradeHasBeenCanceled = (author: User, cause?: string) => new EmbedBuilder()
@@ -112,8 +112,7 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
             try {
                 await removeUserPoint(interaction.user.id, amount)
                 await addUserPoint(target.id, amount - tax)
-                const user = await getUser(interaction, target.id)
-                user.send({ embeds: [youGotCoin(interaction.user, target.tag, amount - tax, target.point, tradeTime)] })
+                await sendDM(target.id, { embeds: [youGotCoin(interaction.user, target.tag, amount - tax, target.point, tradeTime)] })
                 interaction.editReply({ embeds: [tradeSuccess(i.user, target.tag, amount, userData.point, tax, tradeTime)] })
             } catch {
                 interaction.editReply({ embeds: [theTradeHasBeenCanceled(i.user)] })

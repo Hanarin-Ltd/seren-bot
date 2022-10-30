@@ -7,6 +7,7 @@ import { Server } from "socket.io"
 import { createServer } from "http"
 import { client, env } from ".."
 import fetch from "node-fetch"
+import { sendDM } from "./discord"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
 
@@ -50,7 +51,7 @@ export const deleteCoin = async (id: number) => {
     await prisma.userCoinData.deleteMany({ where: { coinId: id } })
     users.forEach(async u => {
         const user = await client.users.fetch(u.userId)
-        await user.send({ embeds: [{
+        await sendDM(u.userId, { embeds: [{
             color: BOT_COLOR,
             title: `:cry: 아쉽게도 ${user.username} 님의 ${coin.name}이(가) 삭제되었습니다.`,
             description: `코인의 가격이 0원 이하로 내려가면 자동으로 삭제됩니다.`
