@@ -31,7 +31,8 @@ export default function startWeeklyPoint() {
                 if (!userData) return
                 if (userData.point >= 30000) return
                 addUserPoint(userId, plan === 'Free' ? 6000 : plan === 'Serendard' ? 12000 : 20000)
-                await sendDM(userId, { embeds: [youGotPoint(plan, userData.point)] })
+                // TODO : 가입한 유저에게만 전송
+                // await sendDM(userId, { embeds: [youGotPoint(plan, userData.point)] })
             })
         }
     }, null, true, 'Asia/Seoul')
