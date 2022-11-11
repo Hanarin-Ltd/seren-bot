@@ -1,6 +1,6 @@
 import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, ModalActionRowComponentBuilder, ModalBuilder, ModalSubmitInteraction, TextBasedChannel, TextInputBuilder, TextInputStyle, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { chunkArray, completeSuccessfullyMessage, deferReply, errorMessage } from "../utils/default"
+import { chunkArray, completeSuccessfullyMessage, errorMessage } from "../utils/default"
 import { addVote, getVoter, makeVote, removeVote, updateVote } from "../utils/vote"
 
 const makeVoteButton = (disabled: boolean = false) => new ActionRowBuilder<ButtonBuilder>()
@@ -87,7 +87,7 @@ const voteResultEmbed = (title: string, desc: string, options: string[], value: 
     )))
 
 export default async function vote(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
+    await interaction.deferReply()
 
     const args = interaction.options
     const mentionEveryone = args.getBoolean('everyone') || false

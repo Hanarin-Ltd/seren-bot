@@ -4,7 +4,7 @@ import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openAPIServer from './api'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
-import { addSlashCommands, errorMessage } from './utils/default'
+import { addSlashCommands, deferReply, errorMessage } from './utils/default'
 import { getChannel, getGuildOwner } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
@@ -19,7 +19,7 @@ import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
 import coinGame from './coin/coin'
 import { addUserData, getUserData } from './utils/userData'
 import { scanMessage } from './utils/blockword'
-import { KoreanbotsClient } from "koreanbots"
+import { KoreanbotsClient } from 'koreanbots'
 import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
 import startWeeklyPoint from './coin/weeklyPoint'
@@ -104,21 +104,29 @@ client.on('interactionCreate', async (interaction) => {
                 return interaction.reply({ embeds: [errorMessage()] })
             }
         } else {
-            const logSetting = await getGuildLogSetting(interaction.guild!.id)
-        
+            if (!interaction.channel) return
+
             try {
+                await deferReply(interaction)
+
                 getCommandFunction()[interaction.commandName](interaction)
+
+                if (interaction.channel.isDMBased() || !interaction.guild) return
+                const logSetting = await getGuildLogSetting(interaction.guild.id)
+                const guildSetting = await getGuildOption(interaction.guild.id)
+
                 logSetting?.useCommand && log({
                     content: `명령어 사용 : ${interaction.member!.user.username} / 사용한 명령어 : ${interaction.commandName}`,
                     rawContent: `명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}`,
                     guild: interaction.guild!,
                     type: 'useCommand'
                 })
-                await addMemberExp(interaction.member! as GuildMember, 5)
-                if (interaction.channel!.isDMBased()) return
-                if (interaction.channel!.type !== ChannelType.GuildText) return
-                await checkLevelUp(interaction.member! as GuildMember, interaction.channel!)
-            } catch (error: any) {
+
+                if (guildSetting?.useLevelSystem) {
+                    await addMemberExp(interaction.member! as GuildMember, 5)
+                    await checkLevelUp(interaction.member! as GuildMember, interaction.channel!)
+                }
+            } catch (error) {
                 console.log(error)
                 interaction.reply({ embeds: [errorMessage()] })
             }

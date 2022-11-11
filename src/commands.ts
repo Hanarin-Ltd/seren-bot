@@ -23,6 +23,7 @@ const commandsFile = {
     '내코인': 'mycoin',
     '코인댓글': 'coincomment',
     '포인트전송': 'sendpoint',
+    '도박': 'gamble',
     '마이그레이션': 'migration'
 }
 
@@ -31,22 +32,22 @@ type command = keyof typeof commandsFile
 const commands =  [
     new SlashCommandBuilder()
         .setName('핑')
-        .setDescription('봇 응답시간을 테스트합니다')
+        .setDescription('🏓 봇 응답시간을 테스트합니다')
         .setDMPermission(false)
         .toJSON(),
     new SlashCommandBuilder()
         .setName('도움말')
-        .setDescription('봇 명령어 리스트를 출력합니다')
+        .setDescription('📑 봇 명령어 리스트를 출력합니다')
         .setDMPermission(false)
         .toJSON(),
     new SlashCommandBuilder()
         .setName('정보')
-        .setDescription('서버의 자세한 정보를 알려줍니다')
+        .setDescription('ℹ️ 서버의 자세한 정보를 알려줍니다')
         .setDMPermission(false)
         .toJSON(),
     new SlashCommandBuilder()
         .setName('리스트')
-        .setDescription('관리자 / 금지어 목록을 출력합니다')
+        .setDescription('📜 관리자 / 금지어 목록을 출력합니다')
         .setDMPermission(false)
         .addStringOption(content => 
             content.setName('내용')
@@ -62,12 +63,12 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('안녕')
-        .setDescription('봇에게 인사를 건네보세요!')
+        .setDescription('👋 봇에게 인사를 건네보세요!')
         .setDMPermission(false)
         .toJSON(),
     new SlashCommandBuilder()
         .setName('랭킹')
-        .setDescription('랭킹을 출력합니다')
+        .setDescription('📊 랭킹을 출력합니다')
         .setDMPermission(false)
         .addStringOption(content =>
             content.setName('종류')
@@ -81,7 +82,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('아이디')
-        .setDescription('유저의 아이디를 출력합니다')
+        .setDescription('🪪 유저의 아이디를 출력합니다')
         .addUserOption(target =>
             target.setName('유저')
             .setDescription('아이디를 출력할 유저')
@@ -90,12 +91,12 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('내아이디')
-        .setDescription('자신의 아이디를 출력합니다')
+        .setDescription('🪪 자신의 아이디를 출력합니다')
         .toJSON(),
 
     new SlashCommandBuilder()
         .setName('금지어')
-        .setDescription('금지어를 관리합니다')
+        .setDescription('🤬 금지어를 관리합니다')
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addStringOption(setting => 
@@ -115,7 +116,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('역할')
-        .setDescription('사용자의 역할을 관리합니다')
+        .setDescription('🎭 사용자의 역할을 관리합니다')
         .setDMPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles | PermissionFlagsBits.ManageGuild)
         .addStringOption(setting =>
@@ -139,7 +140,7 @@ const commands =  [
         ),
     new SlashCommandBuilder()
         .setName('경고')
-        .setDescription('경고를 관리합니다')
+        .setDescription('⚠️ 경고를 관리합니다')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false)
         .addStringOption(setting => 
@@ -164,7 +165,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('차단')
-        .setDescription('차단 유저를 관리합니다')
+        .setDescription('⛔ 차단 유저를 관리합니다')
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers | PermissionFlagsBits.Administrator)
         .setDMPermission(false)
         .addStringOption(setting =>
@@ -187,7 +188,7 @@ const commands =  [
         ),
     new SlashCommandBuilder()
         .setName('차단경고갯수')
-        .setDescription('설정한 경고 갯수에 도달하면 차단합니다')
+        .setDescription('🚫 설정한 경고 갯수에 도달하면 차단합니다')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false)
         .addNumberOption(count =>
@@ -199,7 +200,7 @@ const commands =  [
 
     new SlashCommandBuilder()
         .setName('로그')
-        .setDescription('로그를 설정합니다')
+        .setDescription('📜 로그를 설정합니다')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false)
         .addStringOption(setting =>
@@ -241,7 +242,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('투표')
-        .setDescription('현재 채널에 투표를 생성합니다')
+        .setDescription('🗳️ 현재 채널에 투표를 생성합니다')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false)
         .addBooleanOption(mention =>
@@ -268,11 +269,11 @@ const commands =  [
 
     new SlashCommandBuilder()
         .setName('코인')
-        .setDescription('코인게임에 참가하시겠습니까?')
+        .setDescription('🪙 코인게임에 참가하시겠습니까?')
         .toJSON(),
     new SlashCommandBuilder()
         .setName('코인가격')
-        .setDescription('코인 가격을 확인합니다')
+        .setDescription('💹 코인 가격을 확인합니다')
         .addStringOption(coin =>
             coin.setName('이름')
             .setDescription('코인 이름을 입력해주세요')
@@ -282,7 +283,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('코인구매')
-        .setDescription('코인을 구매합니다')
+        .setDescription('🪙 코인을 구매합니다')
         .addStringOption(coin =>
             coin.setName('이름')
             .setDescription('코인 이름을 입력해주세요')
@@ -297,7 +298,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('코인판매')
-        .setDescription('코인을 판매합니다')
+        .setDescription('🪙 코인을 판매합니다')
         .addStringOption(coin =>
             coin.setName('이름')
             .setDescription('코인 이름을 입력해주세요')
@@ -312,11 +313,11 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('내코인')
-        .setDescription('내 코인을 확인합니다')
+        .setDescription('💰 내 코인을 확인합니다')
         .toJSON(),
     new SlashCommandBuilder()
         .setName('코인댓글')
-        .setDescription('코인에 댓글을 답니다')
+        .setDescription('💬 코인에 댓글을 답니다')
         .addStringOption(coin => 
             coin.setName('이름')
             .setDescription('코인 이름을 입력해주세요')
@@ -331,7 +332,7 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('포인트전송')
-        .setDescription('다른 사람에게 포인트를 보냅니다')
+        .setDescription('💸 다른 사람에게 포인트를 보냅니다')
         .addStringOption(userId =>
             userId.setName('아이디')
             .setDescription('받을 사람의 아이디를 입력해주세요')
@@ -340,6 +341,15 @@ const commands =  [
         .addNumberOption(amount =>
             amount.setName('수량')
             .setDescription('보낼 수량을 입력해주세요')
+            .setRequired(true)
+        )
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('도박')
+        .setDescription('🎰 포인트를 일정 확률로 얻거나 잃습니다')
+        .addNumberOption(amount =>
+            amount.setName('포인트')
+            .setDescription('도박할 포인트를 입력해주세요')
             .setRequired(true)
         )
         .toJSON(),

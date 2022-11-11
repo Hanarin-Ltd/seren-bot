@@ -3,7 +3,7 @@ import fetch from "node-fetch"
 import { env } from "process"
 import { BOT_COLOR, WEB_PORT } from "../lib"
 import { errorOccurredWhileTrading, getCoinDataAsName, getUserCoinData, removeUserCoin, userCoinIo } from "../utils/coin"
-import { deferReply, getCurrentDate, getCurrentTime } from "../utils/default"
+import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { addUserPoint, getUserData } from "../utils/userData"
 
 interface CoinSellCommand {
@@ -34,8 +34,6 @@ const youSelledCoin = (data: CoinSellCommand) => (
 )
 
 export default async function coinbuy(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const coinName = args.getString('이름')!
     const amount = args.getInteger('수량')!

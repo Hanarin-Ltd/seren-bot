@@ -1,12 +1,10 @@
 import { ChatInputCommandInteraction, CacheType, GuildMember } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { checkIsBlockword, addBlockword, removeBlockword } from "../utils/blockword"
-import { deferReply, noPermissionMessage } from "../utils/default"
+import { noPermissionMessage } from "../utils/default"
 import { getThisGuild, updateMemberCache, isGuildModerator } from "../utils/discord"
 
 export default async function blockword(interaction: ChatInputCommandInteraction<CacheType>) {
-    await deferReply(interaction)
-    
     const args = interaction.options
     const thisGuild = await getThisGuild(interaction)
     const guildId = thisGuild.id

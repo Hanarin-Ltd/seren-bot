@@ -1,7 +1,7 @@
 import { blockQuote, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { addCoinComment, getCoinDataAsName } from "../utils/coin"
-import { deferReply, errorMessage } from "../utils/default"
+import { errorMessage } from "../utils/default"
 
 const youCommentedCoin = (name: string, content: string) => new EmbedBuilder()
     .setColor(BOT_COLOR)
@@ -17,8 +17,6 @@ const coinNotFound = (name: string) => new EmbedBuilder()
     .setDescription(`\`${name}\`라는 이름의 코인을 찾을 수 없습니다. 오타를 확인해주세요.`)
 
 export default async function coincomment(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const coinName = args.getString('이름')!
     const content = args.getString('댓글')!

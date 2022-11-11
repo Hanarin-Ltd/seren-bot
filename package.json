@@ -7,6 +7,9 @@
     "scripts": {
         "dev": "nodemon --files --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
         "start": "npm run build && node dist/index.js",
+        "generate": "prisma generate",
+        "push": "prisma push --accept-data-loss",
+        "studio": "prisma studio",
         "build": "tsc"
     },
     "keywords": [],

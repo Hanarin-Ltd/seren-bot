@@ -1,11 +1,9 @@
 import { ChatInputCommandInteraction, GuildMember } from "discord.js"
-import { completeSuccessfullyMessage, deferReply } from "../utils/default"
+import { completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild } from "../utils/discord"
 import { giveWarning, removeWarning } from "../utils/warning"
 
 export default async function warning(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const targetMember = args.getMember('멤버')! as GuildMember
     const option = args.getString('설정', true)

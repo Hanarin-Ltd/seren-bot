@@ -2,7 +2,7 @@ import { UserCoinData } from "@prisma/client"
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { getCoinData, getUserCoinData } from "../utils/coin"
-import { deferReply, errorMessage } from "../utils/default"
+import { errorMessage } from "../utils/default"
 import { getUserData } from "../utils/userData"
 
 const coinEmbed = async (data: UserCoinData[], point: number) => {
@@ -25,8 +25,6 @@ const coinEmbed = async (data: UserCoinData[], point: number) => {
 }
 
 export default async function coinbuy(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const userCoinData = await getUserCoinData(interaction.user.id)
     const userData = await getUserData(interaction.user.id)
 

@@ -1,10 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { deferReply, completeSuccessfullyMessage } from "../utils/default"
 
 export default async function getId(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const target = args.getUser('유저', true)
 

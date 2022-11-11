@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import fetch from "node-fetch"
 import { BOT_COLOR, WEB_PORT } from "../lib"
 import prisma from "../prisma"
-import { deferReply, errorMessage } from "../utils/default"
+import { errorMessage } from "../utils/default"
 
 const rankingEmbed = (option: string, data: { username: string, tag: string, value: number }[]) => new EmbedBuilder()
     .setColor(BOT_COLOR)
@@ -12,8 +12,6 @@ const rankingEmbed = (option: string, data: { username: string, tag: string, val
     ).join('\n')}`)
 
 export default async function ranking(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const option = interaction.options.getString('종류', true)
      
     try {

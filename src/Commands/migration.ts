@@ -1,8 +1,7 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { getBlockwordList, setDefaultBlockword } from "../utils/blockword"
 import { addAllGuildChannel } from "../utils/channel"
-import { deferReply } from "../utils/default"
 import { addOrUpdateGuildData } from "../utils/guildData"
 import { getGuildOption, setDefaultGuildOption } from "../utils/guildOption"
 import { getGuildLogSetting, setGuildLogSetting } from "../utils/log"
@@ -54,8 +53,6 @@ const checkButtons = new ActionRowBuilder<ButtonBuilder>()
     )
 
 export default async function migration(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const collector = interaction.channel?.createMessageComponentCollector<ComponentType.Button>({
         filter: i => i.user.id === interaction.user.id,
         time: 10000,

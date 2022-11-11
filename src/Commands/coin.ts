@@ -1,8 +1,6 @@
 import { bold, ChatInputCommandInteraction, codeBlock, EmbedBuilder } from "discord.js"
-import { env } from ".."
-import { BOT_COLOR } from "../lib"
+import { BOT_COLOR, env } from "../lib"
 import { getCoinList, getPriceInfo } from "../utils/coin"
-import { deferReply } from "../utils/default"
 
 type CoinDataList = {
     name: string
@@ -25,8 +23,6 @@ const youJoined = (data: CoinDataList) => new EmbedBuilder()
     ])
 
 export default async function coin(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const coinList = await getCoinList()
     const coinDataList = coinList.map(c => {
         const priceInfo = getPriceInfo(c.priceHistory)

@@ -1,10 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js"
-import { completeSuccessfullyMessage, deferReply } from "../utils/default"
+import { completeSuccessfullyMessage } from "../utils/default"
 import { setWarningLimit } from "../utils/warning"
 
 export default async function warningLimit(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const count = args.getNumber('갯수', true)
 

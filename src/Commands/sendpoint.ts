@@ -1,6 +1,6 @@
 import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { getUser, sendDM } from "../utils/discord"
+import { sendDM } from "../utils/discord"
 import { addUserPoint, getUserData, removeUserPoint } from "../utils/userData"
 
 const theTradeHasBeenCanceled = (author: User, cause?: string) => new EmbedBuilder()

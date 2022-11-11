@@ -1,9 +1,8 @@
 import { blockQuote, bold, ChatInputCommandInteraction, EmbedBuilder } from "discord.js"
 import fetch from "node-fetch"
-import { env } from ".."
-import { BOT_COLOR, WEB_PORT } from "../lib"
+import { BOT_COLOR, env, WEB_PORT } from "../lib"
 import { addUserCoin, errorOccurredWhileTrading, getCoinDataAsName, getUserCoinData } from "../utils/coin"
-import { deferReply, getCurrentDate, getCurrentTime } from "../utils/default"
+import { getCurrentDate, getCurrentTime } from "../utils/default"
 import { getUserData, removeUserPoint } from "../utils/userData"
 
 const notEnoughPoint = (point: number, needPoint: number) => (
@@ -34,8 +33,6 @@ const youBoughtCoin = (name: string, amount: number, price: number, point: numbe
 )
 
 export default async function coinbuy(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const coinName = args.getString('이름')!
     const amount = args.getInteger('수량')!

@@ -1,12 +1,10 @@
 import { ChatInputCommandInteraction, GuildMember, Role } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { noPermissionMessage, completeSuccessfullyMessage, deferReply } from "../utils/default"
+import { noPermissionMessage, completeSuccessfullyMessage } from "../utils/default"
 import { isGuildModerator } from "../utils/discord"
 import { getGuildModRole } from "../utils/role"
 
 export default async function role(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     if (!await isGuildModerator(interaction.guild!, interaction.member as GuildMember)) return interaction.editReply({ embeds: [noPermissionMessage()] })
 
     const args = interaction.options

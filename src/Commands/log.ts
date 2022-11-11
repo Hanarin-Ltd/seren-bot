@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, Guild } from "discord.js"
 import { BOT_COLOR } from "../lib"
-import { completeSuccessfullyMessage, deferReply } from "../utils/default"
+import { completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild } from "../utils/discord"
 import { getGuildLogSetting, modifyGuildLogSetting } from "../utils/log"
 
@@ -28,8 +28,6 @@ const sameValue = (on: boolean) => {
 }
 
 export default async function log(interaction: ChatInputCommandInteraction) {
-    await deferReply(interaction)
-
     const args = interaction.options
     const thisGuild = await getThisGuild(interaction)
     const guildId = thisGuild.id

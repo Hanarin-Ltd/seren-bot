@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder, GuildMember, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { addBan, removeBan } from "../utils/ban"
-import { noPermissionMessage, errorMessage, completeSuccessfullyMessage, deferReply } from "../utils/default"
+import { noPermissionMessage, errorMessage, completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild, getUser, getMember, isGuildModerator, getChannel, updateMemberCache } from "../utils/discord"
 import { getGuildOption } from "../utils/guildOption"
 
@@ -29,8 +29,6 @@ export default async function ban(interaction: ChatInputCommandInteraction) {
     const targetMember = await getMember(thisGuild, args.getString('아이디')!)
     const reason = args.getString('사유')!
     const permission = await getGuildOption(thisGuild.id)
-
-    await deferReply(interaction)
 
     if (!await isGuildModerator(thisGuild, interaction.member! as GuildMember)) {
         return await interaction.editReply({ embeds: [noPermissionMessage()] })
