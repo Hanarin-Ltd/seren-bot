@@ -95,12 +95,12 @@ export const getRandomItem = (array: any[], weights?: number[]) => {
 
 export const abs = (number: number) => Math.abs(number)
 
-export const isSameArray = (a: any[],b: any[]) => {
+export const isSameArray = (a: any[], b: any[]) => {
     if (a instanceof Array && b instanceof Array) {
-        if (a.length!=b.length)
+        if (a.length != b.length)
             return false
         for(let i = 0; i < a.length; i++)
-            if (!isSameArray(a[i],b[i]))
+            if (!isSameArray(a[i], b[i]))
                 return false
         return true
     } else {
@@ -112,7 +112,7 @@ export const deferReply = async (interaction: ChatInputCommandInteraction) => {
     if (interaction.deferred || interaction.replied) return
     if (alwaysEphemeral.includes(interaction.commandName as Command)) return await interaction.deferReply({ ephemeral: true })
     if (!interaction.guildId) return await interaction.deferReply()
-    
+
     const option = await getGuildOption(interaction.guildId)
     if (!option) return await interaction.deferReply()
 
@@ -121,10 +121,10 @@ export const deferReply = async (interaction: ChatInputCommandInteraction) => {
 }
 
 export function chunkArray<T>(array: T[], n: number) {
-    const chunkLength = Math.max(array.length/n ,1)
+    const chunkLength = Math.max(array.length / n ,1)
     const chunks = []
     for (let i = 0; i < n; i++) {
-        if(chunkLength*(i+1)<=array.length)chunks.push(array.slice(chunkLength*i, chunkLength*(i+1)))
+        if (chunkLength * (i+1) <= array.length) chunks.push(array.slice(chunkLength * i, chunkLength * (i+1)))
     }
     return chunks
 }

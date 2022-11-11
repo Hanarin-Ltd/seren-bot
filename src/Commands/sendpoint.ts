@@ -1,5 +1,6 @@
 import { ActionRowBuilder, blockQuote, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, User } from "discord.js"
 import { BOT_COLOR } from "../lib"
+import { errorMessage } from "../utils/default"
 import { sendDM } from "../utils/discord"
 import { addUserPoint, getUserData, removeUserPoint } from "../utils/userData"
 
@@ -86,6 +87,7 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
 
     const userData = await getUserData(interaction.user.id)
 
+    if (!interaction.channel) return interaction.editReply({ embeds: [errorMessage('채널 정보를 불러올 수 없습니다.')] })
     if (!target) {
         return await interaction.editReply({ embeds: [theTradeHasBeenCanceled(interaction.user, '유효하지 않은 아이디이거나 Seren 사용자가 아닙니다.')] })
     } else if (target.id === interaction.user.id) {
@@ -99,11 +101,11 @@ export default async function sendPoint(interaction: ChatInputCommandInteraction
     }
 
     const tax = Math.round(amount * (1 / 10))
-    const collector = interaction.channel?.createMessageComponentCollector<ComponentType.Button>({
+    const collector = interaction.channel.createMessageComponentCollector<ComponentType.Button>({
         max: 1,
         filter: i => i.user.id === interaction.user.id,
     })
-    collector?.on('collect', async i => {
+    collector.on('collect', async i => {
         interaction.editReply({ embeds: [pleaseWait(i.user)], components: [] })
         if (i.customId === 'yes') {
             const tradeTime = new Date()

@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, GuildMember } from "discord.js"
+import { ChatInputCommandInteraction, GuildMember, userMention } from "discord.js"
 import { completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild } from "../utils/discord"
 import { giveWarning, removeWarning } from "../utils/warning"
@@ -16,5 +16,5 @@ export default async function warning(interaction: ChatInputCommandInteraction) 
         await removeWarning(thisGuild.id, targetMember, warningAmount ? warningAmount : 1)
     }
 
-    await  interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] })
+    await  interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user, `${userMention(targetMember.id)}에게 경고가 추가되었습니다.`)] })
 }

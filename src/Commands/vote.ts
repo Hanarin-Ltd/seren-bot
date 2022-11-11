@@ -129,6 +129,8 @@ const generateVote = async (
     },
     channel: TextBasedChannel | null
     ) => {
+
+    if (!channel) return modalInteraction.editReply({ embeds: [errorMessage('채널 정보를 불러올 수 없습니다.')] })
     const title = modalInteraction.fields.getTextInputValue('voteTitle')
     const description = modalInteraction.fields.getTextInputValue('voteDescription')
     const voteOptions = modalInteraction.fields.getTextInputValue('voteOption').split('\n').filter(c => c !== '')
@@ -140,16 +142,16 @@ const generateVote = async (
     } else if (voteOptions.length > 10) {
         return modalInteraction.reply({ embeds: [errorMessage('투표 항목은 최대 10개까지만 가능합니다.')] })
     }
-    await modalInteraction.reply({ embeds: [completeSuccessfullyMessage(modalInteraction.user, '투표가 생성되었습니다.')]})
+    await modalInteraction.reply({ embeds: [completeSuccessfullyMessage(modalInteraction.user, '투표가 생성되었습니다.')], ephemeral: true })
 
     await makeVote(modalInteraction.id, author.id, title, description, voteOptions, setting)
 
-    const collecter = channel?.createMessageComponentCollector<ComponentType.Button>({
+    const collecter = channel.createMessageComponentCollector<ComponentType.Button>({
         max: 1000000,
         time: 50000000,
     })
 
-    const voteEmbedId = await channel?.send({
+    const voteEmbedId = await channel.send({
         content: mentionEveryone ? '@everyone' : '',
         embeds: [voteEmbed(author, title, description, voteOptions, hideResult ? true : onlyAdmin ? true: false)],
         components: voteOptions.length > 5 ?
@@ -157,10 +159,9 @@ const generateVote = async (
             [voteButton(author.id, voteOptions, i => `${author.id}-${i}`), voteEndButton(author.id)],
     })
 
-    collecter?.on('collect', async i => {
+    collecter.on('collect', async i => {
         const targetId = i.customId.split('-')[0]
         const optionId = i.customId.split('-')[1]
-        console.log(targetId, optionId, i.user.tag)
 
         if (optionId === 'end' && author.id === i.user.id) {
             ;(await channel?.messages?.fetch(voteEmbedId!.id))?.edit({

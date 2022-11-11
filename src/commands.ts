@@ -346,11 +346,11 @@ const commands =  [
         .toJSON(),
     new SlashCommandBuilder()
         .setName('도박')
-        .setDescription('🎰 포인트를 일정 확률로 얻거나 잃습니다')
+        .setDescription('🎰 포인트를 일정 확률로 얻거나 잃습니다. 기본 포인트 : 1000')
+        .setDMPermission(true)
         .addNumberOption(amount =>
-            amount.setName('포인트')
-            .setDescription('도박할 포인트를 입력해주세요')
-            .setRequired(true)
+            amount.setName('짜릿함')
+            .setDescription('1000 * (짜릿함) 만큼의 포인트를 걸 수 있습니다')
         )
         .toJSON(),
 
@@ -378,7 +378,7 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디']
+export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디', '도박']
 export default getCommands
 export { getCommandList, getCommandFunction }
 export const alwaysEphemeral: Command[] = ['포인트전송', '내아이디', '투표', '마이그레이션']
