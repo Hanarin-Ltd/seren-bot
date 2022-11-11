@@ -1,5 +1,5 @@
 import { Guild, GuildMember, ChatInputCommandInteraction, MessagePayload, BaseMessageOptions, User } from "discord.js"
-import client from ".."
+import { client } from ".."
 import { getModList } from "./mod"
 
 export const updateMemberCache = async (guild: Guild) => {

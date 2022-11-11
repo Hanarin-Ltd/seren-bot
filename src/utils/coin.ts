@@ -2,10 +2,10 @@ import { AutocompleteInteraction, EmbedBuilder } from "discord.js"
 import prisma from "../prisma"
 import { abs, getRandomInt, getRandomItem, isSameArray } from "./default"
 import randomWords from 'random-words'
-import { BOT_COLOR, WEB_PORT } from "../lib"
+import { BOT_COLOR, env, WEB_PORT } from "../lib"
 import { Server } from "socket.io"
 import { createServer } from "http"
-import { client, env } from ".."
+import { client } from ".."
 import fetch from "node-fetch"
 import { sendDM } from "./discord"
 

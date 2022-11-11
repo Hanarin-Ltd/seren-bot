@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import express, { Request, Response } from 'express'
-import { client as botClient, env } from './index'
+import { client as botClient } from './index'
+import { env } from './lib'
 import prisma from './prisma'
 import { GuildAllData } from './types/api'
 import { getBanListFromSQL, updateBanListCache } from './utils/ban'

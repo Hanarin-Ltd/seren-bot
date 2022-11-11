@@ -1,6 +1,5 @@
 import { EmbedBuilder, Guild, PermissionFlagsBits } from "discord.js"
-import { env } from '.'
-import { BOT_COLOR } from "./lib"
+import { BOT_COLOR, env } from "./lib"
 import { setDefaultBlockword } from "./utils/blockword"
 import { addAllGuildChannel } from "./utils/channel"
 import { sendDM } from "./utils/discord"

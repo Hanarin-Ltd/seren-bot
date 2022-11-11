@@ -1,7 +1,6 @@
 import { Routes, EmbedBuilder, blockQuote, ChatInputCommandInteraction, User } from "discord.js"
-import { env } from ".."
 import getCommands from "../commands"
-import { rest, BOT_COLOR } from "../lib"
+import { rest, BOT_COLOR, env } from "../lib"
 import { getGuildOption } from "./guildOption"
 
 export const addSlashCommands = async () => {

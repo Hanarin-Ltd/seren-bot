@@ -1,10 +1,3 @@
-import 'dotenv/config'
-import * as dotenv from 'dotenv'
-
-dotenv.config({ path: __dirname+'../.env' })
-
-export const env = process.env
-
 import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
 import { getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
@@ -30,6 +23,7 @@ import { KoreanbotsClient } from "koreanbots"
 import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
 import startWeeklyPoint from './coin/weeklyPoint'
+import { env } from './lib'
 
 const clientIntents = [
     GatewayIntentBits.Guilds,
@@ -296,7 +290,5 @@ client.on('roleDelete', async role => {
 client.on('roleUpdate', async (oldRole, newRole) => {
     await modifyGuildRole(oldRole, newRole)
 })
-
-export default client
 
 client.login(env.BOT_TOKEN)

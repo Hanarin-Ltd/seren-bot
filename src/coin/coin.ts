@@ -1,7 +1,6 @@
 import { CoinData } from "@prisma/client"
 import fetch from "node-fetch"
-import { env } from ".."
-import { WEB_PORT } from "../lib"
+import { env, WEB_PORT } from "../lib"
 import { getCoinList, getPriceInfo, makeNewCoin, updateCoinPrice } from "../utils/coin"
 
 class CoinGame {
