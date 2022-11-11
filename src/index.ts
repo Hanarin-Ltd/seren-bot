@@ -1,5 +1,5 @@
 import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
-import { getCommandFunction, usableInDM } from './commands'
+import { Command, getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openAPIServer from './api'
@@ -96,7 +96,7 @@ client.on('interactionCreate', async (interaction) => {
         return
     }
     else if (interaction.isChatInputCommand()) {
-        if (usableInDM.includes(interaction.commandName) && !interaction.channel) {
+        if (usableInDM.includes(interaction.commandName as Command) && !interaction.channel) {
             try {
                 return getCommandFunction()[interaction.commandName](interaction)
             } catch (error: any) {

@@ -1,5 +1,5 @@
 import { Routes, EmbedBuilder, blockQuote, ChatInputCommandInteraction, User } from "discord.js"
-import getCommands from "../commands"
+import getCommands, { alwaysEphemeral, Command } from "../commands"
 import { rest, BOT_COLOR, env } from "../lib"
 import { getGuildOption } from "./guildOption"
 
@@ -109,7 +109,10 @@ export const isSameArray = (a: any[],b: any[]) => {
 }
 
 export const deferReply = async (interaction: ChatInputCommandInteraction) => {
+    if (interaction.deferred || interaction.replied) return
+    if (alwaysEphemeral.includes(interaction.commandName as Command)) return await interaction.deferReply({ ephemeral: true })
     if (!interaction.guildId) return await interaction.deferReply()
+    
     const option = await getGuildOption(interaction.guildId)
     if (!option) return await interaction.deferReply()
 

@@ -80,8 +80,6 @@ const tradeQuestion = () => new ActionRowBuilder<ButtonBuilder>()
     )
 
 export default async function sendPoint(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true })
-
     const args = interaction.options
     const target = await getUserData(args.getString('아이디', true))
     const amount = args.getNumber('수량', true)

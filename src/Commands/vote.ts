@@ -87,8 +87,6 @@ const voteResultEmbed = (title: string, desc: string, options: string[], value: 
     )))
 
 export default async function vote(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply()
-
     const args = interaction.options
     const mentionEveryone = args.getBoolean('everyone') || false
     const hideResult = args.getBoolean('투표현황비공개') || false

@@ -27,7 +27,7 @@ const commandsFile = {
     '마이그레이션': 'migration'
 }
 
-type command = keyof typeof commandsFile
+export type Command = keyof typeof commandsFile
 
 const commands =  [
     new SlashCommandBuilder()
@@ -366,7 +366,7 @@ const getCommands = (): any[] => {
     return commands
 }
 
-const getCommandList = (): command[] => {
+const getCommandList = (): Command[] => {
     return getCommands().map(command => command.name)
 }
 
@@ -378,6 +378,7 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디']
+export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디']
 export default getCommands
 export { getCommandList, getCommandFunction }
+export const alwaysEphemeral: Command[] = ['포인트전송', '내아이디', '투표', '마이그레이션']
