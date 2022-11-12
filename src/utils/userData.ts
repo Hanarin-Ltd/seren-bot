@@ -13,6 +13,11 @@ export const getUserDataPlanList = async (plan: SerenPlan) => {
     return data.map(d => d.id)
 }
 
+export const getAllUserIdList = async () => {
+    const data = await prisma.userData.findMany()
+    return data.map(d => d.id)
+}
+
 export const addUserData = async (userId: string) => {
     const user = await client.users.fetch(userId)
     const exist = await prisma.userData.findUnique({ where: { id: user.id } })
@@ -81,4 +86,13 @@ export const removeUserPoint = async (userId: string, point: number) => {
 export const getOwnedGuildList = async (userId: string) => {
     const result = await prisma.guildData.findMany({ where: { ownerId: userId } })
     return result
+}
+
+export const setUserGambleCount = async (userId: string, count: number) => {
+    const userData = await getUserData(userId)
+    if (!userData) return
+    await prisma.userData.update({
+        where: { id: userId },
+        data: { gambleCount: count }
+    })
 }

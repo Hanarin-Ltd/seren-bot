@@ -70,9 +70,13 @@ export const toObject = (string: string) => {
     return JSON.parse(string)
 }
 
-export const getRandomInt = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min
-}
+export const getRandomInt = (min: number, max: number) => (
+    Math.floor(Math.random() * (max - min + 1)) + min
+)
+
+export const getRamdomFloat = (min: number, max: number) => (
+    Math.random() * (max - min) + min
+)
 
 export const getRandomItem = (array: any[], weights?: number[]) => {
     if (!weights) {

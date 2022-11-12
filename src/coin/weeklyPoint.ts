@@ -2,7 +2,7 @@ import { CronJob } from 'cron'
 import { EmbedBuilder } from 'discord.js'
 import { BOT_COLOR } from '../lib'
 import { sendDM } from '../utils/discord'
-import { addUserPoint, getUserData, getUserDataPlanList } from '../utils/userData'
+import { addUserPoint, getAllUserIdList, getUserData, getUserDataPlanList, setUserGambleCount } from '../utils/userData'
 
 export const serenPlanList = ['Free', 'Serendard', 'Seren Pass'] as const
 
@@ -21,7 +21,7 @@ const youGotPoint = (plan: SerenPlan, point: number) => {
     )
 }
 
-export default function startWeeklyPoint() {
+export default function startCoinCronJob() {
     const weeklyPoint = new CronJob('0 0 * * 0', async () => {
         console.log(`Weekly point job started at ${new Date().toString()}`)
         for (const plan of serenPlanList) { // foreach는 성능이 떨어짐
@@ -36,6 +36,14 @@ export default function startWeeklyPoint() {
             })
         }
     }, null, true, 'Asia/Seoul')
+    const resetGambleCount = new CronJob('0 0 * * *', async () => {
+        console.log(`Reset gamble count job started at ${new Date().toString()}`)
+        const userIdList = await getAllUserIdList()
+        for (const userId of userIdList) {
+            await setUserGambleCount(userId, 0)
+        }
+    })
 
     weeklyPoint.start()
+    resetGambleCount.start()
 }

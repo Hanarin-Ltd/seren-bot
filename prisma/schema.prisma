@@ -94,6 +94,7 @@ model UserData {
     point Int @default(25000)
     currentPlan String @default("Free")
     preminumStartedAt DateTime @default(now())
+    gambleCount Int @default(0)
     createdAt DateTime
 }
 

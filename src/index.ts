@@ -22,7 +22,7 @@ import { scanMessage } from './utils/blockword'
 import { KoreanbotsClient } from 'koreanbots'
 import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
-import startWeeklyPoint from './coin/weeklyPoint'
+import startCoinCronJob from './coin/weeklyPoint'
 import { env } from './lib'
 
 const clientIntents = [
@@ -60,7 +60,7 @@ client.on('ready', async () => {
     console.log(`Mode : ${env.NODE_ENV}`)
     openAPIServer()
     coinGame()
-    startWeeklyPoint()
+    startCoinCronJob()
 
     await addSlashCommands()
 })
