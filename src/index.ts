@@ -1,4 +1,4 @@
-import { ChannelType, Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
+import { Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
 import { Command, getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'

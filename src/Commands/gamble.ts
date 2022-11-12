@@ -1,7 +1,7 @@
 import { randomInt } from 'crypto'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, User } from 'discord.js'
 import { BOT_COLOR } from '../lib'
-import { errorMessage } from '../utils/default'
+import { errorMessage, getRandomInt } from '../utils/default'
 import { addUserPoint, getUserData } from '../utils/userData'
 
 const gambleEmbed = (user: User, attempt: number, point: number, accumulate: number,) => new EmbedBuilder()
@@ -10,7 +10,7 @@ const gambleEmbed = (user: User, attempt: number, point: number, accumulate: num
     .setDescription('과연 얼마나 많은 포인트를 얻을 수 있을까요?')
     .addFields(
         { name: '도전 횟수', value: `> **${attempt.toString()}회**`, inline: true },
-        { name: '성공 확률', value: `> **${100 / (attempt + 1)}%**`, inline: true },
+        { name: '성공 확률', value: `> **${(100 / (attempt + 0.2)).toFixed(2)}%**`, inline: true },
         { name: '현재 누적 포인트', value: `> **${accumulate.toString()}**`, inline: true },
         { name: '성공시 누적 포인트', value: `> **${((accumulate * attempt / 10) + point).toString()}**`, inline: true },
     )
@@ -92,28 +92,28 @@ export default async function gamble(interaction: ChatInputCommandInteraction) {
     collector.on('collect', async (i): Promise<any> => {
         await i.deferUpdate()
         if (i.customId === 'gamble') {
-            const isSuccess = randomInt(0, data.attempt + 1) === 0
+            const isSuccess = getRandomInt(1, 100) > 50
             if (isSuccess) {
                 data.accumulate += data.accumulate * data.attempt / 10
                 data.attempt += 1
                 await interaction.editReply({ embeds: [gambleEmbed(user, data.attempt, data.point, data.accumulate)] })
             }
             else {
+                collector.stop()
                 if (data.attempt === 1) {
                     return await interaction.editReply({ embeds: [gambleEndEmbed(user, data.attempt, 0, userData.point)], components: [] })
                 }
                 await interaction.editReply({ embeds: [gambleFailEmbed(user, data.attempt, data.accumulate, userData.point - data.accumulate)], components: [] })
                 await addUserPoint(user.id, -amount)
-                collector.stop()
             }
         }
         else if (i.customId === 'gambleEnd') {
+            collector.stop()
             if (data.attempt === 1) {
                 return await interaction.editReply({ embeds: [gambleEndEmbed(user, data.attempt, 0, userData.point)], components: [] })
             }
             await interaction.editReply({ embeds: [gambleEndEmbed(user, data.attempt, data.accumulate, userData.point + data.accumulate)], components: [] })
             await addUserPoint(user.id, -data.accumulate)
-            collector.stop()
         }
     })
 
