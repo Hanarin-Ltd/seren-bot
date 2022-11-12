@@ -20,6 +20,7 @@ export const getAllUserIdList = async () => {
 
 export const addUserData = async (userId: string) => {
     const user = await client.users.fetch(userId)
+    if (user.bot) return
     const exist = await prisma.userData.findUnique({ where: { id: user.id } })
     if (exist) return
     return await prisma.userData.create({
