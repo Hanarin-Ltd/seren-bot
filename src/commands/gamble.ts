@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, ComponentType, EmbedBuilder, User } from 'discord.js'
 import { BOT_COLOR } from '../lib'
 import { errorMessage } from '../utils/default'
+import { updateTodayStatistics } from '../utils/statistics'
 import { addUserPoint, getUserData, setUserGambleCount } from '../utils/userData'
 
 let percentageSeed = 1.1
@@ -82,6 +83,7 @@ export default async function gamble(interaction: ChatInputCommandInteraction) {
     if (userData.point < amount) return interaction.editReply({ embeds: [notEnoughPointEmbed] })
 
     await setUserGambleCount(user.id, userData.gambleCount + 1)
+    updateTodayStatistics('todayGambleCount', prev => prev + 1)
 
     const data = {
         attempt: 1,

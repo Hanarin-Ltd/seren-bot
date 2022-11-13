@@ -4,6 +4,7 @@ import { addBan } from "./ban"
 import { getGuildOption } from "./guildOption"
 import { getGuildLogSetting, log } from "./log"
 import { getMemberData, addMemberData } from "./memberData"
+import { updateTodayStatistics } from "./statistics"
 
 export const getWarning = async (guildId: string, memberId: string) => {
     const result = await prisma.memberData.findFirst({ where: {
@@ -42,6 +43,7 @@ export const giveWarning = async (guildId: string, member: GuildMember, num = 1)
         member.ban()
         await addBan(guildId, member, `경고 누적으로 인한 차단 (${afterWarning}개)`)
     }
+    updateTodayStatistics('totalWarning', prev => prev += 1)
 }
 
 export const removeWarning = async (guildId: string, member: GuildMember, num = 1) => {

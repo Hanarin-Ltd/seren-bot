@@ -231,8 +231,23 @@ model VoteData {
 model Statistic {
     id Int @id @default(autoincrement())
 
+    totalGuilds Int @default(0)
+    totalUsers Int @default(0)
+    totalVote Int @default(0)
+    totalVoteOptions Int @default(0)
+    totalWarning Int @default(0)
+
+    totalUsedPoint Int @default(0)
     todayUsedPoint Int @default(0)
+
+    totalUsedCommand Int @default(0)
     todayUsedCommand Int @default(0)
+
+    totalCoinComment Int @default(0)
+    todayCoinComment Int @default(0)
+
+    todayGambleCount Int @default(0)
+    totalGambleCount Int @default(0)
 
     createdAt DateTime @default(now())
 }

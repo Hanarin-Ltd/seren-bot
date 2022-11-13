@@ -22,8 +22,9 @@ import { scanMessage } from './utils/blockword'
 import { KoreanbotsClient } from 'koreanbots'
 import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
-import startCoinCronJob from './coin/weeklyPoint'
 import { env } from './lib'
+import startCronJobs from './cronjobs/main'
+import { updateTodayStatistics } from './utils/statistics'
 
 const clientIntents = [
     GatewayIntentBits.Guilds,
@@ -60,7 +61,7 @@ client.on('ready', async () => {
     console.log(`Mode : ${env.NODE_ENV}`)
     openAPIServer()
     coinGame()
-    startCoinCronJob()
+    startCronJobs()
 
     await addSlashCommands()
 })
@@ -96,6 +97,7 @@ client.on('interactionCreate', async (interaction) => {
         return
     }
     else if (interaction.isChatInputCommand()) {
+        updateTodayStatistics('todayUsedCommand', prev => prev + 1)
         if (usableInDM.includes(interaction.commandName as Command) && !interaction.channel) {
             try {
                 return getCommandFunction()[interaction.commandName](interaction)

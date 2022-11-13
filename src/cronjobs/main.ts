@@ -1,0 +1,8 @@
+import startCoinCronJob from "./coin"
+import startStatisticsCronJob from "./statistics"
+
+export default function startCronJobs() {
+    startCoinCronJob()
+    startStatisticsCronJob()
+    console.log('All Cron Jobs Started')
+}
