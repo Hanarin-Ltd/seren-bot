@@ -64,7 +64,7 @@ export const deleteCoin = async (id: number) => {
         },
         body: JSON.stringify({
             type: 'delete',
-            coinId: id,
+            id,
             secret: env.BOT_TOKEN,
         })
     })

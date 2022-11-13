@@ -112,7 +112,6 @@ export const scanMessage = async (message: Message) => {
         message.content.toLowerCase().split(' ').forEach(word => {
             if (data.isSubscribed && option?.useEnhancedFilter) {
                 // TODO: Enhanced Filtering
-                // ~/Downloads/al.js
             }
             else {
                 if (compareTwoStrings(word, blockword) > 0.8) {

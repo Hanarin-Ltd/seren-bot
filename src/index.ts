@@ -11,7 +11,7 @@ import { addMemberData, removeMemberData, updateMemberData } from './utils/membe
 import { addMod, hasModRole, removeMod } from './utils/mod'
 import { addBan, removeBan } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
-import { someoneHasBan, someoneHasUnban } from './Commands/ban'
+import { someoneHasBan, someoneHasUnban } from './commands/ban'
 import { addGuildRole, getGuildRole } from './utils/role'
 import { getGuildLogSetting, log } from './utils/log'
 import { addMemberExp, checkLevelUp } from './utils/level'

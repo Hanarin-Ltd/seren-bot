@@ -227,3 +227,12 @@ model VoteData {
     voterId String
     value String
 }
+
+model Statistic {
+    id Int @id @default(autoincrement())
+
+    todayUsedPoint Int @default(0)
+    todayUsedCommand Int @default(0)
+
+    createdAt DateTime @default(now())
+}
