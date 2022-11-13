@@ -373,7 +373,7 @@ const getCommandList = (): Command[] => {
 const getCommandFunction = (): any => {
     const returnValue: any = {}
     getCommandList().forEach(command => {
-        returnValue[command] = require(`./Commands/${commandsFile[command]}`).default
+        returnValue[command] = require(`./commands/${commandsFile[command]}`).default
     })
     return returnValue
 }

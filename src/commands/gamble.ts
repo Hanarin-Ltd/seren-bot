@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteracti
 import { BOT_COLOR } from '../lib'
 import { errorMessage } from '../utils/default'
 import { updateTodayStatistics } from '../utils/statistics'
-import { addUserPoint, getUserData, setUserGambleCount } from '../utils/userData'
+import { addUserPoint, getUserData, removeUserPoint, setUserGambleCount } from '../utils/userData'
 
 let percentageSeed = 1.1
 
@@ -107,7 +107,7 @@ export default async function gamble(interaction: ChatInputCommandInteraction) {
             else {
                 collector.stop()
                 if (data.attempt === 1) {
-                    await addUserPoint(user.id, -data.point)
+                    await removeUserPoint(user.id, data.point)
                     return await interaction.editReply({ embeds: [gambleFailEmbed(user, data.attempt, 0, userData.point - data.point)], components: [] })
                 }
                 await interaction.editReply({ embeds: [gambleFailEmbed(user, data.attempt, data.accumulate, userData.point + data.accumulate)], components: [] })
@@ -117,8 +117,8 @@ export default async function gamble(interaction: ChatInputCommandInteraction) {
         else if (i.customId === 'gambleEnd') {
             collector.stop()
             if (data.attempt === 1) {
-                await addUserPoint(user.id, -data.point)
-                return await interaction.editReply({ embeds: [gambleEndEmbed(user, data.attempt, 0, userData.point)], components: [] })
+                await removeUserPoint(user.id, data.point)
+                return await interaction.editReply({ embeds: [gambleEndEmbed(user, data.attempt, 0, userData.point - data.point)], components: [] })
             }
             await interaction.editReply({ embeds: [gambleEndEmbed(user, data.attempt, data.accumulate, userData.point + data.accumulate)], components: [] })
             await addUserPoint(user.id, data.accumulate)

@@ -1,4 +1,7 @@
 import { Statistic } from "@prisma/client"
+import fetch from "node-fetch"
+import { env } from "process"
+import { WEB_PORT } from "../lib"
 import prisma from "../prisma"
 
 export const getTodayStatistics = async () => {
@@ -8,9 +11,18 @@ export const getTodayStatistics = async () => {
 
 export const updateTodayStatistics = async (type: keyof Statistic, data: number | ((prev: number) => number)) => {
     const todayStatistics = await getTodayStatistics()
-    if (typeof data === 'number') {
-        await prisma.statistic.update({ where: { id: todayStatistics.id }, data: { [type]: data } })
-    } else {
-        await prisma.statistic.update({ where: { id: todayStatistics.id }, data: { [type]: data(todayStatistics[type] as number) } })
+    const changedData = typeof data === 'number' ? data : data(todayStatistics[type] as number)
+
+    const updatedStatistics = await prisma.statistic.update({ where: { id: todayStatistics.id }, data: { [type]: changedData } })
+
+    if (type === 'todayUsedPoint') {
+        fetch(`http://localhost:${WEB_PORT}/api/statistics/point`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                today: updatedStatistics.todayUsedPoint,
+                secret: env.BOT_TOKEN
+            })
+        })
     }
 }
