@@ -21,7 +21,7 @@ export default function startStatisticsCronJob() {
             totalUsedCommand: todayStatistics.totalUsedCommand + todayStatistics.todayUsedCommand,
             totalGambleCount: todayStatistics.totalGambleCount + todayStatistics.todayGambleCount,
         } })
-    })
+    }, null, true, 'Asia/Seoul')
     
     statistics.start()
 }

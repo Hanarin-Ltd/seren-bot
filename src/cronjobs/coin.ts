@@ -23,7 +23,7 @@ export default function startCoinCronJob() {
         for (const userId of userIdList) {
             await setUserGambleCount(userId, 0)
         }
-    })
+    }, null, true, 'Asia/Seoul')
 
     weeklyPoint.start()
     resetGambleCount.start()
