@@ -6,6 +6,7 @@ type GuildAllData = {
     createdAt: Date
     isCommunityGuild: boolean
     isSettingComplete: boolean
+    isBotRoleHighest: boolean
     icon: string
 
     memberCount: number

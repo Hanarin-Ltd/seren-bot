@@ -229,6 +229,9 @@ client.on('guildBanRemove', async (banMember) => {
 })
 
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
+    if (newMember.id === client.user?.id && newMember.guild.roles.highest.id === newMember.roles.highest.id) {
+        await addOrUpdateGuildData(newMember.guild)
+    }
     if (oldMember.user.id === client.user?.id) return
 
     await updateMemberData(newMember)

@@ -26,38 +26,44 @@ app.post('/guild', async (req: Request, res: Response) => {
     const modList = await getModList(guildId)
     const banList = await getBanListFromSQL(guildId)
 
-    if (data.mod.length !== modList.length) {
-        const newModList = data.mod.map(m => m.userId)
-        const guild = (botClient.guilds.cache.get(guildId))!
-        await updateMemberCache(guild)
-
-        const oldModList = (await prisma.memberData.findMany({ where: { guildId, mod: true } })).map(m => m.userId)
-
-        oldModList.forEach(async id => {
-            if (newModList.includes(id)) return
-            const target = await getMember(guild, id)
-            const modRoleList = (await getGuildModRole(guild)).map(r => r.id)
-            target?.roles.cache.forEach(async role => {
-                if (modRoleList.includes(role.id)) await target?.roles.remove(role)
+    try {
+        if (data.mod.length !== modList.length) {
+            if (!data.isBotRoleHighest) return
+            const newModList = data.mod.map(m => m.userId)
+            const guild = (botClient.guilds.cache.get(guildId))!
+            await updateMemberCache(guild)
+    
+            const oldModList = (await prisma.memberData.findMany({ where: { guildId, mod: true } })).map(m => m.userId)
+    
+            oldModList.forEach(async id => {
+                if (newModList.includes(id)) return
+                const target = await getMember(guild, id)
+                const modRoleList = (await getGuildModRole(guild)).map(r => r.id)
+                target?.roles.cache.forEach(async role => {
+                    if (modRoleList.includes(role.id)) await target?.roles.remove(role)
+                })
             })
-        })
-        updateGuildMod(guildId, data)
+            updateGuildMod(guildId, data)
+        }
+    
+        if (banList.length !== data.ban.length) {
+            const newBanList = data.ban.map((b: { userId: string }) => b.userId)
+            const guild = (botClient.guilds.cache.get(guildId))!
+            await updateBanListCache(guild)
+    
+            const oldBanList = guild.bans.cache.map(b => b.user.id)
+    
+            oldBanList.forEach(async id => {
+                if (newBanList.includes(id)) return
+                await guild.members.unban(id)
+            })
+        }
+    
+        res.send({ success: true })
+    } catch (e) {
+        console.error(e)
+        res.send({ error: e })
     }
-
-    if (banList.length !== data.ban.length) {
-        const newBanList = data.ban.map((b: { userId: string }) => b.userId)
-        const guild = (botClient.guilds.cache.get(guildId))!
-        await updateBanListCache(guild)
-
-        const oldBanList = guild.bans.cache.map(b => b.user.id)
-
-        oldBanList.forEach(async id => {
-            if (newBanList.includes(id)) return
-            await guild.members.unban(id)
-        })
-    }
-
-    res.send({ success: true })
 })
 
 export default function openAPIServer() {
