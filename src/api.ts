@@ -6,6 +6,7 @@ import prisma from './prisma'
 import { GuildAllData } from './types/api'
 import { getBanListFromSQL, updateBanListCache } from './utils/ban'
 import { getMember, updateMemberCache } from './utils/discord'
+import { getGuildData } from './utils/guildData'
 import { getModList, updateGuildMod } from './utils/mod'
 import { getGuildModRole } from './utils/role'
 
@@ -25,10 +26,13 @@ app.post('/guild', async (req: Request, res: Response) => {
 
     const modList = await getModList(guildId)
     const banList = await getBanListFromSQL(guildId)
+    const guildData = await getGuildData(guildId)
+
+    if (!guildData) return res.status(404).send('Guild not found')
 
     try {
         if (data.mod.length !== modList.length) {
-            if (!data.isBotRoleHighest) return
+            if (!guildData.isBotRoleHighest) return res.status(403).send('Bot role is not highest')
             const newModList = data.mod.map(m => m.userId)
             const guild = (botClient.guilds.cache.get(guildId))!
             await updateMemberCache(guild)
