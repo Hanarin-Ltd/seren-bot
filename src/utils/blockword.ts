@@ -32,12 +32,11 @@ export const setDefaultBlockword = async (guildId: string, word: string[] = []) 
 }
 
 export const addBlockword = async (guild: Guild, word: string) => {
-    const logSetting = await getGuildLogSetting(guild.id)
     await prisma.blockword.updateMany({
         where: { guildId: guild.id },
         data: { word: [...await getBlockwordList(guild.id), word] },
     })
-    logSetting?.addBlockword && log({
+    log({
         content: `금지어 추가됨 : ${word}`,
         rawContent: `금지어 추가됨 : ${word}`,
         guild,
@@ -47,7 +46,6 @@ export const addBlockword = async (guild: Guild, word: string) => {
 
 export const removeBlockword = async (guild: Guild, word: string) => {
     const wordList = await getBlockwordList(guild.id)
-    const logSetting = await getGuildLogSetting(guild.id)
     if (!wordList.includes(word)) return
 
     wordList.splice(wordList.indexOf(word), 1)
@@ -55,7 +53,7 @@ export const removeBlockword = async (guild: Guild, word: string) => {
         where: { guildId: guild.id },
         data: { word: word  }
     })
-    logSetting?.removeBlockword && log({
+    log({
         content: `금지어 제거됨 : ${word}`,
         rawContent: `금지어 제거됨 : ${word}`,
         guild,
@@ -99,7 +97,6 @@ export const scanMessage = async (message: Message) => {
 
     const blockwordList = await getBlockwordList(guildId)
     const catchedWordList: string[] = []
-    const logSetting = await getGuildLogSetting(guildId)
 
     blockwordList.forEach(blockword => {
         const word = blockword.toLowerCase()
@@ -126,7 +123,7 @@ export const scanMessage = async (message: Message) => {
         await message.delete()
         await sendDM(message.author.id, { embeds: [youUsedBlockword(catchedWordList)] })
         await giveWarning(guildId, message.member!)
-        logSetting?.useBlockword && await log({
+        log({
             content: `금지어 사용 멤버 : ${message.member!.user.username} / 사용 금지어 : ${catchedWordList.join(', ')}`,
             rawContent: `금지어 사용 멤버 : ${userMention(message.member!.id)} / 사용 금지어 : ${catchedWordList.join(', ')}`,
             guild: thisGuild,

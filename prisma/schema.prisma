@@ -39,8 +39,6 @@ model GuildOption {
     messageInLevelupChannel Boolean @default(true)
 
     setCommandMessageAsEphemeral Boolean @default(false)
-    enableLegacyCommand Boolean @default(false)
-    legacyCommandPrefix String @default("!")
 
     warningLimit Int @default(10)
 

@@ -47,8 +47,7 @@ export const checkLevelUp = async (member: GuildMember, channel: GuildTextBasedC
     
     const afterLevel = currentLevel + 1
     if (currentExp >= currentLevel * 200) {
-        const logSetting = await getGuildLogSetting(member.guild.id)
-        logSetting?.levelUp && log({
+        log({
             content: `레벨업 : ${member.user.username} / ${currentLevel} -> ${afterLevel}`,
             rawContent: `레벨업 : ${userMention(member.id)} / ${currentLevel} -> ${afterLevel}`,
             guild: member.guild,

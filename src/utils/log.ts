@@ -33,8 +33,11 @@ const logEmbed = (content: string, now: Date) => {
 }
 
 export const log = async ({ content, rawContent, guild, type }: { content: string, rawContent: string, guild: Guild, type: keyof GuildLogSetting }) => {
-    const option = (await getGuildOption(guild.id))!
-    const logChannel = (await getChannel(guild, option.logChannelId))!
+    const option = await getGuildOption(guild.id)
+    const logSetting = await getGuildLogSetting(guild.id)
+    if (!option || !option.logEnabled || !logSetting || !logSetting[type]) return
+    const logChannel = await getChannel(guild, option.logChannelId)
+    if (!logChannel) return
     const createdAt = new Date()
     if (logChannel.isTextBased()) logChannel.send({ embeds: [logEmbed(rawContent, createdAt)] })
     return await prisma.guildLog.create({

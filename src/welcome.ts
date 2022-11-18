@@ -39,9 +39,8 @@ export const welcome = async (member: GuildMember) => {
 
 export const goodbye = async (member: GuildMember | PartialGuildMember) => {
     const permission = await getGuildOption(member.guild.id)
-    const logSetting = await getGuildLogSetting(member.guild.id)
 
-    logSetting?.userDelete && log({
+    log({
         content: `멤버 나감 : ${member.user.username}`,
         rawContent: `멤버 나감 : ${userMention(member.id)}`,
         guild: member.guild,

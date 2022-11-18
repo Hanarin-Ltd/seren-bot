@@ -38,6 +38,24 @@ export const addUserData = async (userId: string) => {
     })
 }
 
+export const updateUserData = async (userId: string) => {
+    const user = await client.users.fetch(userId)
+    if (user.bot) return
+    return await prisma.userData.update({
+        where: { id: user.id },
+        data: {
+            id: user.id,
+            username: user.username,
+            tag: user.tag,
+            profileImg: user.displayAvatarURL(),
+            bannedGuild: await getBannedGuildList(userId),
+            ownedGuild: (await getOwnedGuildList(userId)).map(g => g.guildId),
+            modGuild: await getGuildListThatUserMod(userId),
+            createdAt: user.createdAt
+        }
+    })
+}
+
 export const addGuildAllUserData = async (guild: Guild) => {
     const users = await guild.members.fetch()
     for (const user of users.values()) {

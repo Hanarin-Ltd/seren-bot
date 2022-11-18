@@ -23,12 +23,11 @@ export const getGuildListThatUserMod = async (userId: string) => {
 }
 
 export const addMod = async (guild: Guild, member: GuildMember) => {
-    const logSetting = await getGuildLogSetting(guild.id)
     const exist = await prisma.memberData.findMany({ where: { guildId: guild.id, mod: true, userId: member.id } })
     if (exist.length > 0) return
     await addUserModGuild(member.id, guild.id)
     await updateMemberData(member)
-    logSetting?.addMod && log({
+    log({
         content: `관리자 임명됨 : ${member.user.username}`,
         rawContent: `관리자 임명됨 : ${userMention(member.id)}`,
         guild,
@@ -37,11 +36,10 @@ export const addMod = async (guild: Guild, member: GuildMember) => {
 }
 
 export const removeMod = async (guild: Guild, member: GuildMember) => {
-    const logSetting = await getGuildLogSetting(guild.id)
     await addMemberData(member)
     await updateMemberData(member)
     await removeUserModGuild(member.id, guild.id)
-    logSetting?.removeMod && log({
+    log({
         content: `관리자 해임됨 : ${member.user.username}`,
         rawContent: `관리자 해임됨 : ${userMention(member.id)}`,
         guild,

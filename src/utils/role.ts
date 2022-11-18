@@ -15,9 +15,8 @@ export const addAllGuildRole = async (guild: Guild) => {
 
 export const addGuildRole = async (role: Role) => {
     if (role.name === '@everyone' || role.name === 'Seren') return
-    const logSetting = await getGuildLogSetting(role.guild.id)
 
-    logSetting?.roleCreate && log({
+    log({
         content: `역할 추가됨 / 이름 : ${role.name}`,
         rawContent: `역할 추가됨 / 이름 : ${role.name}`,
         guild: role.guild,
@@ -42,9 +41,7 @@ export const getGuildRole = async (guild: Guild, roleId: string) => {
 }
 
 export const removeGuildRole = async (role: Role) => {
-    const logSetting = await getGuildLogSetting(role.guild.id)
-
-    logSetting?.roleDelete && log({
+    log({
         content: `역할 삭제됨 / 이름 : ${inlineCode(role.name)}`,
         rawContent: `역할 삭제됨 / 이름 : ${role.name}`,
         guild: role.guild,
@@ -54,9 +51,7 @@ export const removeGuildRole = async (role: Role) => {
 }
 
 export const modifyGuildRole = async (oldRole: Role, newRole: Role) => {
-    const logSetting = await getGuildLogSetting(newRole.guild.id)
-
-    logSetting?.roleUpdate && log({
+    log({
         content: `역할 편집됨 / 이름 : ${newRole.name}`,
         rawContent: `역할 편집됨 / 이름 : ${newRole.name}`,
         guild: newRole.guild,
