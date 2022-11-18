@@ -13,7 +13,7 @@ type messageProp = {
     createdAt: Date
 }
 
-const message = ({ name, memberCount, botCount, ownerName, boostCount, premiumTier, createdAt }: messageProp) => {
+const serverInfoEmbed = ({ name, memberCount, botCount, ownerName, boostCount, premiumTier, createdAt }: messageProp) => {
     return new EmbedBuilder()
         .setColor(BOT_COLOR)
         .setTitle(':information_source: 서버 정보')
@@ -34,7 +34,7 @@ export default async function info(interaction: ChatInputCommandInteraction<Cach
     const owner = await interaction.guild!.fetchOwner()!
     const thisGuild = interaction.client.guilds.cache.get(interaction.guildId!)!
 
-    interaction.editReply({ embeds: [message({
+    interaction.editReply({ embeds: [serverInfoEmbed({
         name: interaction.guild!.name!,
         memberCount: thisGuild.members.cache.filter(member => !member.user.bot).size!,
         botCount: thisGuild.members.cache.filter(member => member.user.bot).size!,

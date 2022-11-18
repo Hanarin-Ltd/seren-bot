@@ -3,7 +3,9 @@ import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 const commandsFile = {
     '핑': 'ping',
     '도움말': 'help',
-    '정보': 'info',
+    '서버정보': 'serverinfo',
+    '봇정보': 'botinfo',
+    '멤버정보': 'memberinfo',
     '금지어': 'blockword',
     '리스트': 'list',
     '랭킹': 'ranking',
@@ -15,6 +17,8 @@ const commandsFile = {
     '차단경고갯수': 'warninglimit',
     '역할': 'role',
     '로그': 'log',
+    '대시보드': 'dashboard',
+    '초대': 'invite',
     '투표': 'vote',
     '코인': 'coin',
     '코인가격': 'coinprice',
@@ -41,10 +45,25 @@ const commands =  [
         .setDMPermission(false)
         .toJSON(),
     new SlashCommandBuilder()
-        .setName('정보')
+        .setName('서버정보')
         .setDescription('ℹ️ 서버의 자세한 정보를 알려줍니다')
         .setDMPermission(false)
         .toJSON(),
+    new SlashCommandBuilder()
+        .setName('봇정보')
+        .setDescription('ℹ️ Seren의 자세한 정보를 알려줍니다')
+        .setDMPermission(true)
+        .toJSON(),
+    new SlashCommandBuilder()
+        .setName('멤버정보')
+        .setDescription('ℹ️ 멤버의 자세한 정보를 알려줍니다')
+        .addUserOption(option =>
+            option.setName('멤버')
+            .setDescription('멤버를 선택해주세요')
+            .setRequired(true)
+        )
+        .setDMPermission(false)
+        .toJSON(), 
     new SlashCommandBuilder()
         .setName('리스트')
         .setDescription('📜 관리자 / 금지어 목록을 출력합니다')
@@ -241,6 +260,12 @@ const commands =  [
         )
         .toJSON(),
     new SlashCommandBuilder()
+        .setName('대시보드')
+        .setDescription('📊 대시보드에 접속합니다')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDMPermission(false)
+        .toJSON(),
+    new SlashCommandBuilder()
         .setName('투표')
         .setDescription('🗳️ 현재 채널에 투표를 생성합니다')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
@@ -378,7 +403,7 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디', '도박']
+export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디', '도박', '봇정보']
 export default getCommands
 export { getCommandList, getCommandFunction }
-export const alwaysEphemeral: Command[] = ['포인트전송', '내아이디', '투표', '마이그레이션']
+export const alwaysEphemeral: Command[] = ['포인트전송', '내아이디', '투표', '마이그레이션', '대시보드']

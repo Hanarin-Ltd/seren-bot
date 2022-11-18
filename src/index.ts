@@ -36,7 +36,8 @@ const clientIntents = [
     GatewayIntentBits.GuildBans,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildMessageTyping,
-    GatewayIntentBits.DirectMessageTyping
+    GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.GuildPresences
 ]
 const KOREAN_TOKEN = env.KOREAN_TOKEN
 export let client = new Client({ intents: clientIntents }) as KoreanbotsClient
