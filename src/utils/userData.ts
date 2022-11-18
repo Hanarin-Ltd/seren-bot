@@ -100,3 +100,12 @@ export const setUserGambleCount = async (userId: string, count: number) => {
         data: { gambleCount: count }
     })
 }
+
+export const addUserOwnedGuild = async (userId: string, guildId: string) => {
+    const userData = await getUserData(userId)
+    if (!userData || userData.ownedGuild.includes(guildId)) return
+    await prisma.userData.update({
+        where: { id: userId },
+        data: { ownedGuild: [...userData.ownedGuild, guildId] }
+    })
+}

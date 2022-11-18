@@ -4,7 +4,7 @@ import { updateRoleCache } from "./discord"
 import { getGuildLogSetting, log } from "./log"
 import { addMemberData, updateMemberData } from "./memberData"
 import { getGuildModRole } from "./role"
-import { addUserModGuild, removeUserModGuild } from "./userData"
+import { addUserModGuild, addUserOwnedGuild, removeUserModGuild } from "./userData"
 
 export const getModList = async (guildId: string) => {
     const modList = await prisma.memberData.findMany({ where: {
@@ -74,6 +74,7 @@ export const hasModRole = async (member: GuildMember | PartialGuildMember) => {
 export const updateAllMod = async (guild: Guild) => {
     await addMod(guild, await guild.fetchOwner())
     await addUserModGuild(guild.ownerId, guild.id)
+    await addUserOwnedGuild(guild.ownerId, guild.id)
     await updateRoleCache(guild)
     guild.roles.cache.forEach(role => {
         if (role.permissions.has(PermissionFlagsBits.Administrator)) {
