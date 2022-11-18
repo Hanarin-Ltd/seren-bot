@@ -40,6 +40,7 @@ model GuildOption {
 
     setCommandMessageAsEphemeral Boolean @default(false)
     enableLegacyCommand Boolean @default(false)
+    legacyCommandPrefix String @default("!")
 
     warningLimit Int @default(10)
 
@@ -88,9 +89,9 @@ model UserData {
     username String
     tag String
     profileImg String
-    bannedGuild String[]
-    ownedGuild String[]
-    modGuild String[]
+    bannedGuild String[] @default([])
+    ownedGuild String[] @default([])
+    modGuild String[] @default([])
     point Int @default(25000)
     currentPlan String @default("Free")
     preminumStartedAt DateTime @default(now())
@@ -212,7 +213,7 @@ model VoteSetting {
     authorId String
     title String
     description String
-    options String[]
+    options String[] @default([])
     
     mentionEveryone Boolean @default(false)
     hideResult Boolean @default(false)

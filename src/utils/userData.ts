@@ -47,7 +47,7 @@ export const addGuildAllUserData = async (guild: Guild) => {
 
 export const addUserModGuild = async (userId: string, guildId: string) => {
     const user = await getUserData(userId)
-    if (!user) return
+    if (!user || user.modGuild.includes(guildId)) return
     return await prisma.userData.update({
         where: { id: userId },
         data: {

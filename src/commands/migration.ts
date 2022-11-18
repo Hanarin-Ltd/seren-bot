@@ -6,7 +6,7 @@ import { addOrUpdateGuildData } from "../utils/guildData"
 import { getGuildOption, setDefaultGuildOption } from "../utils/guildOption"
 import { getGuildLogSetting, setGuildLogSetting } from "../utils/log"
 import { addAllGuildMemberData } from "../utils/memberData"
-import { updateAllMod } from "../utils/mod"
+import { updateAllMod, updateGuildMod } from "../utils/mod"
 import { addAllGuildRole } from "../utils/role"
 import { addGuildAllUserData } from "../utils/userData"
 

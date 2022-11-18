@@ -1,5 +1,6 @@
-import { Guild, GuildMember, PartialGuildMember, userMention } from "discord.js"
+import { Guild, GuildMember, PartialGuildMember, PermissionFlagsBits, userMention } from "discord.js"
 import prisma from "../prisma"
+import { updateRoleCache } from "./discord"
 import { getGuildLogSetting, log } from "./log"
 import { addMemberData, updateMemberData } from "./memberData"
 import { getGuildModRole } from "./role"
@@ -71,18 +72,22 @@ export const hasModRole = async (member: GuildMember | PartialGuildMember) => {
 }
 
 export const updateAllMod = async (guild: Guild) => {
-    const modList = await getModList(guild.id)
-    if (modList.length === 0) await addMod(guild, await guild.fetchOwner())
-    modList.forEach(async m => {
-        const member = await guild.members.fetch(m.userId)
-        if (!member) return
-        if (!await hasModRole(member)) {
-            await removeMod(guild, member)
+    await addMod(guild, await guild.fetchOwner())
+    await addUserModGuild(guild.ownerId, guild.id)
+    await updateRoleCache(guild)
+    guild.roles.cache.forEach(role => {
+        if (role.permissions.has(PermissionFlagsBits.Administrator)) {
+            role.members.forEach(async member => {
+                if (member.user.bot) return
+                await addMod(guild, member)
+                await addUserModGuild(member.id, guild.id)
+            })
+        } else {
+            role.members.forEach(async member => {
+                if (await hasModRole(member)) return
+                await removeMod(guild, member)
+                await removeUserModGuild(member.id, guild.id)
+            })
         }
-    })
-    const memberList = await guild.members.fetch()
-    memberList.forEach(async m => {
-        if (await hasModRole(m)) await addMod(guild, m)
-        else await removeMod(guild, m)
     })
 }
