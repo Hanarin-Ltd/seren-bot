@@ -38,7 +38,6 @@ export const addBlockword = async (guild: Guild, word: string) => {
     })
     log({
         content: `금지어 추가됨 : ${word}`,
-        rawContent: `금지어 추가됨 : ${word}`,
         guild,
         type: 'addBlockword'
     })
@@ -55,7 +54,6 @@ export const removeBlockword = async (guild: Guild, word: string) => {
     })
     log({
         content: `금지어 제거됨 : ${word}`,
-        rawContent: `금지어 제거됨 : ${word}`,
         guild,
         type: 'removeBlockword'
     })
@@ -125,7 +123,6 @@ export const scanMessage = async (message: Message) => {
         await giveWarning(guildId, message.member!)
         log({
             content: `금지어 사용 멤버 : ${message.member!.user.username} / 사용 금지어 : ${catchedWordList.join(', ')}`,
-            rawContent: `금지어 사용 멤버 : ${userMention(message.member!.id)} / 사용 금지어 : ${catchedWordList.join(', ')}`,
             guild: thisGuild,
             type: 'useBlockword'
         })

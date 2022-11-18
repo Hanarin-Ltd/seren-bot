@@ -1,8 +1,8 @@
-import { ChatInputCommandInteraction, EmbedBuilder, Guild } from "discord.js"
+import { ChatInputCommandInteraction, codeBlock, EmbedBuilder, Guild } from "discord.js"
 import { BOT_COLOR } from "../lib"
 import { completeSuccessfullyMessage } from "../utils/default"
 import { getThisGuild } from "../utils/discord"
-import { getGuildLogSetting, modifyGuildLogSetting } from "../utils/log"
+import { getGuildLogSetting, logName, modifyGuildLogSetting } from "../utils/log"
 
 const setToOff = async (type: string, logSetting: any, guildId: string) => {
     const data = logSetting[type]
@@ -31,8 +31,8 @@ export default async function log(interaction: ChatInputCommandInteraction) {
     const args = interaction.options
     const thisGuild = await getThisGuild(interaction)
     const guildId = thisGuild.id
-    const setting = args.getString('설정')!
-    const type = args.getString('종류')!
+    const setting = args.getString('설정', true)
+    const type = args.getString('종류', true)
 
     const logSetting = (await getGuildLogSetting(guildId))!
     let result: boolean = true
@@ -46,6 +46,6 @@ export default async function log(interaction: ChatInputCommandInteraction) {
         else result = true
     }
     return result ?
-        await interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user)] }) :
+        await interaction.editReply({ embeds: [completeSuccessfullyMessage(interaction.user, `${codeBlock(logName[type])} 이(가) ${setting === 'on' ? '활성화' : '비활성화'}되었습니다.`)] }) :
         await interaction.editReply({ embeds: [sameValue(setting === 'on')] })
 }

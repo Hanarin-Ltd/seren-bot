@@ -45,7 +45,6 @@ export const giveWarning = async (guildId: string, member: GuildMember, num = 1)
     })
     log({
         content: `경고 추가 멤버 : ${member.user.username} / 갯수 : ${num}개`,
-        rawContent: `경고 추가 멤버 : ${userMention(member.id)} / 갯수 : ${num}개`,
         guild: member.guild!,
         type: 'getWarning'
     })
@@ -68,7 +67,6 @@ export const removeWarning = async (guildId: string, member: GuildMember, num = 
     })
     log({
         content: `경고 제거 멤버 : ${member.user.username} / 갯수 : ${num >= warningCount ? warningCount : num}개`,
-        rawContent: `경고 제거 멤버 : ${userMention(member.id)} / 갯수 : ${num >= warningCount ? warningCount : num}개`,
         guild: member.guild!,
         type: 'removeWarning'
     })

@@ -167,6 +167,24 @@ model GuildLogSetting {
 
     getWarning Boolean @default(false)
     removeWarning Boolean @default(false)
+
+    threadCreate Boolean @default(false)
+    threadDelete Boolean @default(false)
+    threadMemberUpdate Boolean @default(false)
+    threadUpdate Boolean @default(false)
+
+    emojiCreate Boolean @default(false)
+    emojiDelete Boolean @default(false)
+    emojiUpdate Boolean @default(false)
+
+    guildScheduledEventCreate Boolean @default(false)
+    guildScheduledEventDelete Boolean @default(false)
+    guildScheduledEventUpdate Boolean @default(false)
+    guildScheduledEventUserAdd Boolean @default(false)
+    guildScheduledEventUserRemove Boolean @default(false)
+
+    inviteCreate Boolean @default(false)
+    inviteDelete Boolean @default(false)
 }
 
 model GuildLog {
@@ -174,7 +192,6 @@ model GuildLog {
     guildId String
     type String
     content String
-    rawContent String
     createdAt DateTime
 }
 

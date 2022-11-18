@@ -29,7 +29,6 @@ export const addMod = async (guild: Guild, member: GuildMember) => {
     await updateMemberData(member)
     log({
         content: `관리자 임명됨 : ${member.user.username}`,
-        rawContent: `관리자 임명됨 : ${userMention(member.id)}`,
         guild,
         type: 'addMod'
     })
@@ -41,7 +40,6 @@ export const removeMod = async (guild: Guild, member: GuildMember) => {
     await removeUserModGuild(member.id, guild.id)
     log({
         content: `관리자 해임됨 : ${member.user.username}`,
-        rawContent: `관리자 해임됨 : ${userMention(member.id)}`,
         guild,
         type: 'removeMod'
     })

@@ -103,10 +103,27 @@ interface GuildLogSetting {
     levelUp: boolean
     addRoleToMember: boolean
     removeRoleToMember: boolean
+    roleCreate: boolean
+    roleDelete: boolean
+    roleUpdate: boolean
     addBan: boolean
     removeBan: boolean
     getWarning: boolean
     removeWarning: boolean
+    threadCreate: Boolean
+    threadDelete: Boolean
+    threadMemberUpdate: Boolean
+    threadUpdate: Boolean
+    emojiCreate: Boolean
+    emojiDelete: Boolean
+    emojiUpdate: Boolean
+    guildScheduledEventCreate: Boolean
+    guildScheduledEventDelete: Boolean
+    guildScheduledEventUpdate: Boolean
+    guildScheduledEventUserAdd: Boolean
+    guildScheduledEventUserRemove: Boolean
+    inviteCreate: Boolean
+    inviteDelete: Boolean
 }
 
 interface GuildOption {

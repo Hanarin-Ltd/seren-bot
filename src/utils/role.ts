@@ -18,7 +18,6 @@ export const addGuildRole = async (role: Role) => {
 
     log({
         content: `역할 추가됨 / 이름 : ${role.name}`,
-        rawContent: `역할 추가됨 / 이름 : ${role.name}`,
         guild: role.guild,
         type: 'roleCreate'
     })
@@ -43,7 +42,6 @@ export const getGuildRole = async (guild: Guild, roleId: string) => {
 export const removeGuildRole = async (role: Role) => {
     log({
         content: `역할 삭제됨 / 이름 : ${inlineCode(role.name)}`,
-        rawContent: `역할 삭제됨 / 이름 : ${role.name}`,
         guild: role.guild,
         type: 'roleDelete'
     })
@@ -53,7 +51,6 @@ export const removeGuildRole = async (role: Role) => {
 export const modifyGuildRole = async (oldRole: Role, newRole: Role) => {
     log({
         content: `역할 편집됨 / 이름 : ${newRole.name}`,
-        rawContent: `역할 편집됨 / 이름 : ${newRole.name}`,
         guild: newRole.guild,
         type: 'roleUpdate'
     })

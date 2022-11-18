@@ -234,29 +234,8 @@ const commands =  [
         )
         .addStringOption(type =>
             type.setName('종류')
-            .setDescription('설정할 로그 타입')
-            .addChoices(
-                { name: '멤버 입장', value: 'userCreate' },
-                { name: '멤버 퇴장', value: 'userDelete' },
-                { name: '관리자 임명', value: 'addMod' },
-                { name: '관리자 해임', value: 'removeMod' },
-                { name: '명령어 사용', value: 'useCommand' },
-                { name: '금지어 사용', value: 'useBlockword' },
-                { name: '금지어 추가', value: 'addBlockword' },
-                { name: '금지어 제거', value: 'removeBlockword' },
-                { name: '메세지 삭제', value: 'removeMessage' },
-                { name: '레벨업', value: 'levelUp' },
-                { name: '멤버 역할 추가', value: 'addRoleToMember' },
-                { name: '멤버 역할 삭제', value: 'removeRoleToMember' },
-                { name: '역할 생성', value: 'createRole' },
-                { name: '역할 삭제', value: 'deleteRole' },
-                { name: '역할 편집', value: 'updateRole' },
-                { name: '차단 추가', value: 'addBan' },
-                { name: '차단 삭제', value: 'removeBan' },
-                { name: '경고 추가', value: 'getWarning' },
-                { name: '경고 삭제', value: 'removeWarning' },
-                
-            )
+            .setDescription('설정할 로그 종류를 검색하세요')
+            .setAutocomplete(true)
             .setRequired(true)
         )
         .toJSON(),

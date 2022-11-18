@@ -1,10 +1,10 @@
-import { Client, GatewayIntentBits, GuildMember, userMention } from 'discord.js'
+import { Client, codeBlock, GatewayIntentBits, Guild, GuildMember, GuildScheduledEventStatus } from 'discord.js'
 import { Command, getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openAPIServer from './api'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
-import { addSlashCommands, deferReply, errorMessage } from './utils/default'
+import { addSlashCommands, deferReply, errorMessage, getCurrentDate, getCurrentTime } from './utils/default'
 import { getChannel, getGuildOwner } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
@@ -13,7 +13,7 @@ import { addBan, removeBan } from './utils/ban'
 import { getGuildOption } from './utils/guildOption'
 import { someoneHasBan, someoneHasUnban } from './commands/ban'
 import { addGuildRole, getGuildRole } from './utils/role'
-import { getGuildLogSetting, log } from './utils/log'
+import { log, logTypeAutoComplete } from './utils/log'
 import { addMemberExp, checkLevelUp } from './utils/level'
 import { coinNameAutoComplete, ownedCoinAutoComplete } from './utils/coin'
 import coinGame from './coin/coin'
@@ -94,6 +94,7 @@ client.on('interactionCreate', async (interaction) => {
             case '코인구매': { await coinNameAutoComplete(interaction); break }
             case '코인판매': { await ownedCoinAutoComplete(interaction); break }
             case '코인댓글': { await coinNameAutoComplete(interaction); break }
+            case '로그': { await logTypeAutoComplete(interaction); break }
         }
         return
     }
@@ -119,7 +120,6 @@ client.on('interactionCreate', async (interaction) => {
 
                 log({
                     content: `명령어 사용 : ${interaction.member!.user.username} / 사용한 명령어 : ${interaction.commandName}`,
-                    rawContent: `명령어 사용 : ${interaction.member} / 사용한 명령어 : ${interaction.commandName}`,
                     guild: interaction.guild!,
                     type: 'useCommand'
                 })
@@ -193,7 +193,6 @@ client.on('guildBanAdd', async banMember => {
 
         log({
             content: `차단 추가됨 : ${banMember.user.username}`,
-            rawContent: `차단 추가됨 : ${userMention(banMember.user.id)}`,
             guild: thisGuild,
             type: 'addBan'
         })
@@ -213,7 +212,6 @@ client.on('guildBanRemove', async (banMember) => {
 
         log({
             content: `차단 해제됨 : ${banMember.user.username}`,
-            rawContent: `차단 해제됨 : ${userMention(banMember.user.id)}`,
             guild: thisGuild,
             type: 'removeBan'
         })
@@ -248,7 +246,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
             if (!role) return
             log({
                 content: `역할 제거됨 : ${newMember.user.username} / 제거된 역할 : ${role.name}`,
-                rawContent: `역할 제거됨 : ${userMention(newMember.id)} / 제거된 역할 : ${role.name}`,
                 guild: thisGuild,
                 type: 'removeRoleToMember'
             })
@@ -258,7 +255,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
             if (!role) return
             log({
                 content: `역할 추가됨 : ${newMember.user.username} / 추가된 역할 : ${role.name}`,
-                rawContent: `역할 추가됨 : ${userMention(newMember.id)} / 추가된 역할 : ${role.name}`,
                 guild: thisGuild,
                 type: 'addRoleToMember'
             })
@@ -283,7 +279,6 @@ client.on('messageDelete', async (message) => {
         if (!message.guild) return
         log({
             content: `메세지 삭제됨 / 메세지 작성자 : ${message.member!.user.username} / 내용 : ${message.content || '알 수 없음 (null)'}`,
-            rawContent: `메세지 삭제됨 / 메세지 작성자 : ${userMention(message.member!.id)} / 내용 : ${message.content || '알 수 없음 (null)'}`,
             guild: message.guild,
             type: 'removeMessage'
         })
@@ -303,10 +298,160 @@ client.on('roleUpdate', async (oldRole, newRole) => {
     await addOrUpdateGuildData(newRole.guild)
 })
 
-client.on('threadCreate' ,async thread => {})
-client.on('threadDelete', async thread => {})
-client.on('threadListSync', async (thread, guild) => {})
-client.on('threadMemberUpdate', async (oldMember, newMember) => {})
-client.on('threadUpdate', async (oldThread, newThread) => {})
+client.on('threadCreate' ,async thread => {
+    log({
+        content: `쓰레드 생성됨 / 쓰레드 이름 : ${thread.name} / 쓰레드 생성자 : ${thread}`,
+        guild: thread.guild,
+        type: 'threadCreate'
+    })
+})
+
+client.on('threadDelete', async thread => {
+    log({
+        content: `쓰레드 삭제됨 / 쓰레드 이름 : ${thread.name} / 쓰레드 생성자 : ${thread}`,
+        guild: thread.guild,
+        type: 'threadDelete'
+    })
+})
+
+client.on('threadMemberUpdate', async (oldMember, newMember) => {
+    const thread = newMember.thread
+
+    if (oldMember.joinedTimestamp === newMember.joinedTimestamp) return
+    if (oldMember.joinedTimestamp === null && newMember.joinedTimestamp !== null) {
+        log({
+            content: `쓰레드 참여됨 / 쓰레드 이름 : ${thread.name} / 참여자 : ${newMember.user?.tag || '알 수 없음'}`,
+            guild: thread.guild,
+            type: 'threadMemberUpdate'
+        })
+    } else {
+        log({
+            content: `쓰레드 나감 / 쓰레드 이름 : ${thread.name} / 나간 사람 : ${newMember.user?.tag || '알 수 없음'}`,
+            guild: thread.guild,
+            type: 'threadMemberUpdate'
+        })
+    }
+})
+
+client.on('threadUpdate', async (oldThread, newThread) => {
+    const changedData = []
+    if (oldThread.name !== newThread.name) changedData.push(`이름 : ${oldThread.name} -> ${newThread.name}`)
+    if (oldThread.archived !== newThread.archived) changedData.push(`아카이브 : ${oldThread.archived ? '활성화' : '비활성화'} -> ${newThread.archived ? '활성화' : '비활성화'}`)
+    if (oldThread.locked !== newThread.locked) changedData.push(`쓰레드 잠금 : ${oldThread.locked ? '잠금' : '잠금 해제'} -> ${newThread.locked ? '잠금' : '잠금 해제'}`)
+    if (oldThread.autoArchiveDuration !== newThread.autoArchiveDuration) changedData.push(`활동없으면 보관하기 : ${oldThread.autoArchiveDuration} -> ${newThread.autoArchiveDuration}`)
+    if (oldThread.rateLimitPerUser !== newThread.rateLimitPerUser) changedData.push(`슬로우 모드 : ${oldThread.rateLimitPerUser} -> ${newThread.rateLimitPerUser}`)
+
+    log({
+        content: `쓰레드 변경됨 / 쓰레드 이름 : ${newThread.name} / 변경된 내용 : ${changedData.join(', ')}`,
+        guild: newThread.guild,
+        type: 'threadUpdate'
+    })
+})
+
+client.on('emojiCreate', async emoji => {
+    log({
+        content: `이모지 생성됨 / 이모지 이름 : ${emoji.name} / 이모지 생성자 : ${emoji.author?.tag || '알 수 없음'}`,
+        guild: emoji.guild,
+        type: 'emojiCreate'
+    })
+})
+
+client.on('emojiDelete', async emoji => {
+    log({
+        content: `이모지 삭제됨 / 이모지 이름 : ${emoji.name}`,
+        guild: emoji.guild,
+        type: 'emojiDelete'
+    })
+})
+
+client.on('emojiUpdate', async (oldEmoji, newEmoji) => {
+    log({
+        content: `이모지 변경됨 / 이모지 이름 : ${newEmoji.name} / 변경된 내용 : 이름 : ${oldEmoji.name} -> ${newEmoji.name}`,
+        guild: newEmoji.guild,
+        type: 'emojiUpdate'
+    })
+})
+
+client.on('guildScheduledEventCreate', async event => {
+    if (!event.guild) return
+    log({
+        content: `일정 생성됨 / 일정 이름 : ${event.name} / 일정 생성자 : ${event.creator?.tag || '알 수 없음'}`,
+        guild: event.guild,
+        type: 'guildScheduledEventCreate'
+    })
+})
+
+client.on('guildScheduledEventDelete', async event => {
+    if (!event.guild) return
+    log({
+        content: `일정 삭제됨 / 일정 이름 : ${event.name}`,
+        guild: event.guild,
+        type: 'guildScheduledEventDelete'
+    })
+})
+
+client.on('guildScheduledEventUpdate', async (oldEvent, newEvent) => {
+    if (!oldEvent || !newEvent) return
+    if (!newEvent.guild) return
+    const changedData = []
+    const oldLocation = oldEvent.entityMetadata?.location || '알 수 없음'
+    const newLocation = newEvent.entityMetadata?.location || '알 수 없음'
+    const oldScheduledStart = oldEvent.scheduledStartAt ? `${getCurrentDate(oldEvent.scheduledStartAt)} ${getCurrentTime(oldEvent.scheduledStartAt)}` : '알 수 없음'
+    const newScheduledStart = newEvent.scheduledStartAt ? `${getCurrentDate(newEvent.scheduledStartAt)} ${getCurrentTime(newEvent.scheduledStartAt)}` : '알 수 없음'
+    const oldScheduledEnd = oldEvent.scheduledEndAt ? `${getCurrentDate(oldEvent.scheduledEndAt)} ${getCurrentTime(oldEvent.scheduledEndAt)}` : '알 수 없음'
+    const newScheduledEnd = newEvent.scheduledEndAt ? `${getCurrentDate(newEvent.scheduledEndAt)} ${getCurrentTime(newEvent.scheduledEndAt)}` : '알 수 없음'
+    const oldStatus = oldEvent.status === GuildScheduledEventStatus.Scheduled ?'예정됨' : oldEvent.status === GuildScheduledEventStatus.Active ? '활성화됨' : oldEvent.status === GuildScheduledEventStatus.Completed ? '완료됨' : oldEvent.status === GuildScheduledEventStatus.Canceled ? '취소됨' : '알 수 없음'
+    const newStatus = newEvent.status === GuildScheduledEventStatus.Scheduled ? '예정됨' : newEvent.status === GuildScheduledEventStatus.Active ? '활성화됨' : newEvent.status === GuildScheduledEventStatus.Completed ? '완료됨' : newEvent.status === GuildScheduledEventStatus.Canceled ? '취소됨' : '알 수 없음'
+
+    if (oldEvent.name !== newEvent.name) changedData.push(`이름 : ${codeBlock(oldEvent.name)} -> ${codeBlock(newEvent.name)}`)
+    if (oldEvent.description !== newEvent.description) changedData.push(`설명 : ${codeBlock(oldEvent.description || '알 수 없음')} -> ${codeBlock(newEvent.description || '알 수 없음')}`)
+    if (oldLocation !== oldLocation) changedData.push(`장소 : ${codeBlock(oldLocation)} -> ${codeBlock(newLocation)}`)
+    if (oldScheduledStart !== newScheduledStart) changedData.push(`시작 시간 : ${codeBlock(oldScheduledStart)} -> ${codeBlock(newScheduledStart)}`)
+    if (oldScheduledEnd !== newScheduledEnd) changedData.push(`종료 시간 : ${oldScheduledEnd} -> ${newScheduledEnd}`)
+    if (oldStatus !== newStatus) changedData.push(`상태 : ${codeBlock(oldStatus)} -> ${codeBlock(newStatus)}`)
+    if (oldEvent.coverImageURL() !== newEvent.coverImageURL()) changedData.push(`커버 이미지 : ${codeBlock(oldEvent.coverImageURL() || '없음')} -> ${codeBlock(newEvent.coverImageURL() || '없음')}`)
+
+    log({
+        content: `일정 변경됨 / 일정 이름 : ${newEvent.name} / 변경된 내용 : ${changedData.join('\n')}`,
+        guild: newEvent.guild,
+        type: 'guildScheduledEventUpdate'
+    })
+})
+
+client.on('guildScheduledEventUserAdd', async (event, user) => {
+    if (!event.guild) return
+    log({
+        content: `일정 참가자 추가됨 / 일정 이름 : ${event.name} / 참가자 : ${user.tag}`,
+        guild: event.guild,
+        type: 'guildScheduledEventUserAdd'
+    })
+})
+
+client.on('guildScheduledEventUserRemove', async (event, user) => {
+    if (!event.guild) return
+    log({
+        content: `일정 참가자 제거됨 / 일정 이름 : ${event.name} / 참가자 : ${user.tag}`,
+        guild: event.guild,
+        type: 'guildScheduledEventUserRemove'
+    })
+})
+
+client.on('inviteCreate', async invite => {
+    if (!invite.guild) return
+    log({
+        content: `초대 링크 생성됨 / 초대 링크 : ${invite.url}`,
+        guild: invite.guild as Guild,
+        type: 'inviteCreate'
+    })
+})
+
+client.on('inviteDelete', async invite => {
+    if (!invite.guild) return
+    log({
+        content: `초대 링크 삭제됨 / 초대 링크 : ${invite.url}`,
+        guild: invite.guild as Guild,
+        type: 'inviteDelete'
+    })
+})
 
 client.login(env.BOT_TOKEN)
