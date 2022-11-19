@@ -4,7 +4,7 @@ import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
 import openAPIServer from './api'
 import { addGuildChannel, removeGuildChannel, modifyGuildChannel } from './utils/channel'
-import { addSlashCommands, deferReply, errorMessage, getCurrentDate, getCurrentTime } from './utils/default'
+import { addSlashCommands, deferReply, errorMessage, getCurrentDate, getCurrentTime, getHours } from './utils/default'
 import { getChannel, getGuildOwner } from './utils/discord'
 import { addOrUpdateGuildData, getGuildData, removeGuildData } from './utils/guildData'
 import { addMemberData, removeMemberData, updateMemberData } from './utils/memberData'
@@ -24,7 +24,7 @@ import { removeGuildRole } from './utils/role'
 import { modifyGuildRole } from './utils/role'
 import { env } from './lib'
 import startCronJobs from './cronjobs/main'
-import { updateTodayBotStatistics } from './utils/statistics'
+import { addTodayChannelMessagesPerHour, addTodayGuildMessagesPerHour, addTodayMemberMessagesPerHour, updateTodayBotStatistics, updateTodayChannelStatistics, updateTodayGuildStatistics, updateTodayMemberStatistics } from './utils/statistics'
 
 const clientIntents = [
     GatewayIntentBits.Guilds,
@@ -77,6 +77,16 @@ client.on('messageCreate', async message => {
         const guildData = await getGuildData(message.guild.id)
         if (!guildData) await addOrUpdateGuildData(message.guild)
 
+        const guildId = message.guild.id
+
+        await updateTodayGuildStatistics(guildId, 'todayMessages', prev => prev + 1)
+        await updateTodayChannelStatistics(guildId, message.channel.id, 'todayMessages', prev => prev + 1)
+        await updateTodayMemberStatistics(guildId, message.member.id, 'todayMessages', prev => prev + 1)
+        
+        await addTodayGuildMessagesPerHour(guildId, getHours())
+        await addTodayChannelMessagesPerHour(guildId, message.channel.id, getHours())
+        await addTodayMemberMessagesPerHour(guildId, message.member.id, getHours())
+
         await scanMessage(message)
 
         await addMemberExp(message.member!, 10)
@@ -99,8 +109,8 @@ client.on('interactionCreate', async (interaction) => {
         return
     }
     else if (interaction.isChatInputCommand()) {
-        updateTodayBotStatistics('todayUsedCommand', prev => prev + 1)
-        if (usableInDM.includes(interaction.commandName as Command) && !interaction.channel) {
+        await updateTodayBotStatistics('todayUsedCommand', prev => prev + 1)
+        if (usableInDM.includes(interaction.commandName as Command) && interaction.channel?.isDMBased()) {
             try {
                 return getCommandFunction()[interaction.commandName](interaction)
             } catch (error: any) {
@@ -117,6 +127,9 @@ client.on('interactionCreate', async (interaction) => {
 
                 if (interaction.channel.isDMBased() || !interaction.guild) return
                 const guildSetting = await getGuildOption(interaction.guild.id)
+                const guildId = interaction.guild.id
+                await updateTodayGuildStatistics(guildId, 'todayUsedCommands', prev => prev + 1)
+                await updateTodayMemberStatistics(guildId, interaction.user.id, 'todayUsedCommands', prev => prev + 1)
 
                 log({
                     content: `명령어 사용 : ${interaction.member!.user.username} / 사용한 명령어 : ${interaction.commandName}`,
@@ -151,7 +164,9 @@ client.on('guildDelete', async (guild) => {
     }
 })
 
-client.on('guildMemberAdd', async (member) => {
+client.on('guildMemberAdd', async member => {
+    await updateTodayGuildStatistics(member.guild.id, 'todayNewUsers', prev => prev + 1)
+
     await addMemberData(member)
     await addUserData(member.id)
     await welcome(member)

@@ -6,7 +6,7 @@ import { sendDM } from "./discord"
 import { getGuildOption } from "./guildOption"
 import { getGuildLogSetting, log } from "./log"
 import { getMemberData, addMemberData } from "./memberData"
-import { updateTodayBotStatistics } from "./statistics"
+import { updateTodayBotStatistics, updateTodayGuildStatistics, updateTodayMemberStatistics } from "./statistics"
 
 export const getWarning = async (guildId: string, memberId: string) => {
     const result = await prisma.memberData.findFirst({ where: {
@@ -59,7 +59,10 @@ export const giveWarning = async (guildId: string, member: GuildMember, num = 1)
         member.ban()
         await addBan(guildId, member, `경고 누적으로 인한 차단 (${afterWarning}개)`)
     }
-    updateTodayBotStatistics('totalWarning', prev => prev += 1)
+
+    await updateTodayBotStatistics('totalWarning', prev => prev += num)
+    await updateTodayGuildStatistics(guildId, 'todayWarnings', prev => prev += num)
+    await updateTodayMemberStatistics(guildId, member.id, 'todayWarnings', prev => prev += num)
 }
 
 export const removeWarning = async (guildId: string, member: GuildMember, num = 1) => {
@@ -75,15 +78,19 @@ export const removeWarning = async (guildId: string, member: GuildMember, num = 
         guild: member.guild!,
         type: 'removeWarning'
     })
+
+    await updateTodayMemberStatistics(guildId, member.id, 'todayWarnings', prev => prev >= num ? prev - num : 0)
 }
 
 export const resetWarning = async (guildId: string, memberId: string) => {
-    return await prisma.memberData.updateMany({
+    await prisma.memberData.updateMany({
         where: { guildId, userId: memberId },
         data: {
             warning: 0
         }
     })
+
+    await updateTodayMemberStatistics(guildId, memberId, 'todayWarnings', 0)
 }
 
 export const setWarningLimit = async (guildId: string, count: number) => {

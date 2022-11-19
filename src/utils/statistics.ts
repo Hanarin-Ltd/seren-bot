@@ -39,6 +39,16 @@ export const updateTodayGuildStatistics = async (guildId: string, type: keyof Gu
     await prisma.guildStatistic.update({ where: { uniqueId: todayStatistics.uniqueId }, data: { [type]: changedData } })
 }
 
+export const addTodayGuildMessagesPerHour = async (guildId: string, hour: number) => {
+    const todayStatistics = await getTodayGuildStatistics(guildId)
+    const changedData = todayStatistics.messagesPerHour
+    changedData[hour] = changedData[hour] + 1
+
+    await prisma.guildStatistic.update({
+        where: { uniqueId: todayStatistics.uniqueId },
+        data: { messagesPerHour: changedData }
+    })
+}
 
 export const getTodayMemberStatistics = async (guildId: string, userId: string) => {
     const data = await prisma.memberStatistic.findFirst({ where: { guildId, userId }, orderBy: { uniqueId: 'desc' }, take: 1 })
@@ -52,6 +62,17 @@ export const updateTodayMemberStatistics = async (guildId: string, userId: strin
     await prisma.memberStatistic.update({ where: { uniqueId: todayStatistics.uniqueId }, data: { [type]: changedData } })
 }
 
+export const addTodayMemberMessagesPerHour = async (guildId: string, userId: string, hour: number) => {
+    const todayStatistics = await getTodayMemberStatistics(guildId, userId)
+    const changedData = todayStatistics.messagesPerHour
+    changedData[hour] = changedData[hour] + 1
+
+    await prisma.memberStatistic.update({
+        where: { uniqueId: todayStatistics.uniqueId },
+        data: { messagesPerHour: changedData }
+    })
+}
+
 export const getTodayChannelStatistics = async (guildId: string, channelId: string) => {
     const data = await prisma.guildChannelStatistic.findFirst({ where: { guildId, channelId }, orderBy: { uniqueId: 'desc' }, take: 1 })
     return data ? data : await prisma.guildChannelStatistic.create({ data: { guildId, channelId } })
@@ -62,6 +83,17 @@ export const updateTodayChannelStatistics = async (guildId: string, channelId: s
     const changedData = typeof data === 'number' ? data : data(todayStatistics[type] as number)
 
     await prisma.guildChannelStatistic.update({ where: { uniqueId: todayStatistics.uniqueId }, data: { [type]: changedData } })
+}
+
+export const addTodayChannelMessagesPerHour = async (guildId: string, channelId: string, hour: number) => {
+    const todayStatistics = await getTodayChannelStatistics(guildId, channelId)
+    const changedData = todayStatistics.messagesPerHour
+    changedData[hour] = changedData[hour] + 1
+
+    await prisma.guildChannelStatistic.update({
+        where: { uniqueId: todayStatistics.uniqueId },
+        data: { messagesPerHour: changedData }
+    })
 }
 
 export const getTodayInviteStatistics = async (guildId: string, inviteCode: string) => {

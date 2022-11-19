@@ -132,3 +132,5 @@ export function chunkArray<T>(array: T[], n: number) {
     }
     return chunks
 }
+
+export const getHours = (time: Date = new Date()) => time.getHours() 

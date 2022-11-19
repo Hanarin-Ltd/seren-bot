@@ -326,7 +326,6 @@ model GuildInviteStatistic { // Save Data per Day
     inviteCode String @unique
 
     totalUses Int @default(0)
-    todayUses Int @default(0)
 
     createdAt DateTime @default(now())
 }
