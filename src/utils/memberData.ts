@@ -7,6 +7,11 @@ export const getMemberData = async (guildId: string, memberId: string) => {
     return await prisma.memberData.findFirst({ where: { userId: memberId, guildId } })
 }
 
+export const getAllMemberIdList = async (guildId: string) => {
+    const data = await prisma.memberData.findMany({ where: { guildId }, select: { userId: true } })
+    return data.map(m => m.userId)
+}
+
 export const addMemberData = async (member: GuildMember) => {
     const exist = await prisma.memberData.findFirst({ where: { userId: member.id, guildId: member.guild.id } })
     if (exist) return

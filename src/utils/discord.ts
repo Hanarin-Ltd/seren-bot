@@ -69,3 +69,16 @@ export const isGuildMember = async (guild: Guild, user: User) => {
 export const isCommunity = (guild: Guild) => {
     return guild.features?.includes('COMMUNITY')
 }
+
+export const getAllGuildIdList = async () => {
+    return client.guilds.cache.map(guild => guild.id)
+}
+
+export const getInvite = async (inviteId: string) => {
+    return await client.fetchInvite(inviteId)
+}
+
+export const getGuildAllInvite = async (guild: Guild) => {
+    const data = await guild.invites.fetch()
+    return data.map(invite => guild.invites.resolve(invite))
+}

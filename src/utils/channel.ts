@@ -7,6 +7,11 @@ export const getGuildChannel = async (guild: Guild) => {
     return result ? result : {} as GuildChannel
 }
 
+export const getAllGuildChannelIdList = async (guildId: string) => {
+    const data = await prisma.guildChannel.findMany({ where: { guildId }, select: { channelId: true } })
+    return data.map(m => m.channelId)
+}
+
 export const addAllGuildChannel = async (guild: Guild) => {
     await updateChannelCache(guild)
 

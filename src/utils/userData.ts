@@ -3,7 +3,7 @@ import { client } from ".."
 import prisma from "../prisma"
 import { getBannedGuildList } from "./ban"
 import { getGuildListThatUserMod } from "./mod"
-import { updateTodayStatistics } from "./statistics"
+import { updateTodayBotStatistics } from "./statistics"
 
 export const getUserData = async (userId: string) => {
     return await prisma.userData.findUnique({ where: { id: userId } })
@@ -93,7 +93,7 @@ export const addUserPoint = async (userId: string, point: number) => {
         where: { id: userId },
         data: { point: userData.point + point }
     })
-    updateTodayStatistics('todayUsedPoint', prev => prev + point)
+    updateTodayBotStatistics('todayUsedPoint', prev => prev + point)
 }
 
 export const removeUserPoint = async (userId: string, point: number) => {
@@ -103,7 +103,7 @@ export const removeUserPoint = async (userId: string, point: number) => {
         where: { id: userId },
         data: { point: userData.point - point }
     })
-    updateTodayStatistics('todayUsedPoint', prev => prev + point)
+    updateTodayBotStatistics('todayUsedPoint', prev => prev + point)
 }
 
 export const getOwnedGuildList = async (userId: string) => {

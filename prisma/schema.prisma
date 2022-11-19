@@ -268,3 +268,65 @@ model Statistic {
 
     createdAt DateTime @default(now())
 }
+
+model GuildStatistic { // Save Data per Day
+    uniqueId Int @id @default(autoincrement())
+    guildId String
+
+    totalUsers Int @default(0)
+    todayNewUsers Int @default(0)
+
+    todayMessages Int @default(0)
+    messagesPerHour Int[] @default([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+
+    totalUsedCommands Int @default(0)
+    todayUsedCommands Int @default(0)
+
+    totalWarnings Int @default(0)
+    todayWarnings Int @default(0)
+
+    totalBans Int @default(0)
+    todayBans Int @default(0)
+
+    createdAt DateTime @default(now())
+}
+
+model GuildChannelStatistic { // Save Data per Day
+    uniqueId Int @id @default(autoincrement())
+    guildId String
+    channelId String
+
+    totalMessages Int @default(0)
+    todayMessages Int @default(0)
+    messagesPerHour Int[] @default([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+
+    createdAt DateTime @default(now())
+}
+
+model MemberStatistic { // Save Data per Day
+    uniqueId Int @id @default(autoincrement())
+    guildId String
+    userId String
+
+    todayMessages Int @default(0)
+    messagesPerHour Int[] @default([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+
+    totalUsedCommands Int @default(0)
+    todayUsedCommands Int @default(0)
+
+    totalWarnings Int @default(0)
+    todayWarnings Int @default(0)
+
+    createdAt DateTime @default(now())
+}
+
+model GuildInviteStatistic { // Save Data per Day
+    uniqueId Int @id @default(autoincrement())
+    guildId String
+    inviteCode String @unique
+
+    totalUses Int @default(0)
+    todayUses Int @default(0)
+
+    createdAt DateTime @default(now())
+}

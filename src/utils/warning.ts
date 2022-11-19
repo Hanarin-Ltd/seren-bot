@@ -6,7 +6,7 @@ import { sendDM } from "./discord"
 import { getGuildOption } from "./guildOption"
 import { getGuildLogSetting, log } from "./log"
 import { getMemberData, addMemberData } from "./memberData"
-import { updateTodayStatistics } from "./statistics"
+import { updateTodayBotStatistics } from "./statistics"
 
 export const getWarning = async (guildId: string, memberId: string) => {
     const result = await prisma.memberData.findFirst({ where: {
@@ -14,6 +14,11 @@ export const getWarning = async (guildId: string, memberId: string) => {
         userId: memberId,
     } })
     return result ? result.warning : 0
+}
+
+export const getGuildWarnings = async (guildId: string) => {
+    const result = await prisma.memberData.findMany({ select: { warning: true }, where: { guildId } })
+    return result.reduce((acc, cur) => acc + cur.warning, 0)
 }
 
 export const getWarningList = async (guildId: string) => {
@@ -54,7 +59,7 @@ export const giveWarning = async (guildId: string, member: GuildMember, num = 1)
         member.ban()
         await addBan(guildId, member, `경고 누적으로 인한 차단 (${afterWarning}개)`)
     }
-    updateTodayStatistics('totalWarning', prev => prev += 1)
+    updateTodayBotStatistics('totalWarning', prev => prev += 1)
 }
 
 export const removeWarning = async (guildId: string, member: GuildMember, num = 1) => {

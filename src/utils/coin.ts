@@ -8,7 +8,7 @@ import { createServer } from "http"
 import { client } from ".."
 import fetch from "node-fetch"
 import { sendDM } from "./discord"
-import { updateTodayStatistics } from "./statistics"
+import { updateTodayBotStatistics } from "./statistics"
 
 const cmp = (n1: number, n2: number) => n1 >= n2 ? 1 : -1
 
@@ -239,7 +239,7 @@ export const getPriceInfo = (data: number[]) => {
 export const addCoinComment = async (coinId: number, userId: string, content: string) => {
     const coinData = await getCoinData(coinId)
     if (!coinData) return false
-    updateTodayStatistics('todayCoinComment', prev => prev + 1)
+    updateTodayBotStatistics('todayCoinComment', prev => prev + 1)
     return await fetch(`http://localhost:${WEB_PORT}/api/coin/comment`, {
         method: 'POST',
         body: JSON.stringify({
