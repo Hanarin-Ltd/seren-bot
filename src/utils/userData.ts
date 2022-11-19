@@ -41,6 +41,7 @@ export const addUserData = async (userId: string) => {
 export const updateUserData = async (userId: string) => {
     const user = await client.users.fetch(userId)
     if (user.bot) return
+    if (!user) await addUserData(userId)
     return await prisma.userData.update({
         where: { id: user.id },
         data: {
