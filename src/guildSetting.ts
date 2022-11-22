@@ -41,5 +41,5 @@ export default async function guildSetting(guild: Guild) {
         }
     })
 
-    await sendDM(owner.id, { embeds: [thanksForUsing(guildId)] })
+    //await sendDM(owner.id, { embeds: [thanksForUsing(guildId)] })
 }
