@@ -323,7 +323,7 @@ model MemberStatistic { // Save Data per Day
 model GuildInviteStatistic { // Save Data per Day
     uniqueId Int @id @default(autoincrement())
     guildId String
-    inviteCode String @unique
+    inviteCode String
 
     totalUses Int @default(0)
 

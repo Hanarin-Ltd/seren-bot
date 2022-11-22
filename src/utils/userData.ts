@@ -40,8 +40,9 @@ export const addUserData = async (userId: string) => {
 
 export const updateUserData = async (userId: string) => {
     const user = await client.users.fetch(userId)
+    const exist = await getUserData(userId)
     if (user.bot) return
-    if (!user) await addUserData(userId)
+    if (!exist) await addUserData(userId)
     return await prisma.userData.update({
         where: { id: user.id },
         data: {

@@ -19,6 +19,8 @@ export const getMemberExp = async (member: GuildMember) => {
 export const addMemberExp = async (member: GuildMember, exp: number) => {
     const exist = await prisma.memberData.findFirst({ where: { guildId: member.guild.id, userId: member.id } })
     if (!exist) await addMemberData(member)
+    const guildSetting = await getGuildOption(member.guild.id)
+    if (!guildSetting || !guildSetting.useLevelSystem) return
     return await prisma.memberData.updateMany({
         where: { guildId: member.guild.id, userId: member.id },
         data: {
