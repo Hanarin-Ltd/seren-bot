@@ -1,4 +1,4 @@
-import { Client, codeBlock, GatewayIntentBits, Guild, GuildMember, GuildScheduledEventStatus, WebhookClient } from 'discord.js'
+import { Client, codeBlock, DMChannel, GatewayIntentBits, Guild, GuildMember, GuildScheduledEventStatus, WebhookClient } from 'discord.js'
 import { Command, getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
@@ -38,7 +38,6 @@ const clientIntents = [
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildMessageTyping,
     GatewayIntentBits.DirectMessageTyping,
-    GatewayIntentBits.GuildPresences
 ]
 const KOREAN_TOKEN = env.KOREAN_TOKEN
 export let client = new Client({ intents: clientIntents }) as KoreanbotsClient
@@ -112,7 +111,8 @@ client.on('interactionCreate', async (interaction) => {
     }
     else if (interaction.isChatInputCommand()) {
         await updateTodayBotStatistics('todayUsedCommand', prev => prev + 1)
-        if (usableInDM.includes(interaction.commandName as Command) && interaction.channel?.isDMBased()) {
+        await deferReply(interaction)
+        if (usableInDM.includes(interaction.commandName as Command) && interaction.channel === null) {
             try {
                 return getCommandFunction()[interaction.commandName](interaction)
             } catch (error: any) {
@@ -120,10 +120,8 @@ client.on('interactionCreate', async (interaction) => {
                 return interaction.reply({ embeds: [errorMessage()] })
             }
         } else {
-            if (!interaction.channel) return
-
             try {
-                await deferReply(interaction)
+                if (!interaction.channel) return interaction.reply({ embeds: [errorMessage('채널을 감지하지 못했습니다.')] })
 
                 getCommandFunction()[interaction.commandName](interaction)
 

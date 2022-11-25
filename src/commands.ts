@@ -102,6 +102,7 @@ const commands =  [
     new SlashCommandBuilder()
         .setName('아이디')
         .setDescription('🪪 유저의 아이디를 출력합니다')
+        .setDMPermission(false)
         .addUserOption(target =>
             target.setName('유저')
             .setDescription('아이디를 출력할 유저')
@@ -111,6 +112,7 @@ const commands =  [
     new SlashCommandBuilder()
         .setName('내아이디')
         .setDescription('🪪 자신의 아이디를 출력합니다')
+        .setDMPermission(true)
         .toJSON(),
 
     new SlashCommandBuilder()
@@ -352,7 +354,7 @@ const commands =  [
     new SlashCommandBuilder()
         .setName('도박')
         .setDescription('🎰 포인트를 일정 확률로 얻거나 잃습니다. 기본 포인트 : 1000')
-        .setDMPermission(true)
+        .setDMPermission(false)
         .addNumberOption(amount =>
             amount.setName('짜릿함')
             .setDescription('1000 * (짜릿함) 만큼의 포인트를 걸 수 있습니다')
@@ -383,7 +385,7 @@ const getCommandFunction = (): any => {
     return returnValue
 }
 
-export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디', '도박', '봇정보']
+export const usableInDM: Command[] = ['코인가격', '코인구매', '코인판매', '내코인', '코인댓글', '코인', '포인트전송', '내아이디', '봇정보']
 export default getCommands
 export { getCommandList, getCommandFunction }
 export const alwaysEphemeral: Command[] = ['포인트전송', '내아이디', '투표', '마이그레이션', '대시보드']
