@@ -79,6 +79,8 @@ export const getInvite = async (inviteId: string) => {
 }
 
 export const getGuildAllInvite = async (guild: Guild) => {
-    const data = await guild.invites.fetch()
-    return data.map(invite => guild.invites.resolve(invite))
+    try {
+        const data = await guild.invites.fetch()
+        return data.map(invite => guild.invites.resolve(invite))
+    } catch { return [] }
 }
