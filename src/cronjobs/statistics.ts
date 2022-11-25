@@ -1,7 +1,7 @@
 import { CronJob } from "cron"
 import { client } from ".."
 import prisma from "../prisma"
-import { getBanListFromAPI, getBanListFromSQL } from "../utils/ban"
+import { getBanListFromSQL } from "../utils/ban"
 import { getAllGuildChannelIdList } from "../utils/channel"
 import { getAllGuildIdList, getGuildAllInvite } from "../utils/discord"
 import { getAllMemberIdList } from "../utils/memberData"

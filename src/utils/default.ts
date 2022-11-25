@@ -134,3 +134,13 @@ export function chunkArray<T>(array: T[], n: number) {
 }
 
 export const getHours = (time: Date = new Date()) => time.getHours() 
+
+export const getUptime = () => {
+    const uptime = process.uptime()
+    const days = Math.floor(uptime / 86400)
+    const hours = Math.floor(uptime / 3600) % 24
+    const minutes = Math.floor(uptime / 60) % 60
+    const seconds = Math.floor(uptime) % 60
+
+    return `${days}일 ${hours}시간 ${minutes}분 ${seconds}초`
+}

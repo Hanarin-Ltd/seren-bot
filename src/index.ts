@@ -1,4 +1,4 @@
-import { Client, codeBlock, GatewayIntentBits, Guild, GuildMember, GuildScheduledEventStatus } from 'discord.js'
+import { Client, codeBlock, GatewayIntentBits, Guild, GuildMember, GuildScheduledEventStatus, WebhookClient } from 'discord.js'
 import { Command, getCommandFunction, usableInDM } from './commands'
 import guildSetting from './guildSetting'
 import { goodbye, welcome } from './welcome'
@@ -25,6 +25,7 @@ import { modifyGuildRole } from './utils/role'
 import { env } from './lib'
 import startCronJobs from './cronjobs/main'
 import { addTodayChannelMessagesPerHour, addTodayGuildMessagesPerHour, addTodayMemberMessagesPerHour, updateTodayBotStatistics, updateTodayChannelStatistics, updateTodayGuildStatistics, updateTodayMemberStatistics } from './utils/statistics'
+import adminCommand from './utils/admin/command'
 
 const clientIntents = [
     GatewayIntentBits.Guilds,
@@ -41,6 +42,7 @@ const clientIntents = [
 ]
 const KOREAN_TOKEN = env.KOREAN_TOKEN
 export let client = new Client({ intents: clientIntents }) as KoreanbotsClient
+export const webhookAlert = new WebhookClient({ url: env.WEBHOOK_URL })
 
 if(env.NODE_ENV === 'production'){
     client = new KoreanbotsClient({ 
@@ -69,11 +71,11 @@ client.on('ready', async () => {
 
 client.on('messageCreate', async message => {
     try {
-        if (!message.guild) return
-        if (!message.member) return
-        if (message.author.bot) return
+        if (!message.guild || message.webhookId || !message.member || message.author.bot) return
         if (!message.channel || message.channel.isDMBased()) return
         
+        adminCommand(message)
+
         const guildData = await getGuildData(message.guild.id)
         if (!guildData) await addOrUpdateGuildData(message.guild)
 

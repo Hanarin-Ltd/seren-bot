@@ -3,16 +3,7 @@ import { ChatInputCommandInteraction } from "discord.js"
 import { client } from ".."
 import { BOT_COLOR, env } from "../lib"
 import * as DiscordJS from "discord.js"
-
-const getUptime = () => {
-    const uptime = process.uptime()
-    const days = Math.floor(uptime / 86400)
-    const hours = Math.floor(uptime / 3600) % 24
-    const minutes = Math.floor(uptime / 60) % 60
-    const seconds = Math.floor(uptime) % 60
-
-    return `${days}일 ${hours}시간 ${minutes}분 ${seconds}초`
-}
+import { getUptime } from "../utils/default"
 
 const botInfoEmbed = () => {
     return new EmbedBuilder()

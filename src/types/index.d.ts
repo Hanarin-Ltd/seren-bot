@@ -16,6 +16,7 @@ interface ENV {
     DATABASE_URL: string
     KOREAN_TOKEN: string
     NODE_ENV: 'development' | 'production'
+    WEBHOOK_URL: string
 
     [key: string]: string
 }
