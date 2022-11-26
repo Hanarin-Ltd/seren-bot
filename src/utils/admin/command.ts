@@ -13,7 +13,7 @@ export default async function adminCommand(message: Message) {
     const commandArgs = args.slice(1)
 
     try {
-        const command = require(`../../commands/admin/${commandName}.ts`).default
+        const command = require(`../../commands/admin/${commandName}`).default
         return command(commandArgs, message)
     } catch (e) {
         if (!(e instanceof Error)) return
