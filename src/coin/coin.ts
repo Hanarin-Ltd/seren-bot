@@ -3,6 +3,8 @@ import fetch from "node-fetch"
 import { env, WEB_PORT } from "../lib"
 import { getCoinList, getPriceInfo, makeNewCoin, updateCoinPrice } from "../utils/coin"
 
+const MAX_COIN_COUNT = 70
+
 class CoinGame {
     constructor(
         public coins: CoinData[] = [],
@@ -14,10 +16,10 @@ class CoinGame {
         this.coins = await getCoinList()
     }
 
-    private async updateCoinPrice() {
+    private async updateCoin() {
         this.coins = await getCoinList()
-        if (this.coins.length < 10) {
-            for (let i = this.coins.length; i < 10; i++) {
+        if (this.coins.length < MAX_COIN_COUNT) {
+            for (let i = this.coins.length; i < MAX_COIN_COUNT; i++) {
                 await this.addCoin()
             }
         }
@@ -44,7 +46,7 @@ class CoinGame {
 
     async start() {
         this.coins = await getCoinList()
-        this.interval = setInterval(() => this.updateCoinPrice(), 3000)
+        this.interval = setInterval(() => this.updateCoin(), 3000)
     }
 }
 

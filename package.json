@@ -5,7 +5,7 @@
     "private": true,
     "main": "dist/index.js",
     "scripts": {
-        "dev": "nodemon --files --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+        "dev": "npx nodemon --watch \"./src/**/*\" -e ts --exec \"ts-node src/index.ts\"",
         "start": "npm run build && node dist/index.js",
         "generate": "prisma generate",
         "push": "prisma db push --accept-data-loss",
