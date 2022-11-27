@@ -152,18 +152,18 @@ export const updateCoinPrice = async (id: number) => {
 export const coinNameAutoComplete = async (interaction: AutocompleteInteraction) => {
     const coins = await getCoinList()
     const focused = interaction.options.getFocused().toLowerCase()
-    const filtered = coins.filter(c => c.name.toLowerCase().startsWith(focused))
+    const filtered = coins.filter(c => c.name.toLowerCase().includes(focused))
     await interaction.respond(
-        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}pt`, value: c.name })) : []
+        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}pt`, value: c.name })).slice(0, 25) : []
     )
 }
 
 export const ownedCoinAutoComplete = async (interaction: AutocompleteInteraction) => {
     const coins = await getOwnedCoinList(interaction.user.id)
     const focused = interaction.options.getFocused().toLowerCase()
-    const filtered = coins.filter(c => c.name.toLowerCase().startsWith(focused))
+    const filtered = coins.filter(c => c.name.toLowerCase().includes(focused))
     await interaction.respond(
-        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}`, value: c.name })) : []
+        filtered.length > 0 ? filtered.map(c => ({ name: `${c.name} - ${c.price}`, value: c.name })).slice(0, 25) : []
     )
 }
 
