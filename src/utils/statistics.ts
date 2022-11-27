@@ -3,6 +3,7 @@ import fetch from "node-fetch"
 import { env } from "process"
 import { WEB_PORT } from "../lib"
 import prisma from "../prisma"
+import { getCurrentDate } from "./default"
 
 export const getTodayBotStatistics = async () => {
     const data = await prisma.statistic.findFirst({ orderBy: { id: 'desc' }, take: 1 })
@@ -28,8 +29,11 @@ export const updateTodayBotStatistics = async (type: keyof Statistic, data: numb
 }
 
 export const getTodayGuildStatistics = async (guildId: string) => {
-    const data = await prisma.guildStatistic.findFirst({ where: { guildId }, orderBy: { uniqueId: 'desc' }, take: 1 })
-    return data ? data : await prisma.guildStatistic.create({ data: { guildId } })
+    const data = await prisma.guildStatistic.findMany()
+    if (data.some(d => getCurrentDate(d.createdAt) !== getCurrentDate())) {
+        return await prisma.guildStatistic.create({ data: { guildId } })
+    }
+    return data.find(d => d.guildId === guildId) ?? await prisma.guildStatistic.create({ data: { guildId } })
 }
 
 export const updateTodayGuildStatistics = async (guildId: string, type: keyof GuildStatistic, data: number | ((prev: number) => number)) => {
